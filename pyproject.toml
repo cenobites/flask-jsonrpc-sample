@@ -1,0 +1,180 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel>=0.42"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "Flask-JSONRPC-sample"
+version = "0.0.1"
+description = "Sample project for a library management system (LMS) using Flask-JSONRPC."
+readme = {file = "README.md", content-type = "text/markdown"}
+license = {file = "LICENSE"}
+authors = [{name = "Nycholas Oliveira", email = "nycholas@cenobit.es"}]
+maintainers = [{name = "Cenobit Technologies Inc.", email = "hi@cenobit.es"}]
+keywords = ["flask", "flask-extensions", "jsonrpc", "flask-jsonrpc", "sample"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+]
+requires-python = ">=3.12"
+dependencies = [
+    "Flask-JSONRPC>=3.0.0,<4.0",
+]
+
+[project.urls]
+Donate = "https://github.com/sponsors/nycholas"
+"Source Code" = "https://github.com/cenobites/flask-jsonrpc-sample"
+"Issue Tracker" = "https://github.com/cenobites/flask-jsonrpc-sample/issues/"
+
+[tool.setuptools]
+zip-safe = false
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+namespaces = false
+
+[tool.distutils.bdist_wheel]
+universal = true
+
+[tool.ruff]
+src = ["src"]
+fix = true
+show-fixes = true
+output-format = "concise"
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle error
+    "W",    # pycodestyle warning
+    "F",    # pyflakes
+    "UP",   # pyupgrade
+    "ANN",  # flake8-annotations
+    "B",    # flake8-bugbear
+    "Q",    # flake8-quotes
+    "SIM",  # flake8-simplify
+    "T",    # flake8-type-checking
+    "B",    # flake8-bandit
+    "C",    # flake8-copyright
+    "I",    # isort
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.flake8-quotes]
+inline-quotes = "single"
+docstring-quotes = "double"
+
+[tool.ruff.lint.flake8-type-checking]
+exempt-modules = ["typing", "typing_extensions"]
+
+[tool.ruff.lint.flake8-bandit]
+check-typed-exception = true
+
+[tool.ruff.lint.flake8-copyright]
+author = "Cenobit Technologies, Inc. http://cenobit.es/"
+
+[tool.ruff.lint.isort]
+length-sort = true
+combine-as-imports = true
+order-by-type = true
+force-sort-within-sections = true
+split-on-trailing-comma = false
+section-order = ["future", "standard-library", "flask", "flask-jsonrpc", "third-party", "first-party", "local-folder"]
+
+[tool.ruff.lint.isort.sections]
+"flask" = ["flask"]
+"flask-jsonrpc" = ["flask-jsonrpc"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+skip-magic-trailing-comma = true
+docstring-code-format = true
+docstring-code-line-length = 79
+
+[tool.pytest.ini_options]
+addopts = "--pyargs --doctest-modules --junitxml=junit/test-results.xml --cov-report=html --cov-report=term --cov-report=lcov --cov=lms --cov-fail-under=100"
+junit_family = "xunit2"
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
+pythonpath = "src/"
+testpaths = [
+    "src/lms",
+    "tests",
+]
+required_plugins = [
+    "pytest-cov",
+    "pytest-xdist",
+    "pytest-sugar",
+    "pytest-env",
+]
+
+[tool.coverage.run]
+branch = true
+source = [
+    "src/lms",
+    "tests",
+]
+omit = [
+    "*/settings.py",
+    "*/fixtures.py",
+    "*/tests.py",
+    "*/test_*.py",
+    "*/*_tests.py",
+]
+
+[tool.coverage.paths]
+source = [
+    "src",
+    "*/site-packages",
+]
+
+[tool.coverage.report]
+fail_under = 100
+ignore_errors = true
+skip_covered = true
+exclude_lines = [
+    "pragma: no cover",
+    "pragma: no cover ${PRAGMA_VERSION}",
+    "def __repr__",
+    "if self\\.debug",
+    "if settings\\.DEBUG",
+    "if current_app\\.config\\['DEBUG'\\]",
+    "if app\\.config\\['DEBUG'\\]",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "if t\\.TYPE_CHECKING:",
+]
+
+[tool.mypy]
+files = ["src/lms"]
+python_version = "3.12"
+check_untyped_defs = true
+ignore_errors = false
+ignore_missing_imports = false
+strict = true
+
+[[tool.mypy.overrides]]
+module = [
+    "asgiref.*",
+    "mypy-werkzeug.datastructures.*",
+    "typeguard.*",
+    "dotenv.*",
+]
+ignore_missing_imports = true

@@ -1,0 +1,14 @@
+version: '3'
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DEBUG=0
+    user: ${UID:-0}:${GID:-0}
+    command: >
+      sh -c "
+        python src/lms/app.py"
+    ports:
+      - '5000:5000'

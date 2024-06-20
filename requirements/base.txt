@@ -1,0 +1,3 @@
+# Flask
+# ------------------------------------------------------------------------------
+Flask-JSONRPC>=3.0.0,<4.0  # https://github.com/cenobites/flask-jsonrpc
