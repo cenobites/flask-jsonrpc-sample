@@ -58,4 +58,4 @@ RUN chown flask_user:flask_user -R /app
 USER flask_user
 
 EXPOSE 5000
-CMD gunicorn src.lms:app --bind 0.0.0.0:5000
+CMD gunicorn src.lms.app:app --bind 0.0.0.0:5000
