@@ -4,4 +4,4 @@
 
 # WSGI HTTP Server
 # ------------------------------------------------------------------------------
-gunicorn==22  # https://github.com/benoitc/gunicorn
+gunicorn==23.0.0  # https://github.com/benoitc/gunicorn
