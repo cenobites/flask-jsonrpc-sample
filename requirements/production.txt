@@ -1,7 +1,0 @@
-# PRECAUTION: avoid production dependencies that aren't in development
-
--r base.txt
-
-# WSGI HTTP Server
-# ------------------------------------------------------------------------------
-gunicorn==22  # https://github.com/benoitc/gunicorn
