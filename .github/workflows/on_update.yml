@@ -1,35 +1,88 @@
 name: On update
 
+concurrency:
+  group: development
+  cancel-in-progress: false
+
 on:
+  pull_request:
+    paths-ignore: ["docs/**", "README.md"]
   push:
-    branches-ignore:
-      - master
-    tags-ignore:
-      - v**
+    branches: ["release/**"]
+    paths-ignore: ["docs/**", "README.md"]
 
 permissions:
   contents: read
 
 jobs:
-  run-tox:
-    name: Tox | Test, Style, Lint, Typing, Pytype, Security and Docs
+  unit-tests:
+    name: Unit tests [${{ matrix.platform }} | ${{ matrix.python-version }}]
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
       matrix:
         platform:
           - ubuntu-latest
-        python-version: ["3.12"]
+          - macos-latest
+          - windows-latest
+        python-version: ["3.14", "3.14t"]
     steps:
-    - name: Checkout source at ${{ matrix.platform }}
-      uses: actions/checkout@v4
-    - name: Setup Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install tox
-    - name: Run tox
-      run: |
-        tox -e py,style,typing
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7.1.2
+        with:
+          enable-cache: true
+          prune-cache: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
+      - run: |
+          uv run --locked --group tests tox run -e py
+
+  typing:
+    name: Type checker [${{ matrix.platform }} | ${{ matrix.python-version }}]
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - ubuntu-latest
+        python-version: ["3.14"]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7.1.2
+        with:
+          enable-cache: true
+          prune-cache: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
+      - uses: actions/cache@v4.3.0
+        with:
+          path: ./.mypy_cache
+          key: mypy|${{ hashFiles('pyproject.toml') }}
+      - run: |
+          uv run --locked --group typing tox run -e typing
+
+  security:
+    name: Security [${{ matrix.platform }} | ${{ matrix.python-version }}]
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - ubuntu-latest
+        python-version: ["3.14"]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7.1.2
+        with:
+          enable-cache: true
+          prune-cache: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
+      - run: |
+          uv run --locked --group security tox run -e security
