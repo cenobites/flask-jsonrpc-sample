@@ -21,7 +21,12 @@ classifiers = [
 ]
 requires-python = ">=3.14"
 dependencies = [
+    "dotenv>=0.9.9",
+    "email-validator>=2.3.0",
+    "flask-alembic>=3.1.1",
     "flask-jsonrpc",
+    "flask-sqlalchemy>=3.1.1",
+    "pydantic>=2.12.3",
 ]
 
 [project.urls]
@@ -45,14 +50,16 @@ tests = [
     "pytest-xdist==3.8.0", # https://github.com/pytest-dev/pytest-xdist
     "pytest-sugar==1.1.1", # https://github.com/Frozenball/pytest-sugar
     "pytest-env==1.2.0", # https://github.com/MobileDynasty/pytest-env
-    "pytest-rerunfailures==16.1", # https://github.com/pytest-dev/pytest-rerunfailures
-    "pytest-repeat==0.9.4", # https://github.com/pytest-dev/pytest-repeat
+    # "pytest-rerunfailures==16.1", # https://github.com/pytest-dev/pytest-rerunfailures
+    # "pytest-repeat==0.9.4", # https://github.com/pytest-dev/pytest-repeat
     "pytest-clarity==1.0.1", # https://github.com/darrenburns/pytest-clarity
-    "pytest-randomly==4.0.1", # https://github.com/pytest-dev/pytest-randomly
-    "pytest-random-order==1.2.0", # https://github.com/pytest-dev/pytest-random-order
-    "pytest-run-parallel==0.7.1", # https://github.com/Quansight-Labs/pytest-run-parallel
+    # "pytest-randomly==4.0.1", # https://github.com/pytest-dev/pytest-randomly
+    # "pytest-random-order==1.2.0", # https://github.com/pytest-dev/pytest-random-order
+    # "pytest-run-parallel==0.7.1", # https://github.com/Quansight-Labs/pytest-run-parallel
     "coverage[toml]==7.11", # https://github.com/nedbat/coveragepy
     "requests==2.32.5", # https://github.com/psf/requests
+    # "polyfactory>=2.22.4",
+    "factory-boy>=3.3.3",
 ]
 integration-tests = [
     {include-group = "tests"},
@@ -182,7 +189,8 @@ docstring-code-format = true
 docstring-code-line-length = 79
 
 [tool.pytest.ini_options]
-addopts = "-rsxX -vv --pyargs --doctest-modules --showlocals --strict-markers --random-order --numprocesses=auto --count=5 --reruns=5 --parallel-threads=10 --iterations=10 --junitxml=junit/test-results.xml --cov-report=html --cov-report=term --cov-report=lcov --cov=flask_jsonrpc --cov-fail-under=100"
+addopts = "-rsxX -vv --pyargs --doctest-modules --showlocals --strict-markers --junitxml=junit/test-results.xml -n 0 --cov-report=html --cov-report=term --cov-report=lcov --cov=lms --cov-fail-under=100"
+# --random-order --numprocesses=0 --count=0 --reruns=0 --parallel-threads=0 --iterations=0
 junit_family = "xunit2"
 python_files = ["tests.py", "test_*.py", "*_tests.py"]
 pythonpath = "src/"
@@ -199,12 +207,12 @@ required_plugins = [
     "pytest-xdist==3.8.0",
     "pytest-sugar==1.1.1",
     "pytest-env==1.2.0",
-    "pytest-repeat==0.9.4",
-    "pytest-rerunfailures==16.1",
+    # "pytest-repeat==0.9.4",
+    # "pytest-rerunfailures==16.1",
     "pytest-clarity==1.0.1",
-    "pytest-randomly==4.0.1",
-    "pytest-random-order==1.2.0",
-    "pytest-run-parallel==0.7.1",
+    # "pytest-randomly==4.0.1",
+    # "pytest-random-order==1.2.0",
+    # "pytest-run-parallel==0.7.1",
 ]
 
 [tool.coverage.run]
