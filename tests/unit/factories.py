@@ -176,7 +176,7 @@ class HoldFactory(factory.alchemy.SQLAlchemyModelFactory):
     item = factory.SubFactory(ItemFactory)
     copy_id = None
     patron = factory.SubFactory(PatronFactory)
-    loan_id = factory.Faker('uuid7')
+    loan = factory.SubFactory(LoanFactory)
     request_date = factory.LazyFunction(datetime.date.today)
     expiry_date = factory.LazyFunction(lambda: datetime.date.today() + datetime.timedelta(days=7))
     status = HoldStatus.PENDING
