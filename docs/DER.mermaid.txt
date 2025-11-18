@@ -1,0 +1,169 @@
+erDiagram
+
+    %% ===== Core Entities =====
+    Branch ||--o{ Staff : "employs"
+    Branch ||--o{ Patron : "serves"
+    Branch ||--o{ Copy : "owns"
+    Branch ||--o| Staff : "managed by"
+
+    Staff ||--o{ Loan : "processes"
+    Staff ||--o{ AcquisitionOrder : "creates"
+
+    Patron ||--o{ Loan : "borrows"
+    Patron ||--o{ Hold : "places"
+    Patron ||--o{ Fine : "owes"
+
+    Category ||--o{ Item : "classifies"
+    Publisher ||--o{ Item : "publishes"
+    Publisher ||--o{ Serial : "publishes"
+
+    Author }o--o{ Item : "writes"
+
+    Item ||--o{ Copy : "has"
+    Item ||--o{ AcquisitionOrderLine : "ordered"
+    Item ||--o{ SerialIssue : "related to"
+
+    Copy ||--o{ Loan : "is loaned in"
+    Copy ||--o{ Hold : "reserved in"
+
+    Loan ||--o| Fine : "may incur"
+
+    Vendor ||--o{ AcquisitionOrder : "supplies"
+    AcquisitionOrder ||--o{ AcquisitionOrderLine : "contains"
+
+    Serial ||--o{ SerialIssue : "includes"
+
+    %% ===== Entities =====
+    Branch {
+        int id PK
+        string name
+        string address
+        string phone
+        int manager_id FK
+    }
+
+    Staff {
+        int id PK
+        string first_name
+        string last_name
+        string role
+        int branch_id FK
+    }
+
+    Patron {
+        int id PK
+        string first_name
+        string last_name
+        string email
+        string status
+        int branch_id FK
+    }
+
+    Category {
+        int id PK
+        string name
+        string description
+    }
+
+    Publisher {
+        int id PK
+        string name
+        string address
+        string contact_info
+    }
+
+    Author {
+        int id PK
+        string first_name
+        string last_name
+    }
+
+    Item {
+        int id PK
+        string title
+        string isbn
+        date publication_date
+        string item_type
+        int publisher_id FK
+        int category_id FK
+    }
+
+    Copy {
+        int id PK
+        string barcode
+        string status
+        int item_id FK
+        int branch_id FK
+    }
+
+    Loan {
+        int id PK
+        date loan_date
+        date due_date
+        date return_date
+        int copy_id FK
+        int patron_id FK
+        int staff_id FK
+    }
+
+    Hold {
+        int id PK
+        date request_date
+        string status
+        int patron_id FK
+        int copy_id FK
+    }
+
+    Vendor {
+        int id PK
+        string name
+        string contact_info
+        string address
+    }
+
+    AcquisitionOrder {
+        int id PK
+        date order_date
+        string status
+        int vendor_id FK
+        int staff_id FK
+    }
+
+    AcquisitionOrderLine {
+        int id PK
+        int order_id FK
+        int item_id FK
+        int quantity
+        decimal unit_price
+    }
+
+    Serial {
+        int id PK
+        string title
+        string issn
+        string frequency
+        int publisher_id FK
+    }
+
+    SerialIssue {
+        int id PK
+        string issue_number
+        date publication_date
+        int serial_id FK
+    }
+
+    Fine {
+        int id PK
+        decimal amount
+        string status
+        int patron_id FK
+        int loan_id FK
+    }
+
+    Report {
+        int id PK
+        string title
+        string report_type
+        date generated_at
+        string data
+    }
