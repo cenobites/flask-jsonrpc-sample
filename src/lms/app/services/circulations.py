@@ -13,9 +13,9 @@ from lms.domain.patrons.repositories import PatronRepository
 from lms.domain.catalogs.repositories import CopyRepository, ItemRepository
 from lms.domain.circulations.entities import Hold, Loan
 from lms.domain.circulations.services import HoldPolicyService, LoanPolicyService
-from lms.domain.organization.entities import Staff, Branch
+from lms.domain.organizations.entities import Staff, Branch
 from lms.domain.circulations.repositories import HoldRepository, LoanRepository
-from lms.domain.organization.repositories import StaffRepository, BranchRepository
+from lms.domain.organizations.repositories import StaffRepository, BranchRepository
 
 
 class LoanService:

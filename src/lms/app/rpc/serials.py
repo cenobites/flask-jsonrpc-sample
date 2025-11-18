@@ -13,11 +13,11 @@ from lms.app.schemas.serials import SerialCreate
 from lms.app.services.serials import SerialService
 from lms.domain.serials.entities import Serial
 
-jsonrpc_bp = JSONRPCBlueprint('serial', __name__)
+jsonrpc_bp = JSONRPCBlueprint('serials', __name__)
 
 
 @jsonrpc_bp.method(
-    'Serial.list',
+    'Serials.list',
     tm.MethodAnnotated[
         tm.Summary('List serials'),
         tm.Description('Get a list of all serials/periodicals'),
@@ -31,7 +31,7 @@ def list_serials() -> t.Annotated[Page[Serial], tp.Summary('List of serials')]:
 
 
 @jsonrpc_bp.method(
-    'Serial.get',
+    'Serials.get',
     tm.MethodAnnotated[
         tm.Summary('Get serial by ID'), tm.Description('Retrieve details of a specific serial'), tm.Tag(name='serials')
     ],
@@ -45,7 +45,7 @@ def get_serial(
 
 
 @jsonrpc_bp.method(
-    'Serial.create',
+    'Serials.create',
     tm.MethodAnnotated[
         tm.Summary('Create serial'), tm.Description('Create a new serial/periodical'), tm.Tag(name='serials')
     ],

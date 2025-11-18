@@ -4,12 +4,12 @@ import uuid
 
 from flask.testing import FlaskClient
 
-from .factories import ItemFactory, SerialFactory
+from ...factories import ItemFactory, SerialFactory
 
 
 def test_serial_list_empty(client: FlaskClient) -> None:
     rv = client.post(
-        '/api/serial', json={'jsonrpc': '2.0', 'method': 'Serial.list', 'params': {}, 'id': str(uuid.uuid4())}
+        '/api/serials', json={'jsonrpc': '2.0', 'method': 'Serials.list', 'params': {}, 'id': str(uuid.uuid4())}
     )
     assert rv.status_code == 200
     rv_data = rv.get_json()
@@ -21,7 +21,7 @@ def test_serial_list_with_serials(client: FlaskClient) -> None:
     SerialFactory(title='Tech Magazine', issn='8765-4321')
 
     rv = client.post(
-        '/api/serial', json={'jsonrpc': '2.0', 'method': 'Serial.list', 'params': {}, 'id': str(uuid.uuid4())}
+        '/api/serials', json={'jsonrpc': '2.0', 'method': 'Serials.list', 'params': {}, 'id': str(uuid.uuid4())}
     )
     assert rv.status_code == 200
     rv_data = rv.get_json()
@@ -34,7 +34,7 @@ def test_serial_create_minimal(client: FlaskClient) -> None:
 
     params = {'serial': {'title': 'Science Weekly', 'issn': '1111-2222', 'item_id': str(item.id)}}
     rv = client.post(
-        '/api/serial', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Serial.create', 'params': params}
+        '/api/serials', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Serials.create', 'params': params}
     )
     assert rv.status_code == 200, rv.data
     rv_data = rv.get_json()
@@ -58,7 +58,7 @@ def test_serial_create_with_all_fields(client: FlaskClient) -> None:
         }
     }
     rv = client.post(
-        '/api/serial', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Serial.create', 'params': params}
+        '/api/serials', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Serials.create', 'params': params}
     )
     assert rv.status_code == 200, rv.data
     rv_data = rv.get_json()
@@ -74,7 +74,7 @@ def test_serial_create_item_not_found(client: FlaskClient) -> None:
 
     params = {'serial': {'title': 'Failed Serial', 'issn': '9999-0000', 'item_id': fake_item_id}}
     rv = client.post(
-        '/api/serial', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Serial.create', 'params': params}
+        '/api/serials', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Serials.create', 'params': params}
     )
     assert rv.status_code == 500, rv.data
     rv_data = rv.get_json()
@@ -86,7 +86,7 @@ def test_serial_get_success(client: FlaskClient) -> None:
 
     params = {'serial_id': str(serial.id)}
     rv = client.post(
-        '/api/serial', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Serial.get', 'params': params}
+        '/api/serials', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Serials.get', 'params': params}
     )
     assert rv.status_code == 200, rv.data
     rv_data = rv.get_json()
@@ -99,8 +99,8 @@ def test_serial_get_not_found(client: FlaskClient) -> None:
     fake_id = str(uuid.uuid7())
 
     rv = client.post(
-        '/api/serial',
-        json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Serial.get', 'params': {'serial_id': fake_id}},
+        '/api/serials',
+        json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Serials.get', 'params': {'serial_id': fake_id}},
     )
     assert rv.status_code == 500, rv.data
     rv_data = rv.get_json()
@@ -121,15 +121,15 @@ def test_complete_serial_workflow(client: FlaskClient) -> None:
         }
     }
     rv = client.post(
-        '/api/serial', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Serial.create', 'params': params}
+        '/api/serials', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Serials.create', 'params': params}
     )
     assert rv.status_code == 200, rv.data
     serial_id = rv.get_json()['result']['id']
 
     # Get the serial
     rv = client.post(
-        '/api/serial',
-        json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Serial.get', 'params': {'serial_id': serial_id}},
+        '/api/serials',
+        json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Serials.get', 'params': {'serial_id': serial_id}},
     )
     assert rv.status_code == 200, rv.data
     result = rv.get_json()['result']
@@ -148,7 +148,7 @@ def test_create_multiple_serials(client: FlaskClient) -> None:
         'serial': {'title': 'First Journal', 'issn': '1000-1000', 'item_id': str(item1.id), 'frequency': 'monthly'}
     }
     rv = client.post(
-        '/api/serial', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Serial.create', 'params': params}
+        '/api/serials', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Serials.create', 'params': params}
     )
     assert rv.status_code == 200, rv.data
 
@@ -157,13 +157,13 @@ def test_create_multiple_serials(client: FlaskClient) -> None:
         'serial': {'title': 'Second Magazine', 'issn': '2000-2000', 'item_id': str(item2.id), 'frequency': 'weekly'}
     }
     rv = client.post(
-        '/api/serial', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Serial.create', 'params': params}
+        '/api/serials', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Serials.create', 'params': params}
     )
     assert rv.status_code == 200, rv.data
 
     # List all serials
     rv = client.post(
-        '/api/serial', json={'jsonrpc': '2.0', 'method': 'Serial.list', 'params': {}, 'id': str(uuid.uuid4())}
+        '/api/serials', json={'jsonrpc': '2.0', 'method': 'Serials.list', 'params': {}, 'id': str(uuid.uuid4())}
     )
     assert rv.status_code == 200
     assert rv.get_json()['result']['count'] == 2
@@ -181,15 +181,15 @@ def test_serial_creation_and_retrieval(client: FlaskClient) -> None:
         }
     }
     rv = client.post(
-        '/api/serial', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Serial.create', 'params': params}
+        '/api/serials', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Serials.create', 'params': params}
     )
     assert rv.status_code == 200, rv.data
     serial_id = rv.get_json()['result']['id']
 
     # Get the serial
     rv = client.post(
-        '/api/serial',
-        json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Serial.get', 'params': {'serial_id': serial_id}},
+        '/api/serials',
+        json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Serials.get', 'params': {'serial_id': serial_id}},
     )
     assert rv.status_code == 200, rv.data
     result = rv.get_json()['result']
@@ -205,7 +205,7 @@ def test_serial_list_pagination(client: FlaskClient) -> None:
     SerialFactory(title='Serial C', issn='0003-0003')
 
     rv = client.post(
-        '/api/serial', json={'jsonrpc': '2.0', 'method': 'Serial.list', 'params': {}, 'id': str(uuid.uuid4())}
+        '/api/serials', json={'jsonrpc': '2.0', 'method': 'Serials.list', 'params': {}, 'id': str(uuid.uuid4())}
     )
     assert rv.status_code == 200
     rv_data = rv.get_json()

@@ -4,12 +4,12 @@ import uuid
 
 from flask.testing import FlaskClient
 
-from .factories import CopyFactory, ItemFactory, BranchFactory
+from ...factories import CopyFactory, ItemFactory, BranchFactory
 
 
 def test_item_list_empty(client: FlaskClient) -> None:
     rv = client.post(
-        '/api/catalog', json={'jsonrpc': '2.0', 'method': 'Item.list', 'params': {}, 'id': str(uuid.uuid4())}
+        '/api/catalogs', json={'jsonrpc': '2.0', 'method': 'Items.list', 'params': {}, 'id': str(uuid.uuid4())}
     )
     assert rv.status_code == 200
     rv_data = rv.get_json()
@@ -21,7 +21,7 @@ def test_item_list_with_items(client: FlaskClient) -> None:
     ItemFactory(title='Item 2')
 
     rv = client.post(
-        '/api/catalog', json={'jsonrpc': '2.0', 'method': 'Item.list', 'params': {}, 'id': str(uuid.uuid4())}
+        '/api/catalogs', json={'jsonrpc': '2.0', 'method': 'Items.list', 'params': {}, 'id': str(uuid.uuid4())}
     )
     assert rv.status_code == 200
     rv_data = rv.get_json()
@@ -31,11 +31,11 @@ def test_item_list_with_items(client: FlaskClient) -> None:
 
 def test_item_create_minimal(client: FlaskClient) -> None:
     rv = client.post(
-        '/api/catalog',
+        '/api/catalogs',
         json={
             'id': str(uuid.uuid4()),
             'jsonrpc': '2.0',
-            'method': 'Item.create',
+            'method': 'Items.create',
             'params': {'item': {'barcode': 'ITM-001', 'title': 'Test Book', 'material_type': 'book'}},
         },
     )
@@ -59,7 +59,7 @@ def test_item_create_with_all_fields(client: FlaskClient) -> None:
         }
     }
     rv = client.post(
-        '/api/catalog', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Item.create', 'params': params}
+        '/api/catalogs', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Items.create', 'params': params}
     )
     assert rv.status_code == 200, rv.data
     rv_data = rv.get_json()
@@ -74,8 +74,8 @@ def test_item_get_success(client: FlaskClient) -> None:
     item = ItemFactory(title='Test Item', isbn='123-456')
 
     rv = client.post(
-        '/api/catalog',
-        json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Item.get', 'params': {'item_id': str(item.id)}},
+        '/api/catalogs',
+        json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Items.get', 'params': {'item_id': str(item.id)}},
     )
     assert rv.status_code == 200, rv.data
     rv_data = rv.get_json()
@@ -88,8 +88,8 @@ def test_item_get_not_found(client: FlaskClient) -> None:
     fake_id = str(uuid.uuid7())
 
     rv = client.post(
-        '/api/catalog',
-        json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Item.get', 'params': {'item_id': fake_id}},
+        '/api/catalogs',
+        json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Items.get', 'params': {'item_id': fake_id}},
     )
     assert rv.status_code == 500, rv.data
     rv_data = rv.get_json()
@@ -101,7 +101,7 @@ def test_item_update_title(client: FlaskClient) -> None:
 
     params = {'item': {'id': str(item.id), 'barcode': 'ITM-UPD', 'title': 'New Title', 'material_type': 'book'}}
     rv = client.post(
-        '/api/catalog', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Item.update', 'params': params}
+        '/api/catalogs', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Items.update', 'params': params}
     )
     assert rv.status_code == 200, rv.data
     rv_data = rv.get_json()
@@ -123,7 +123,7 @@ def test_item_update_all_fields(client: FlaskClient) -> None:
         },
     }
     rv = client.post(
-        '/api/catalog', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Item.update', 'params': params}
+        '/api/catalogs', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Items.update', 'params': params}
     )
     assert rv.status_code == 200, rv.data
     rv_data = rv.get_json()
@@ -140,7 +140,7 @@ def test_item_update_not_found(client: FlaskClient) -> None:
         'item': {'id': fake_id, 'barcode': 'ITM-XXX', 'title': 'New Title', 'material_type': 'book'},
     }
     rv = client.post(
-        '/api/catalog', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Item.update', 'params': params}
+        '/api/catalogs', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Items.update', 'params': params}
     )
     assert rv.status_code == 500, rv.data
     rv_data = rv.get_json()
@@ -149,7 +149,7 @@ def test_item_update_not_found(client: FlaskClient) -> None:
 
 def test_copy_list_empty(client: FlaskClient) -> None:
     rv = client.post(
-        '/api/catalog', json={'jsonrpc': '2.0', 'method': 'Copy.list', 'params': {}, 'id': str(uuid.uuid4())}
+        '/api/catalogs', json={'jsonrpc': '2.0', 'method': 'Copies.list', 'params': {}, 'id': str(uuid.uuid4())}
     )
     assert rv.status_code == 200
     rv_data = rv.get_json()
@@ -161,7 +161,7 @@ def test_copy_list_with_copies(client: FlaskClient) -> None:
     CopyFactory(barcode='COPY-002')
 
     rv = client.post(
-        '/api/catalog', json={'jsonrpc': '2.0', 'method': 'Copy.list', 'params': {}, 'id': str(uuid.uuid4())}
+        '/api/catalogs', json={'jsonrpc': '2.0', 'method': 'Copies.list', 'params': {}, 'id': str(uuid.uuid4())}
     )
     assert rv.status_code == 200
     rv_data = rv.get_json()
@@ -173,8 +173,8 @@ def test_copy_get_success(client: FlaskClient) -> None:
     copy = CopyFactory(barcode='COPY-GET')
 
     rv = client.post(
-        '/api/catalog',
-        json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Copy.get', 'params': {'copy_id': str(copy.id)}},
+        '/api/catalogs',
+        json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Copies.get', 'params': {'copy_id': str(copy.id)}},
     )
     assert rv.status_code == 200, rv.data
     rv_data = rv.get_json()
@@ -186,8 +186,8 @@ def test_copy_get_not_found(client: FlaskClient) -> None:
     fake_id = str(uuid.uuid7())
 
     rv = client.post(
-        '/api/catalog',
-        json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Copy.get', 'params': {'copy_id': fake_id}},
+        '/api/catalogs',
+        json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Copies.get', 'params': {'copy_id': fake_id}},
     )
     assert rv.status_code == 500, rv.data
     rv_data = rv.get_json()
@@ -207,7 +207,7 @@ def test_complete_catalog_workflow(client: FlaskClient) -> None:
     }
 
     rv = client.post(
-        '/api/catalog', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Item.create', 'params': params}
+        '/api/catalogs', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Items.create', 'params': params}
     )
     assert rv.status_code == 200, rv.data
     item_id = rv.get_json()['result']['id']
@@ -215,15 +215,15 @@ def test_complete_catalog_workflow(client: FlaskClient) -> None:
     # Update item
     params = {'item': {'id': item_id, 'barcode': 'FLOW-ITM-UPD', 'title': 'Updated Workflow Book', 'format': 'book'}}
     rv = client.post(
-        '/api/catalog', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Item.update', 'params': params}
+        '/api/catalogs', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Items.update', 'params': params}
     )
     assert rv.status_code == 200, rv.data
     assert rv.get_json()['result']['title'] == 'Updated Workflow Book'
 
     # Verify item still exists
     rv = client.post(
-        '/api/catalog',
-        json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Item.get', 'params': {'item_id': item_id}},
+        '/api/catalogs',
+        json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Items.get', 'params': {'item_id': item_id}},
     )
     assert rv.status_code == 200, rv.data
     assert rv.get_json()['result']['title'] == 'Updated Workflow Book'
@@ -238,7 +238,7 @@ def test_item_with_multiple_copies(client: FlaskClient) -> None:
 
     # List all copies
     rv = client.post(
-        '/api/catalog', json={'jsonrpc': '2.0', 'method': 'Copy.list', 'params': {}, 'id': str(uuid.uuid4())}
+        '/api/catalogs', json={'jsonrpc': '2.0', 'method': 'Copies.list', 'params': {}, 'id': str(uuid.uuid4())}
     )
     assert rv.status_code == 200
     assert rv.get_json()['result']['count'] == 2
@@ -254,15 +254,15 @@ def test_item_creation_and_retrieval(client: FlaskClient) -> None:
         }
     }
     rv = client.post(
-        '/api/catalog', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Item.create', 'params': params}
+        '/api/catalogs', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Items.create', 'params': params}
     )
     assert rv.status_code == 200, rv.data
     item_id = rv.get_json()['result']['id']
 
     # Get the item
     rv = client.post(
-        '/api/catalog',
-        json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Item.get', 'params': {'item_id': item_id}},
+        '/api/catalogs',
+        json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Items.get', 'params': {'item_id': item_id}},
     )
     assert rv.status_code == 200, rv.data
     result = rv.get_json()['result']

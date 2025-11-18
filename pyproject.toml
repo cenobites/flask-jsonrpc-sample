@@ -191,7 +191,7 @@ docstring-code-format = true
 docstring-code-line-length = 79
 
 [tool.pytest.ini_options]
-addopts = "-rsxX -vv --pyargs --doctest-modules --showlocals --strict-markers --junitxml=junit/test-results.xml --random-order --numprocesses=auto --count=5 --reruns=5 --cov-report=html --cov-report=term --cov-report=lcov --cov=lms --cov-fail-under=100"
+addopts = "-rsxX -vv --pyargs --doctest-modules --showlocals --strict-markers --junitxml=junit/test-results.xml --random-order --numprocesses=0 --count=1 --reruns=0 --cov-report=html --cov-report=term --cov-report=lcov --cov=lms --cov-fail-under=100"
 # --parallel-threads=10 --iterations=5
 junit_family = "xunit2"
 python_files = ["tests.py", "test_*.py", "*_tests.py"]

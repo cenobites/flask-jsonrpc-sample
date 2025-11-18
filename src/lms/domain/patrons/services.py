@@ -30,6 +30,16 @@ class PatronBarringService:
         loans = self.loan_repository.find_by_patron_id(patron_id)
         return patron.status == PatronStatus.ACTIVE.value and len(loans) == 0
 
+    def can_renew_copy(self, patron_id: str, copy_id: str) -> bool:
+        patron = self.patron_repository.get_by_id(patron_id)
+        if patron is None:
+            return False
+        loans = self.loan_repository.find_by_patron_id(patron_id)
+        loan = next((loan for loan in loans if loan.copy_id == copy_id), None)
+        if loan is None:
+            return False
+        return patron.status == PatronStatus.ACTIVE.value and len(loans) == 1
+
 
 class PatronHoldingService:
     def __init__(self, /, *, hold_repository: HoldRepository) -> None:

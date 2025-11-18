@@ -4,8 +4,8 @@ from flask import Flask
 
 
 def register(app: Flask) -> None:
-    from . import patrons, catalogs, organization
+    from . import patrons, catalogs, organizations
 
-    organization.register_handler(app)
+    organizations.register_handler(app)
     patrons.register_handler(app)
     catalogs.register_handler(app)

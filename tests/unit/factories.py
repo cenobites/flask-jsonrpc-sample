@@ -32,7 +32,7 @@ from lms.infrastructure.database.models.acquisitions import (
     AcquisitionOrderLineModel,
 )
 from lms.infrastructure.database.models.circulations import HoldModel, LoanModel, HoldStatus
-from lms.infrastructure.database.models.organization import StaffRole, StaffModel, BranchModel, BranchStatus
+from lms.infrastructure.database.models.organizations import StaffRole, StaffModel, BranchModel, BranchStatus
 
 
 class BranchFactory(factory.alchemy.SQLAlchemyModelFactory):
@@ -173,10 +173,10 @@ class HoldFactory(factory.alchemy.SQLAlchemyModelFactory):
         sqlalchemy_session = db_session
         sqlalchemy_session_persistence = 'flush'
 
-    item = factory.SubFactory(ItemFactory)
-    copy_id = None
     patron = factory.SubFactory(PatronFactory)
+    item = factory.SubFactory(ItemFactory)
     loan = factory.SubFactory(LoanFactory)
+    copy = factory.SubFactory(CopyFactory)
     request_date = factory.LazyFunction(datetime.date.today)
     expiry_date = factory.LazyFunction(lambda: datetime.date.today() + datetime.timedelta(days=7))
     status = HoldStatus.PENDING

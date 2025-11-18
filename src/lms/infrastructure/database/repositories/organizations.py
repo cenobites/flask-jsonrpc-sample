@@ -5,9 +5,9 @@ import uuid
 import sqlalchemy.orm as sa_orm
 from flask_sqlalchemy.session import Session
 
-from lms.domain.organization.entities import Staff, Branch
-from lms.infrastructure.database.models.organization import StaffRole, StaffModel, BranchModel, BranchStatus
-from lms.infrastructure.database.mappers.organization import StaffMapper, BranchMapper
+from lms.domain.organizations.entities import Staff, Branch
+from lms.infrastructure.database.models.organizations import StaffRole, StaffModel, BranchModel, BranchStatus
+from lms.infrastructure.database.mappers.organizations import StaffMapper, BranchMapper
 
 
 class SQLAlchemyBranchRepository:

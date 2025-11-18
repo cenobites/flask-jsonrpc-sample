@@ -44,8 +44,9 @@ class HoldMapper:
         return Hold(
             id=str(model.id) if model.id else None,
             item_id=str(model.item_id),
-            copy_id=str(model.copy_id),
             patron_id=str(model.patron_id),
+            copy_id=str(model.copy_id) if model.copy_id else None,
+            loan_id=str(model.loan_id) if model.loan_id else None,
             request_date=model.request_date,
             expiry_date=model.expiry_date,
             status=model.status.value,
@@ -57,8 +58,9 @@ class HoldMapper:
         if entity.id:
             model.id = uuid.UUID(entity.id)
         model.item_id = uuid.UUID(entity.item_id)
-        model.copy_id = uuid.UUID(entity.copy_id)
         model.patron_id = uuid.UUID(entity.patron_id)
+        model.copy_id = uuid.UUID(entity.copy_id) if entity.copy_id else None
+        model.loan_id = uuid.UUID(entity.loan_id) if entity.loan_id else None
         model.request_date = entity.request_date
         model.expiry_date = entity.expiry_date
         model.status = HoldStatus(entity.status)

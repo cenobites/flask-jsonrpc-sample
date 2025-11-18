@@ -13,7 +13,7 @@ from ..db import Base
 
 if t.TYPE_CHECKING:
     from .catalogs import ItemModel
-    from .organization import StaffModel
+    from .organizations import StaffModel
 
 
 class VendorStatus(enum.Enum):

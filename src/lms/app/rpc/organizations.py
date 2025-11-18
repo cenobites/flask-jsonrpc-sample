@@ -9,17 +9,17 @@ import flask_jsonrpc.types.params as tp
 import flask_jsonrpc.types.methods as tm
 
 from lms.app.schemas import Page
-from lms.app.schemas.organization import StaffCreate, StaffUpdate, BranchCreate, BranchUpdate
-from lms.app.services.organization import StaffService, BranchService
-from lms.domain.organization.entities import Staff, Branch
-from lms.domain.organization.exceptions import (
+from lms.app.schemas.organizations import StaffCreate, StaffUpdate, BranchCreate, BranchUpdate
+from lms.app.services.organizations import StaffService, BranchService
+from lms.domain.organizations.entities import Staff, Branch
+from lms.domain.organizations.exceptions import (
     StaffBaseError,
     BranchBaseError,
     StaffDoesNotExistError,
     BranchDoesNotExistError,
 )
 
-jsonrpc_bp = JSONRPCBlueprint('branches', __name__)
+jsonrpc_bp = JSONRPCBlueprint('organizations', __name__)
 
 
 @jsonrpc_bp.errorhandler(BranchBaseError)
@@ -34,11 +34,11 @@ def handle_branch_does_not_exist(ex: BranchDoesNotExistError) -> dict[str, t.Any
 
 
 @jsonrpc_bp.method(
-    'Branch.list',
+    'Branches.list',
     tm.MethodAnnotated[
         tm.Summary('Get all branches'),
         tm.Description('Retrieve a list of all library branches'),
-        tm.Tag(name='branch'),
+        tm.Tag(name='organizations'),
         tm.Error(code=-32002, message='No branches found', data={'reason': 'no branches available'}),
         tm.Example(name='all_branches_example', params=[]),
     ],
@@ -50,11 +50,11 @@ def list_branches() -> t.Annotated[Page[Branch], tp.Summary('Branch information'
 
 
 @jsonrpc_bp.method(
-    'Branch.get',
+    'Branches.get',
     tm.MethodAnnotated[
         tm.Summary('Get branch by ID'),
         tm.Description('Retrieve branch information using its unique ID'),
-        tm.Tag(name='branch'),
+        tm.Tag(name='organizations'),
         tm.Error(code=-32002, message='Branch not found', data={'reason': 'invalid branch ID'}),
         tm.Example(name='get_branch_example', params=[tm.ExampleField(name='branch_id', value=1, summary='Branch ID')]),
     ],
@@ -67,11 +67,11 @@ def get_branch(
 
 
 @jsonrpc_bp.method(
-    'Branch.create',
+    'Branches.create',
     tm.MethodAnnotated[
         tm.Summary('Create a new branch'),
         tm.Description('Create a new library branch with name and location details'),
-        tm.Tag(name='branch'),
+        tm.Tag(name='organizations'),
         tm.Error(code=-32001, message='Branch creation failed', data={'reason': 'duplicate name or invalid data'}),
         tm.Example(
             name='create_branch_example',
@@ -102,11 +102,11 @@ def create_branch(
 
 
 @jsonrpc_bp.method(
-    'Branch.update',
+    'Branches.update',
     tm.MethodAnnotated[
         tm.Summary('Update an existing branch'),
         tm.Description('Update an existing library branch with new details'),
-        tm.Tag(name='branch'),
+        tm.Tag(name='organizations'),
         tm.Error(code=-32001, message='Branch update failed', data={'reason': 'branch not found or invalid data'}),
         tm.Example(
             name='update_branch_example',
@@ -132,11 +132,11 @@ def update_branch(
 
 
 @jsonrpc_bp.method(
-    'Branch.assign_manager',
+    'Branches.assign_manager',
     tm.MethodAnnotated[
         tm.Summary('Assign a manager to a branch'),
         tm.Description('Assign a manager to a library branch'),
-        tm.Tag(name='branch'),
+        tm.Tag(name='organizations'),
         tm.Error(code=-32001, message='Manager assignment failed', data={'reason': 'branch or manager not found'}),
         tm.Example(
             name='assign_manager_example',
@@ -159,11 +159,11 @@ def assign_branch_manager(
 
 
 @jsonrpc_bp.method(
-    'Branch.close',
+    'Branches.close',
     tm.MethodAnnotated[
         tm.Summary('Close an existing branch'),
         tm.Description('Close an existing library branch by its ID'),
-        tm.Tag(name='branch'),
+        tm.Tag(name='organizations'),
         tm.Error(code=-32001, message='Branch closing failed', data={'reason': 'branch not found or invalid data'}),
         tm.Example(
             name='delete_branch_example',
@@ -193,7 +193,7 @@ def handle_staff_does_not_exist(ex: StaffDoesNotExistError) -> dict[str, t.Any]:
     tm.MethodAnnotated[
         tm.Summary('Get all staff members'),
         tm.Description('Retrieve a list of all library staff members'),
-        tm.Tag(name='staff'),
+        tm.Tag(name='organizations'),
         tm.Error(code=-32002, message='No staff found', data={'reason': 'no staff available'}),
         tm.Example(name='all_staff_example', params=[]),
     ],
@@ -209,7 +209,7 @@ def list_staff() -> t.Annotated[Page[Staff], tp.Summary('List of all staff')]:
     tm.MethodAnnotated[
         tm.Summary('Get staff by ID'),
         tm.Description('Retrieve staff member information using their unique ID'),
-        tm.Tag(name='staff'),
+        tm.Tag(name='organizations'),
         tm.Error(code=-32002, message='Staff not found', data={'reason': 'invalid staff ID'}),
         tm.Example(name='get_staff_example', params=[tm.ExampleField(name='staff_id', value=1, summary='Staff ID')]),
     ],
@@ -254,7 +254,7 @@ def create_staff(
     tm.MethodAnnotated[
         tm.Summary('Update an existing staff member'),
         tm.Description('Update an existing staff member with new details'),
-        tm.Tag(name='staff'),
+        tm.Tag(name='organizations'),
         tm.Error(code=-32001, message='Staff update failed', data={'reason': 'staff not found or invalid data'}),
         tm.Example(
             name='update_staff_example',
@@ -279,7 +279,7 @@ def update_staff(
     tm.MethodAnnotated[
         tm.Summary('Update an existing staff member'),
         tm.Description('Update an existing staff member with new details'),
-        tm.Tag(name='staff'),
+        tm.Tag(name='organizations'),
         tm.Error(code=-32001, message='Staff update failed', data={'reason': 'staff not found or invalid data'}),
         tm.Example(
             name='update_staff_example',
@@ -313,7 +313,7 @@ def update_staff_email(
     tm.MethodAnnotated[
         tm.Summary('Update an existing staff member'),
         tm.Description('Update an existing staff member with new details'),
-        tm.Tag(name='staff'),
+        tm.Tag(name='organizations'),
         tm.Error(code=-32001, message='Staff update failed', data={'reason': 'staff not found or invalid data'}),
         tm.Example(
             name='update_staff_example',
@@ -339,7 +339,7 @@ def update_staff_role(
     tm.MethodAnnotated[
         tm.Summary('Delete an existing staff member'),
         tm.Description('Delete an existing staff member by their ID'),
-        tm.Tag(name='staff'),
+        tm.Tag(name='organizations'),
         tm.Error(code=-32001, message='Staff deletion failed', data={'reason': 'staff not found or invalid data'}),
         tm.Example(
             name='delete_staff_example',

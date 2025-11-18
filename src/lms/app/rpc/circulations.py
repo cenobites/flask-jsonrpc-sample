@@ -12,15 +12,15 @@ from lms.app.schemas import Page
 from lms.app.services.circulations import HoldService, LoanService
 from lms.domain.circulations.entities import Hold, Loan
 
-jsonrpc_bp = JSONRPCBlueprint('circulation', __name__)
+jsonrpc_bp = JSONRPCBlueprint('circulations', __name__)
 
 
 @jsonrpc_bp.method(
-    'Loan.list',
+    'Loans.list',
     tm.MethodAnnotated[
         tm.Summary('Get all loans'),
         tm.Description('Retrieve a list of all active and returned loans'),
-        tm.Tag(name='circulation'),
+        tm.Tag(name='circulations'),
         tm.Error(code=-32002, message='No loans found', data={'reason': 'no loans available'}),
         tm.Example(name='all_loans_example', params=[]),
     ],
@@ -32,11 +32,11 @@ def list_loans() -> t.Annotated[Page[Loan], tp.Summary('Loan search result')]:
 
 
 @jsonrpc_bp.method(
-    'Loan.checkout_copy',
+    'Loans.checkout_copy',
     tm.MethodAnnotated[
         tm.Summary('Check out a copy to a patron'),
         tm.Description('Check out a copy (treated as item_id in request) to a patron'),
-        tm.Tag(name='circulation'),
+        tm.Tag(name='circulations'),
         tm.Error(code=-32001, message='Loan creation failed', data={'reason': 'invalid patron or copy'}),
         tm.Example(
             name='create_loan_example',
@@ -60,11 +60,11 @@ def checkout_copy(
 
 
 @jsonrpc_bp.method(
-    'Loan.checkin_copy',
+    'Loans.checkin_copy',
     tm.MethodAnnotated[
         tm.Summary('Check in a copy from a patron'),
         tm.Description('Check in a copy (treated as item_id in request) from a patron'),
-        tm.Tag(name='circulation'),
+        tm.Tag(name='circulations'),
         tm.Error(code=-32001, message='Loan check-in failed', data={'reason': 'invalid patron or copy'}),
         tm.Example(
             name='create_loan_example',
@@ -87,11 +87,11 @@ def checkin_copy(
 
 
 @jsonrpc_bp.method(
-    'Loan.damaged_copy',
+    'Loans.damaged_copy',
     tm.MethodAnnotated[
         tm.Summary('Update loan'),
         tm.Description('Partially update loan fields (due_date, staff assignments, fine_amount)'),
-        tm.Tag(name='circulation'),
+        tm.Tag(name='circulations'),
         tm.Error(code=-32001, message='Loan update failed', data={'reason': 'loan not found or invalid data'}),
         tm.Example(
             name='update_loan_example',
@@ -110,11 +110,11 @@ def damaged_copy(
 
 
 @jsonrpc_bp.method(
-    'Loan.lost_copy',
+    'Loans.lost_copy',
     tm.MethodAnnotated[
         tm.Summary('Update loan'),
         tm.Description('Partially update loan fields (due_date, staff assignments, fine_amount)'),
-        tm.Tag(name='circulation'),
+        tm.Tag(name='circulations'),
         tm.Error(code=-32001, message='Loan update failed', data={'reason': 'loan not found or invalid data'}),
         tm.Example(
             name='update_loan_example',
@@ -133,11 +133,11 @@ def lost_copy(
 
 
 @jsonrpc_bp.method(
-    'Loan.get',
+    'Loans.get',
     tm.MethodAnnotated[
         tm.Summary('Get loan by ID'),
         tm.Description('Retrieve loan information using its unique ID'),
-        tm.Tag(name='circulation'),
+        tm.Tag(name='circulations'),
         tm.Error(code=-32002, message='Loan not found', data={'reason': 'invalid loan ID'}),
         tm.Example(name='get_loan_example', params=[tm.ExampleField(name='loan_id', value=1, summary='Loan ID')]),
     ],
@@ -150,11 +150,11 @@ def get_loan(
 
 
 @jsonrpc_bp.method(
-    'Loan.renew',
+    'Loans.renew',
     tm.MethodAnnotated[
         tm.Summary('Update loan'),
         tm.Description('Partially update loan fields (due_date, staff assignments, fine_amount)'),
-        tm.Tag(name='circulation'),
+        tm.Tag(name='circulations'),
         tm.Error(code=-32001, message='Loan update failed', data={'reason': 'loan not found or invalid data'}),
         tm.Example(
             name='update_loan_example',
@@ -173,11 +173,11 @@ def renew_loan(
 
 
 @jsonrpc_bp.method(
-    'Hold.list',
+    'Holds.list',
     tm.MethodAnnotated[
         tm.Summary('Get all holds'),
         tm.Description('Retrieve a list of all holds/reservations'),
-        tm.Tag(name='circulation'),
+        tm.Tag(name='circulations'),
         tm.Error(code=-32002, message='No holds found', data={'reason': 'no holds available'}),
         tm.Example(name='all_holds_example', params=[]),
     ],
@@ -189,11 +189,11 @@ def list_holds() -> t.Annotated[Page[Hold], tp.Summary('Hold list')]:
 
 
 @jsonrpc_bp.method(
-    'Hold.get',
+    'Holds.get',
     tm.MethodAnnotated[
         tm.Summary('Get hold by ID'),
         tm.Description('Retrieve hold information using its unique ID'),
-        tm.Tag(name='circulation'),
+        tm.Tag(name='circulations'),
         tm.Error(code=-32002, message='Hold not found', data={'reason': 'invalid hold ID'}),
         tm.Example(name='get_hold_example', params=[tm.ExampleField(name='hold_id', value=1, summary='Hold ID')]),
     ],
@@ -206,11 +206,11 @@ def get_hold(
 
 
 @jsonrpc_bp.method(
-    'Hold.place',
+    'Holds.place',
     tm.MethodAnnotated[
         tm.Summary('Create a new hold'),
         tm.Description('Place a hold on an item for a patron'),
-        tm.Tag(name='circulation'),
+        tm.Tag(name='circulations'),
         tm.Error(code=-32001, message='Hold creation failed', data={'reason': 'invalid patron or item'}),
         tm.Example(
             name='create_hold_example',
@@ -234,11 +234,11 @@ def place_hold(
 
 
 @jsonrpc_bp.method(
-    'Hold.pickup',
+    'Holds.pickup',
     tm.MethodAnnotated[
         tm.Summary('Create a new hold'),
         tm.Description('Place a hold on an item for a patron'),
-        tm.Tag(name='circulation'),
+        tm.Tag(name='circulations'),
         tm.Error(code=-32001, message='Hold creation failed', data={'reason': 'invalid patron or item'}),
         tm.Example(
             name='create_hold_example',
@@ -262,11 +262,11 @@ def pickup_hold(
 
 
 @jsonrpc_bp.method(
-    'Hold.cancel',
+    'Holds.cancel',
     tm.MethodAnnotated[
         tm.Summary('Create a new hold'),
         tm.Description('Place a hold on an item for a patron'),
-        tm.Tag(name='circulation'),
+        tm.Tag(name='circulations'),
         tm.Error(code=-32001, message='Hold creation failed', data={'reason': 'invalid patron or item'}),
         tm.Example(
             name='create_hold_example',

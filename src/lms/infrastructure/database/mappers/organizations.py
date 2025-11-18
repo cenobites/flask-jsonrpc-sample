@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import uuid
 
-from lms.domain.organization.entities import Staff, Branch
-from lms.infrastructure.database.models.organization import (
+from lms.domain.organizations.entities import Staff, Branch
+from lms.infrastructure.database.models.organizations import (
     StaffRole,
     StaffModel,
     BranchModel,

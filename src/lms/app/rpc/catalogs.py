@@ -13,15 +13,15 @@ from lms.app.schemas.catalogs import ItemCreate, ItemUpdate
 from lms.app.services.catalogs import CopyService, ItemService
 from lms.domain.catalogs.entities import Copy, Item
 
-jsonrpc_bp = JSONRPCBlueprint('catalog', __name__)
+jsonrpc_bp = JSONRPCBlueprint('catalogs', __name__)
 
 
 @jsonrpc_bp.method(
-    'Copy.list',
+    'Copies.list',
     tm.MethodAnnotated[
         tm.Summary('Get all catalog copies'),
         tm.Description('Retrieve a list of all copies in the library catalog'),
-        tm.Tag(name='catalog'),
+        tm.Tag(name='catalogs'),
         tm.Error(code=-32002, message='No copies found', data={'reason': 'no catalog copies available'}),
         tm.Example(name='all_catalog_copies_example', params=[]),
     ],
@@ -33,11 +33,11 @@ def list_copies() -> t.Annotated[Page[Copy], tp.Summary('Catalog copies search r
 
 
 @jsonrpc_bp.method(
-    'Copy.get',
+    'Copies.get',
     tm.MethodAnnotated[
         tm.Summary('Get copy by ID'),
         tm.Description('Retrieve physical copy information using its unique ID'),
-        tm.Tag(name='catalog'),
+        tm.Tag(name='catalogs'),
         tm.Error(code=-32002, message='Copy not found', data={'reason': 'invalid copy ID'}),
         tm.Example(name='get_copy_example', params=[tm.ExampleField(name='copy_id', value=1, summary='Copy ID')]),
     ],
@@ -50,11 +50,11 @@ def get_copy(
 
 
 @jsonrpc_bp.method(
-    'Item.list',
+    'Items.list',
     tm.MethodAnnotated[
         tm.Summary('Get all catalog items'),
         tm.Description('Retrieve a list of all items in the library catalog'),
-        tm.Tag(name='catalog'),
+        tm.Tag(name='catalogs'),
         tm.Error(code=-32002, message='No items found', data={'reason': 'no catalog items available'}),
         tm.Example(name='all_catalog_items_example', params=[]),
     ],
@@ -66,11 +66,11 @@ def list_items() -> t.Annotated[Page[Item], tp.Summary('Catalog items search res
 
 
 @jsonrpc_bp.method(
-    'Item.create',
+    'Items.create',
     tm.MethodAnnotated[
         tm.Summary('Create a new catalog item'),
         tm.Description('Add a new item to the library catalog with title, barcode and material type'),
-        tm.Tag(name='catalog'),
+        tm.Tag(name='catalogs'),
         tm.Error(code=-32001, message='Item creation failed', data={'reason': 'duplicate barcode or invalid data'}),
         tm.Example(
             name='create_catalog_item_example',
@@ -107,11 +107,11 @@ def create_item(
 
 
 @jsonrpc_bp.method(
-    'Item.get',
+    'Items.get',
     tm.MethodAnnotated[
         tm.Summary('Get catalog item by ID'),
         tm.Description('Retrieve catalog item information using its unique ID'),
-        tm.Tag(name='catalog'),
+        tm.Tag(name='catalogs'),
         tm.Error(code=-32002, message='Item not found', data={'reason': 'invalid item ID'}),
         tm.Example(
             name='get_catalog_item_example', params=[tm.ExampleField(name='item_id', value=1, summary='Item ID')]
@@ -126,11 +126,11 @@ def get_item(
 
 
 @jsonrpc_bp.method(
-    'Item.update',
+    'Items.update',
     tm.MethodAnnotated[
         tm.Summary('Update catalog item'),
         tm.Description('Update an existing catalog item with new metadata'),
-        tm.Tag(name='catalog'),
+        tm.Tag(name='catalogs'),
         tm.Error(code=-32001, message='Item update failed', data={'reason': 'item not found or invalid data'}),
         tm.Example(
             name='update_catalog_item_example',

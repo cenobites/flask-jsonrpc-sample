@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from lms.infrastructure.database.models.organization import StaffRole
+from lms.infrastructure.database.models.organizations import StaffRole
 
 from .repositories import StaffRepository, BranchRepository
 

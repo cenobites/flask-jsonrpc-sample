@@ -26,10 +26,10 @@ def register(app: Flask) -> None:
     )
     from lms.app.services.acquisitions import VendorService, AcquisitionOrderService
     from lms.app.services.circulations import HoldService, LoanService
-    from lms.app.services.organization import StaffService, BranchService
+    from lms.app.services.organizations import StaffService, BranchService
     from lms.infrastructure.database.db import db_session
     from lms.domain.circulations.services import HoldPolicyService, LoanPolicyService
-    from lms.domain.organization.services import (
+    from lms.domain.organizations.services import (
         StaffUniquenessService,
         BranchAssignmentService,
         BranchUniquenessService,
@@ -52,7 +52,7 @@ def register(app: Flask) -> None:
         SQLAlchemyAcquisitionOrderLineRepository,
     )
     from lms.infrastructure.database.repositories.circulations import SQLAlchemyHoldRepository, SQLAlchemyLoanRepository
-    from lms.infrastructure.database.repositories.organization import (
+    from lms.infrastructure.database.repositories.organizations import (
         SQLAlchemyStaffRepository,
         SQLAlchemyBranchRepository,
     )
