@@ -91,16 +91,18 @@ def list_items() -> t.Annotated[Page[Item], tp.Summary('Catalog items search res
     ],
 )
 def create_item(
-    item_data: t.Annotated[ItemCreate, tp.Summary('Item information'), tp.Required()],
+    item: t.Annotated[ItemCreate, tp.Summary('Item information'), tp.Required()],
 ) -> t.Annotated[Item, tp.Summary('Created catalog item')]:
     item_service: ItemService = current_app.container.item_service()  # type: ignore
     return item_service.create_item(
-        title=item_data.title,
-        isbn=item_data.isbn,
-        publisher_id=None,
-        publication_year=item_data.publication_year,
-        format=str(item_data.material_type),
-        description=item_data.description,
+        title=item.title,
+        isbn=item.isbn,
+        publisher_id=item.publisher_id,
+        publication_year=item.publication_year,
+        category_id=item.category_id,
+        edition=item.edition,
+        format=item.format,
+        description=item.description,
     )
 
 
@@ -145,10 +147,7 @@ def get_item(
     ],
 )
 def update_item(
-    item_id: t.Annotated[str, tp.Summary('Item ID'), tp.Required()],
-    item_data: t.Annotated[ItemUpdate, tp.Summary('Item update information'), tp.Required()],
+    item: t.Annotated[ItemUpdate, tp.Summary('Item update information'), tp.Required()],
 ) -> t.Annotated[Item, tp.Summary('Updated catalog item')]:
     item_service: ItemService = current_app.container.item_service()  # type: ignore
-    return item_service.update_item(
-        item_id=item_id, title=item_data.title, isbn=item_data.isbn, description=item_data.description
-    )
+    return item_service.update_item(item_id=item.id, title=item.title, isbn=item.isbn, description=item.description)

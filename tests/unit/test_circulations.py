@@ -31,7 +31,7 @@ def test_active_circulation_flow(client: FlaskClient) -> None:
     category = CategoryFactory()
     item = ItemFactory(format=ItemFormat.BOOK, category=category, publisher=publisher, authors=[author])
 
-    copies = CopyFactory.create_batch(3, item=item, branch_id=branch.id, status=CopyStatus.AVAILABLE)
+    copies = CopyFactory.create_batch(3, item=item, branch=branch, status=CopyStatus.AVAILABLE)
     patron = PatronFactory(branch=branch, status=PatronStatus.ACTIVE)
 
     # Borrow a copy

@@ -4,7 +4,14 @@ import sqlalchemy.orm as sa_orm
 from flask_sqlalchemy.session import Session
 
 from lms.domain.serials.entities import Serial, SerialIssue
-from lms.infrastructure.database.models.serials import SerialModel, SerialIssueModel
+from lms.infrastructure.database.models.serials import (
+    SerialModel,
+    SerialStatus,
+    SerialFrequency,
+    SerialIssueModel,
+    SerialIssueStatus,
+)
+from lms.infrastructure.database.mappers.serials import SerialMapper, SerialIssueMapper
 
 
 class SQLAlchemySerialRepository:
@@ -13,43 +20,25 @@ class SQLAlchemySerialRepository:
 
     def find_all(self) -> list[Serial]:
         models = self.session.query(SerialModel).all()
-        return [
-            Serial(
-                id=m.id,
-                title=m.title,
-                issn=m.issn,
-                publisher_id=m.publisher_id,
-                frequency=m.frequency.value if m.frequency else None,
-                category_id=m.category_id,
-                description=m.description,
-            )
-            for m in models
-        ]
+        return [SerialMapper.to_entity(m) for m in models]
 
     def get_by_id(self, serial_id: str) -> Serial | None:
         model = self.session.get(SerialModel, serial_id)
-        if not model:
-            return None
-        return Serial(
-            id=str(model.id) if model.id else None,
-            title=model.title,
-            issn=model.issn,
-            publisher_id=model.publisher_id,
-            frequency=model.frequency.value if model.frequency else None,
-            category_id=model.category_id,
-            description=model.description,
-        )
+        return SerialMapper.to_entity(model) if model else None
 
     def save(self, serial: Serial) -> Serial:
         model = self.session.get(SerialModel, serial.id)
         if not model:
-            model = SerialModel(**serial.__dict__)
+            model = SerialMapper.from_entity(serial)
             self.session.add(model)
             self.session.commit()
             serial.id = str(model.id)
             return serial
-        for k, v in serial.__dict__.items():
-            setattr(model, k, v)
+        model.title = serial.title
+        model.issn = serial.issn
+        model.frequency = SerialFrequency(serial.frequency) if serial.frequency else None
+        model.description = serial.description
+        model.status = SerialStatus(serial.status)
         self.session.commit()
         return serial
 
@@ -66,39 +55,23 @@ class SQLAlchemySerialIssueRepository:
 
     def find_all(self) -> list[SerialIssue]:
         models = self.session.query(SerialIssueModel).all()
-        return [
-            SerialIssue(
-                id=m.id,
-                serial_id=m.serial_id,
-                issue_number=m.issue_number,
-                date_received=m.date_received,
-                status=m.status.value,
-            )
-            for m in models
-        ]
+        return [SerialIssueMapper.to_entity(m) for m in models]
 
     def get_by_id(self, issue_id: str) -> SerialIssue | None:
         model = self.session.get(SerialIssueModel, issue_id)
-        if not model:
-            return None
-        return SerialIssue(
-            id=str(model.id) if model.id else None,
-            serial_id=model.serial_id,
-            issue_number=model.issue_number,
-            date_received=model.date_received,
-            status=model.status.value,
-        )
+        return SerialIssueMapper.to_entity(model) if model else None
 
     def save(self, issue: SerialIssue) -> SerialIssue:
         model = self.session.get(SerialIssueModel, issue.id)
         if not model:
-            model = SerialIssueModel(**issue.__dict__)
+            model = SerialIssueMapper.from_entity(issue)
             self.session.add(model)
             self.session.commit()
             issue.id = str(model.id)
             return issue
-        for k, v in issue.__dict__.items():
-            setattr(model, k, v)
+        model.issue_number = issue.issue_number
+        model.date_received = issue.date_received
+        model.status = SerialIssueStatus(issue.status)
         self.session.commit()
         return issue
 

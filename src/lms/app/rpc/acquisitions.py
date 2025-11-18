@@ -85,15 +85,15 @@ def create_order(
         ),
     ],
 )
-def add_line_order(
-    line_data: t.Annotated[OrderLineAdd, tp.Summary('Order line information')],
+def add_order_line(
+    order_line: t.Annotated[OrderLineAdd, tp.Summary('Order line information')],
 ) -> t.Annotated[AcquisitionOrder, tp.Summary('Updated order information')]:
     acquisition_order_service: AcquisitionOrderService = current_app.container.acquisition_order_service()  # type: ignore
     return acquisition_order_service.add_line_to_order(
-        order_id=line_data.order_id,
-        item_id=line_data.item_id,
-        quantity=line_data.quantity,
-        unit_price=line_data.unit_price,
+        order_id=order_line.order_id,
+        item_id=order_line.item_id,
+        quantity=order_line.quantity,
+        unit_price=order_line.unit_price,
     )
 
 
@@ -114,7 +114,7 @@ def add_line_order(
         ),
     ],
 )
-def remove_line_order(
+def remove_order_line(
     order_id: t.Annotated[str, tp.Summary('Order ID'), tp.Required()],
     order_line_id: t.Annotated[str, tp.Summary('Order Line ID'), tp.Required()],
 ) -> t.Annotated[AcquisitionOrder, tp.Summary('Updated order information')]:
@@ -139,7 +139,7 @@ def remove_line_order(
         ),
     ],
 )
-def receive_line_order(
+def receive_order_line(
     order_id: t.Annotated[str, tp.Summary('Order ID'), tp.Required()],
     order_line_id: t.Annotated[str, tp.Summary('Order Line ID'), tp.Required()],
     received_quantity: t.Annotated[int | None, tp.Summary('Received Quantity')] = None,

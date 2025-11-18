@@ -35,14 +35,9 @@ def app() -> t.Generator[Flask]:
 
         yield app
 
-        # db.session.remove()
-        # db.drop_all()
-
-
-@pytest.fixture
-def app_ctx(app: Flask) -> t.Generator[None]:
-    with app.app_context():
-        yield
+        db.session.remove()
+        db.session.close()
+        db.drop_all()
 
 
 @pytest.fixture()

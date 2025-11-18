@@ -32,7 +32,7 @@ def test_serial_list_with_serials(client: FlaskClient) -> None:
 def test_serial_create_minimal(client: FlaskClient) -> None:
     item = ItemFactory(title='Serial Item')
 
-    params = {'title': 'Science Weekly', 'issn': '1111-2222', 'item_id': str(item.id)}
+    params = {'serial': {'title': 'Science Weekly', 'issn': '1111-2222', 'item_id': str(item.id)}}
     rv = client.post(
         '/api/serial', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Serial.create', 'params': params}
     )
@@ -49,11 +49,13 @@ def test_serial_create_with_all_fields(client: FlaskClient) -> None:
     item = ItemFactory(title='Serial Item Full')
 
     params = {
-        'title': 'Complete Journal',
-        'issn': '3333-4444',
-        'item_id': str(item.id),
-        'frequency': 'monthly',
-        'description': 'A comprehensive scientific journal',
+        'serial': {
+            'title': 'Complete Journal',
+            'issn': '3333-4444',
+            'item_id': str(item.id),
+            'frequency': 'monthly',
+            'description': 'A comprehensive scientific journal',
+        }
     }
     rv = client.post(
         '/api/serial', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Serial.create', 'params': params}
@@ -70,7 +72,7 @@ def test_serial_create_with_all_fields(client: FlaskClient) -> None:
 def test_serial_create_item_not_found(client: FlaskClient) -> None:
     fake_item_id = str(uuid.uuid7())
 
-    params = {'title': 'Failed Serial', 'issn': '9999-0000', 'item_id': fake_item_id}
+    params = {'serial': {'title': 'Failed Serial', 'issn': '9999-0000', 'item_id': fake_item_id}}
     rv = client.post(
         '/api/serial', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Serial.create', 'params': params}
     )
@@ -110,11 +112,13 @@ def test_complete_serial_workflow(client: FlaskClient) -> None:
 
     # Create serial
     params = {
-        'title': 'Workflow Journal',
-        'issn': '7777-8888',
-        'item_id': str(item.id),
-        'frequency': 'weekly',
-        'description': 'A test workflow journal',
+        'serial': {
+            'title': 'Workflow Journal',
+            'issn': '7777-8888',
+            'item_id': str(item.id),
+            'frequency': 'weekly',
+            'description': 'A test workflow journal',
+        }
     }
     rv = client.post(
         '/api/serial', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Serial.create', 'params': params}
@@ -140,14 +144,18 @@ def test_create_multiple_serials(client: FlaskClient) -> None:
     item2 = ItemFactory(title='Magazine Item 2')
 
     # Create first serial
-    params = {'title': 'First Journal', 'issn': '1000-1000', 'item_id': str(item1.id), 'frequency': 'monthly'}
+    params = {
+        'serial': {'title': 'First Journal', 'issn': '1000-1000', 'item_id': str(item1.id), 'frequency': 'monthly'}
+    }
     rv = client.post(
         '/api/serial', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Serial.create', 'params': params}
     )
     assert rv.status_code == 200, rv.data
 
     # Create second serial
-    params = {'title': 'Second Magazine', 'issn': '2000-2000', 'item_id': str(item2.id), 'frequency': 'weekly'}
+    params = {
+        'serial': {'title': 'Second Magazine', 'issn': '2000-2000', 'item_id': str(item2.id), 'frequency': 'weekly'}
+    }
     rv = client.post(
         '/api/serial', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Serial.create', 'params': params}
     )
@@ -165,10 +173,12 @@ def test_serial_creation_and_retrieval(client: FlaskClient) -> None:
     item = ItemFactory(title='Retrieval Test Item')
 
     params = {
-        'title': 'Retrieval Test Serial',
-        'issn': '4000-4000',
-        'item_id': str(item.id),
-        'description': 'A test serial for retrieval',
+        'serial': {
+            'title': 'Retrieval Test Serial',
+            'issn': '4000-4000',
+            'item_id': str(item.id),
+            'description': 'A test serial for retrieval',
+        }
     }
     rv = client.post(
         '/api/serial', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Serial.create', 'params': params}

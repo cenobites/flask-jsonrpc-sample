@@ -66,8 +66,11 @@ class SQLAlchemyItemRepository:
             self.session.commit()
             item.id = str(model.id)
             return item
-        item.title = model.title
-        item.isbn = model.isbn
+        model.title = item.title
+        model.isbn = item.isbn
+        model.publication_year = item.publication_year
+        model.edition = item.edition
+        model.description = item.description
         self.session.commit()
         return item
 

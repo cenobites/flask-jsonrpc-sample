@@ -32,13 +32,15 @@ class Serial(DomainEntity):
         cls: type[Serial],
         /,
         *,
+        item: Item,
         title: str,
         issn: str,
-        item_id: str,
         frequency: str | None = None,
         description: str | None = None,
     ) -> Serial:
-        serial = cls(id=None, title=title, issn=issn, item_id=item_id, frequency=frequency, description=description)
+        serial = cls(
+            id=None, title=title, issn=issn, item_id=t.cast(str, item.id), frequency=frequency, description=description
+        )
         event_bus.add_event(
             SerialCreatedEvent(
                 serial_id=t.cast(str, serial.id), issn=serial.issn, item_id=serial.item_id, frequency=serial.frequency

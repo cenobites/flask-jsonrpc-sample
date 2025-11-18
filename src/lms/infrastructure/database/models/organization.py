@@ -42,7 +42,7 @@ class BranchModel(Base):
     address: Mapped[str | None] = mapped_column(String(255))
     phone: Mapped[str | None] = mapped_column(String(20))
     email: Mapped[str | None] = mapped_column(String(100))
-    manager_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey('staff.id'))
+    manager_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey('staff.id', use_alter=True), name='manager_id_fk')
     status: Mapped[BranchStatus] = mapped_column(default=BranchStatus.OPEN)
 
     manager: Mapped[StaffModel] = relationship('StaffModel', back_populates='managed_branch', foreign_keys=[manager_id])

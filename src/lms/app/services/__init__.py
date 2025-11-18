@@ -135,7 +135,11 @@ def register(app: Flask) -> None:
         copy_repository=copy_repository,
     )
 
-    serial_service = SerialService(serial_repository=serial_repository, serial_issue_repository=serial_issue_repository)
+    serial_service = SerialService(
+        serial_repository=serial_repository,
+        serial_issue_repository=serial_issue_repository,
+        item_repository=item_repository,
+    )
     fine_service = FineService(fine_repository=fine_repository, fine_policy_service=fine_policy_service)
 
     patron_service = PatronService(
