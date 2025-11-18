@@ -7,7 +7,13 @@ import factory
 
 from lms.infrastructure.database.db import db_session
 from lms.infrastructure.database.models.patrons import FineModel, FineStatus, PatronModel, PatronStatus
-from lms.infrastructure.database.models.serials import SerialModel, SerialFrequency, SerialIssueModel, SerialIssueStatus
+from lms.infrastructure.database.models.serials import (
+    SerialModel,
+    SerialStatus,
+    SerialFrequency,
+    SerialIssueModel,
+    SerialIssueStatus,
+)
 from lms.infrastructure.database.models.catalogs import (
     CopyModel,
     ItemModel,
@@ -27,6 +33,20 @@ from lms.infrastructure.database.models.acquisitions import (
 )
 from lms.infrastructure.database.models.circulations import HoldModel, LoanModel, HoldStatus
 from lms.infrastructure.database.models.organization import StaffRole, StaffModel, BranchModel, BranchStatus
+
+
+class BranchFactory(factory.alchemy.SQLAlchemyModelFactory):
+    class Meta:
+        model = BranchModel
+        sqlalchemy_session = db_session
+        sqlalchemy_session_persistence = 'flush'
+
+    name = factory.Faker('company')
+    address = factory.Faker('address')
+    phone = factory.Faker('phone_number')
+    email = factory.Faker('company_email')
+    manager_id = None
+    status = BranchStatus.ACTIVE
 
 
 class PublisherFactory(factory.alchemy.SQLAlchemyModelFactory):
@@ -84,25 +104,11 @@ class CopyFactory(factory.alchemy.SQLAlchemyModelFactory):
         sqlalchemy_session_persistence = 'flush'
 
     item = factory.SubFactory(ItemFactory)
-    branch_id = factory.Faker('uuid7')
+    branch = factory.SubFactory(BranchFactory)
     barcode = factory.Faker('ean')
     status = CopyStatus.AVAILABLE
     location = factory.Faker('word')
     acquisition_date = factory.LazyFunction(datetime.date.today)
-
-
-class BranchFactory(factory.alchemy.SQLAlchemyModelFactory):
-    class Meta:
-        model = BranchModel
-        sqlalchemy_session = db_session
-        sqlalchemy_session_persistence = 'flush'
-
-    name = factory.Faker('company')
-    address = factory.Faker('address')
-    phone = factory.Faker('phone_number')
-    email = factory.Faker('company_email')
-    manager_id = None
-    status = BranchStatus.ACTIVE
 
 
 class PatronFactory(factory.alchemy.SQLAlchemyModelFactory):
@@ -224,10 +230,10 @@ class SerialFactory(factory.alchemy.SQLAlchemyModelFactory):
 
     title = factory.Faker('catch_phrase')
     issn = factory.Faker('isbn13')
-    publisher = factory.SubFactory(PublisherFactory)
+    item = factory.SubFactory(ItemFactory)
     frequency = SerialFrequency.MONTHLY
-    category = factory.SubFactory(CategoryFactory)
     description = factory.Faker('text', max_nb_chars=200)
+    status = SerialStatus.ACTIVE
 
 
 class SerialIssueFactory(factory.alchemy.SQLAlchemyModelFactory):
@@ -240,4 +246,4 @@ class SerialIssueFactory(factory.alchemy.SQLAlchemyModelFactory):
     issue_number = factory.Faker('bothify', text='Issue ##')
     date_received = factory.LazyFunction(datetime.date.today)
     status = SerialIssueStatus.RECEIVED
-    item = factory.SubFactory(ItemFactory)
+    copy = factory.SubFactory(CopyFactory)

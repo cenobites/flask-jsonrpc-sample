@@ -296,7 +296,7 @@ def test_acquisition_order_add_line(client: FlaskClient) -> None:
             'jsonrpc': '2.0',
             'method': 'AcquisitionOrder.add_line',
             'params': {
-                'line_data': {'order_id': str(order.id), 'item_id': str(item.id), 'quantity': 5, 'unit_price': 15.75}
+                'order_line': {'order_id': str(order.id), 'item_id': str(item.id), 'quantity': 5, 'unit_price': 15.75}
             },
         },
     )
@@ -491,7 +491,7 @@ def test_complete_acquisition_workflow(client: FlaskClient) -> None:
             'jsonrpc': '2.0',
             'method': 'AcquisitionOrder.add_line',
             'params': {
-                'line_data': {'order_id': order_id, 'item_id': str(item.id), 'quantity': 20, 'unit_price': 12.99}
+                'order_line': {'order_id': order_id, 'item_id': str(item.id), 'quantity': 20, 'unit_price': 12.99}
             },
         },
     )

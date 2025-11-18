@@ -9,15 +9,6 @@ updates:
         patterns:
           - '*'
 
-  - package-ecosystem: pip
-    directory: /
-    schedule:
-      interval: daily
-    groups:
-      python-requirements:
-        patterns:
-          - '*'
-
   - package-ecosystem: uv
     directory: /
     schedule:

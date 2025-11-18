@@ -168,7 +168,7 @@ def test_patron_update_email_success(client: FlaskClient) -> None:
             'id': str(uuid.uuid4()),
             'jsonrpc': '2.0',
             'method': 'Patron.update_email',
-            'params': {'patron': {'patron_id': str(patron.id), 'email': 'new@test.com'}},
+            'params': {'patron_id': str(patron.id), 'email': 'new@test.com'},
         },
     )
     assert rv.status_code == 200, rv.data
@@ -187,7 +187,7 @@ def test_patron_update_email_duplicate(client: FlaskClient) -> None:
             'id': str(uuid.uuid4()),
             'jsonrpc': '2.0',
             'method': 'Patron.update_email',
-            'params': {'patron': {'patron_id': str(patron2.id), 'email': 'existing@test.com'}},
+            'params': {'patron_id': str(patron2.id), 'email': 'existing@test.com'},
         },
     )
     assert rv.status_code == 500, rv.data
@@ -214,7 +214,7 @@ def test_patron_update_email_not_found(client: FlaskClient) -> None:
             'id': str(uuid.uuid4()),
             'jsonrpc': '2.0',
             'method': 'Patron.update_email',
-            'params': {'patron': {'patron_id': fake_id, 'email': 'new@test.com'}},
+            'params': {'patron_id': fake_id, 'email': 'new@test.com'},
         },
     )
     assert rv.status_code == 500, rv.data
@@ -258,7 +258,7 @@ def test_complete_patron_workflow(client: FlaskClient) -> None:
             'id': str(uuid.uuid4()),
             'jsonrpc': '2.0',
             'method': 'Patron.update_email',
-            'params': {'patron': {'patron_id': patron_id, 'email': 'jane.smith@test.com'}},
+            'params': {'patron_id': patron_id, 'email': 'jane.smith@test.com'},
         },
     )
     assert rv.status_code == 200, rv.data

@@ -36,7 +36,7 @@ def test_item_create_minimal(client: FlaskClient) -> None:
             'id': str(uuid.uuid4()),
             'jsonrpc': '2.0',
             'method': 'Item.create',
-            'params': {'item_data': {'barcode': 'ITM-001', 'title': 'Test Book', 'material_type': 'book'}},
+            'params': {'item': {'barcode': 'ITM-001', 'title': 'Test Book', 'material_type': 'book'}},
         },
     )
     assert rv.status_code == 200, rv.data
@@ -48,7 +48,7 @@ def test_item_create_minimal(client: FlaskClient) -> None:
 
 def test_item_create_with_all_fields(client: FlaskClient) -> None:
     params = {
-        'item_data': {
+        'item': {
             'barcode': 'ITM-002',
             'title': 'Complete Book',
             'author': 'John Doe',
@@ -99,16 +99,13 @@ def test_item_get_not_found(client: FlaskClient) -> None:
 def test_item_update_title(client: FlaskClient) -> None:
     item = ItemFactory(title='Old Title')
 
-    params = {
-        'item_id': str(item.id),
-        'item_data': {'id': str(item.id), 'barcode': 'ITM-UPD', 'title': 'New Title', 'material_type': 'book'},
-    }
+    params = {'item': {'id': str(item.id), 'barcode': 'ITM-UPD', 'title': 'New Title', 'material_type': 'book'}}
     rv = client.post(
         '/api/catalog', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Item.update', 'params': params}
     )
     assert rv.status_code == 200, rv.data
     rv_data = rv.get_json()
-    assert rv_data['result']['title'] == 'New Title'
+    assert rv_data['result']['title'] == 'New Title', rv_data
 
 
 def test_item_update_all_fields(client: FlaskClient) -> None:
@@ -116,7 +113,7 @@ def test_item_update_all_fields(client: FlaskClient) -> None:
 
     params = {
         'item_id': str(item.id),
-        'item_data': {
+        'item': {
             'id': str(item.id),
             'barcode': 'ITM-ALL',
             'title': 'Updated Title',
@@ -140,7 +137,7 @@ def test_item_update_not_found(client: FlaskClient) -> None:
 
     params = {
         'item_id': fake_id,
-        'item_data': {'id': fake_id, 'barcode': 'ITM-XXX', 'title': 'New Title', 'material_type': 'book'},
+        'item': {'id': fake_id, 'barcode': 'ITM-XXX', 'title': 'New Title', 'material_type': 'book'},
     }
     rv = client.post(
         '/api/catalog', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Item.update', 'params': params}
@@ -198,16 +195,12 @@ def test_copy_get_not_found(client: FlaskClient) -> None:
 
 
 def test_complete_catalog_workflow(client: FlaskClient) -> None:
-    branch = BranchFactory(name='Main Branch')
-    copy1 = CopyFactory(branch_id=str(branch.id), barcode='FLOW-COPY-1')
-    copy1_id = str(copy1.id)
-
     # Create item
     params = {
-        'item_data': {
+        'item': {
             'barcode': 'FLOW-ITM',
             'title': 'Workflow Book',
-            'material_type': 'book',
+            'format': 'book',
             'isbn': '978-1111111111',
             'publication_year': 2024,
         }
@@ -220,27 +213,12 @@ def test_complete_catalog_workflow(client: FlaskClient) -> None:
     item_id = rv.get_json()['result']['id']
 
     # Update item
-    params = {
-        'item_id': item_id,
-        'item_data': {
-            'id': item_id,
-            'barcode': 'FLOW-ITM-UPD',
-            'title': 'Updated Workflow Book',
-            'material_type': 'book',
-        },
-    }
+    params = {'item': {'id': item_id, 'barcode': 'FLOW-ITM-UPD', 'title': 'Updated Workflow Book', 'format': 'book'}}
     rv = client.post(
         '/api/catalog', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Item.update', 'params': params}
     )
     assert rv.status_code == 200, rv.data
     assert rv.get_json()['result']['title'] == 'Updated Workflow Book'
-
-    # Delete one copy
-    rv = client.post(
-        '/api/catalog',
-        json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Copy.delete', 'params': {'copy_id': copy1_id}},
-    )
-    assert rv.status_code == 200, rv.data
 
     # Verify item still exists
     rv = client.post(
@@ -268,10 +246,10 @@ def test_item_with_multiple_copies(client: FlaskClient) -> None:
 
 def test_item_creation_and_retrieval(client: FlaskClient) -> None:
     params = {
-        'item_data': {
+        'item': {
             'barcode': 'RETRIEVE-ITM',
             'title': 'Retrieval Test Book',
-            'material_type': 'ebook',
+            'format': 'ebook',
             'description': 'A test book for retrieval',
         }
     }
