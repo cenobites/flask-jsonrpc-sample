@@ -5,14 +5,14 @@ import datetime
 from dataclasses import field, dataclass
 
 from lms.infrastructure.event_bus import event_bus
-from lms.domain.organization.events import (
+from lms.domain.organizations.events import (
     BranchClosedEvent,
     BranchOpenedEvent,
     BranchNameChangedEvent,
     StaffEmailChangedEvent,
     ManagerAssignedToBranchEvent,
 )
-from lms.infrastructure.database.models.organization import StaffRole, StaffStatus, BranchStatus
+from lms.infrastructure.database.models.organizations import StaffRole, StaffStatus, BranchStatus
 
 from .. import DomainEntity
 from .services import StaffUniquenessService, BranchAssignmentService, BranchUniquenessService

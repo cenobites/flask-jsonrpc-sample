@@ -13,15 +13,15 @@ from lms.app.schemas.acquisitions import OrderCreate, OrderLineAdd, VendorUpdate
 from lms.app.services.acquisitions import VendorService, AcquisitionOrderService
 from lms.domain.acquisitions.entities import Vendor, AcquisitionOrder
 
-jsonrpc_bp = JSONRPCBlueprint('acquisition', __name__)
+jsonrpc_bp = JSONRPCBlueprint('acquisitions', __name__)
 
 
 @jsonrpc_bp.method(
-    'AcquisitionOrder.list',
+    'AcquisitionOrders.list',
     tm.MethodAnnotated[
         tm.Summary('List acquisition orders'),
         tm.Description('Get a list of all acquisition orders'),
-        tm.Tag(name='acquisition', summary='Acquisitions Management', description='Library acquisition operations'),
+        tm.Tag(name='acquisitions', summary='Acquisitions Management', description='Library acquisition operations'),
     ],
 )
 def list_orders() -> t.Annotated[Page[AcquisitionOrder], tp.Summary('List of orders')]:
@@ -31,11 +31,11 @@ def list_orders() -> t.Annotated[Page[AcquisitionOrder], tp.Summary('List of ord
 
 
 @jsonrpc_bp.method(
-    'AcquisitionOrder.get',
+    'AcquisitionOrders.get',
     tm.MethodAnnotated[
         tm.Summary('Get order by ID'),
         tm.Description('Retrieve details of a specific acquisition order'),
-        tm.Tag(name='acquisition'),
+        tm.Tag(name='acquisitions'),
     ],
 )
 def get_order(
@@ -46,11 +46,11 @@ def get_order(
 
 
 @jsonrpc_bp.method(
-    'AcquisitionOrder.create',
+    'AcquisitionOrders.create',
     tm.MethodAnnotated[
         tm.Summary('Create acquisition order'),
         tm.Description('Create a new acquisition order'),
-        tm.Tag(name='acquisition'),
+        tm.Tag(name='acquisitions'),
     ],
 )
 def create_order(
@@ -69,11 +69,11 @@ def create_order(
 
 
 @jsonrpc_bp.method(
-    'AcquisitionOrder.add_line',
+    'AcquisitionOrders.add_line',
     tm.MethodAnnotated[
         tm.Summary('Update acquisition order'),
         tm.Description('Partially update fields of an acquisition order such as status or received_date'),
-        tm.Tag(name='acquisition'),
+        tm.Tag(name='acquisitions'),
         tm.Error(code=-32001, message='Order update failed', data={'reason': 'order not found or invalid data'}),
         tm.Example(
             name='update_order_example',
@@ -98,11 +98,11 @@ def add_order_line(
 
 
 @jsonrpc_bp.method(
-    'AcquisitionOrder.remove_line',
+    'AcquisitionOrders.remove_line',
     tm.MethodAnnotated[
         tm.Summary('Update acquisition order'),
         tm.Description('Partially update fields of an acquisition order such as status or received_date'),
-        tm.Tag(name='acquisition'),
+        tm.Tag(name='acquisitions'),
         tm.Error(code=-32001, message='Order update failed', data={'reason': 'order not found or invalid data'}),
         tm.Example(
             name='update_order_example',
@@ -123,11 +123,11 @@ def remove_order_line(
 
 
 @jsonrpc_bp.method(
-    'AcquisitionOrder.receive_line',
+    'AcquisitionOrders.receive_line',
     tm.MethodAnnotated[
         tm.Summary('Update acquisition order'),
         tm.Description('Partially update fields of an acquisition order such as status or received_date'),
-        tm.Tag(name='acquisition'),
+        tm.Tag(name='acquisitions'),
         tm.Error(code=-32001, message='Order update failed', data={'reason': 'order not found or invalid data'}),
         tm.Example(
             name='update_order_example',
@@ -151,9 +151,9 @@ def receive_order_line(
 
 
 @jsonrpc_bp.method(
-    'AcquisitionOrder.submit',
+    'AcquisitionOrders.submit',
     tm.MethodAnnotated[
-        tm.Summary('Submit order'), tm.Description('Submit an acquisition order'), tm.Tag(name='acquisition')
+        tm.Summary('Submit order'), tm.Description('Submit an acquisition order'), tm.Tag(name='acquisitions')
     ],
 )
 def submit_order(
@@ -164,9 +164,9 @@ def submit_order(
 
 
 @jsonrpc_bp.method(
-    'AcquisitionOrder.cancel',
+    'AcquisitionOrders.cancel',
     tm.MethodAnnotated[
-        tm.Summary('Cancel order'), tm.Description('Cancel an acquisition order'), tm.Tag(name='acquisition')
+        tm.Summary('Cancel order'), tm.Description('Cancel an acquisition order'), tm.Tag(name='acquisitions')
     ],
 )
 def cancel_order(
@@ -177,11 +177,11 @@ def cancel_order(
 
 
 @jsonrpc_bp.method(
-    'Vendor.list',
+    'Vendors.list',
     tm.MethodAnnotated[
         tm.Summary('Get all vendors'),
         tm.Description('Retrieve a list of all vendors'),
-        tm.Tag(name='acquisition'),
+        tm.Tag(name='acquisitions'),
         tm.Error(code=-32002, message='No vendors found', data={'reason': 'no vendors available'}),
         tm.Example(name='all_vendors_example', params=[]),
     ],
@@ -193,11 +193,11 @@ def list_vendors() -> t.Annotated[Page[Vendor], tp.Summary('Vendor search result
 
 
 @jsonrpc_bp.method(
-    'Vendor.get',
+    'Vendors.get',
     tm.MethodAnnotated[
         tm.Summary('Get vendor by ID'),
         tm.Description('Retrieve vendor information using its unique ID'),
-        tm.Tag(name='acquisition'),
+        tm.Tag(name='acquisitions'),
         tm.Error(code=-32002, message='Vendor not found', data={'reason': 'invalid vendor ID'}),
         tm.Example(name='get_vendor_example', params=[tm.ExampleField(name='vendor_id', value=1, summary='Vendor ID')]),
     ],
@@ -210,11 +210,11 @@ def get_vendor(
 
 
 @jsonrpc_bp.method(
-    'Vendor.register',
+    'Vendors.register',
     tm.MethodAnnotated[
         tm.Summary('Create vendor'),
         tm.Description('Create a new vendor'),
-        tm.Tag(name='acquisition'),
+        tm.Tag(name='acquisitions'),
         tm.Error(code=-32001, message='Vendor creation failed', data={'reason': 'duplicate name or invalid data'}),
         tm.Example(
             name='create_vendor_example',
@@ -239,11 +239,11 @@ def register_vendor(
 
 
 @jsonrpc_bp.method(
-    'Vendor.update',
+    'Vendors.update',
     tm.MethodAnnotated[
         tm.Summary('Update vendor'),
         tm.Description('Update an existing vendor'),
-        tm.Tag(name='acquisition'),
+        tm.Tag(name='acquisitions'),
         tm.Error(code=-32001, message='Vendor update failed', data={'reason': 'vendor not found or invalid data'}),
         tm.Example(
             name='update_vendor_example',

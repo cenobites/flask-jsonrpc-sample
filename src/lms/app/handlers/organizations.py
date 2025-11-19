@@ -4,8 +4,8 @@ from flask import Flask, current_app
 
 from lms.infrastructure.logging import logger
 from lms.infrastructure.event_bus import event_bus
-from lms.app.services.organization import StaffService
-from lms.domain.organization.events import BranchClosedEvent, BranchOpenedEvent, ManagerAssignedToBranchEvent
+from lms.app.services.organizations import StaffService
+from lms.domain.organizations.events import BranchClosedEvent, BranchOpenedEvent, ManagerAssignedToBranchEvent
 
 
 def handle_branch_opened(event: BranchOpenedEvent) -> None:

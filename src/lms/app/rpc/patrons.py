@@ -17,11 +17,11 @@ jsonrpc_bp = JSONRPCBlueprint('patrons', __name__)
 
 
 @jsonrpc_bp.method(
-    'Patron.list',
+    'Patrons.list',
     tm.MethodAnnotated[
         tm.Summary('List patrons'),
         tm.Description('Retrieve all patrons'),
-        tm.Tag(name='patron'),
+        tm.Tag(name='patrons'),
         tm.Example(name='list_patrons_example', params=[]),
     ],
 )
@@ -32,11 +32,11 @@ def list_patrons() -> t.Annotated[Page[Patron], tp.Summary('Patron list')]:
 
 
 @jsonrpc_bp.method(
-    'Patron.get',
+    'Patrons.get',
     tm.MethodAnnotated[
         tm.Summary('Get patron by ID'),
         tm.Description('Retrieve patron information using unique ID'),
-        tm.Tag(name='patron'),
+        tm.Tag(name='patrons'),
         tm.Error(code=-32002, message='Patron not found', data={'reason': 'invalid patron ID'}),
         tm.Example(name='get_patron_example', params=[tm.ExampleField(name='patron_id', value=1, summary='Patron ID')]),
     ],
@@ -49,7 +49,7 @@ def get_patron(
 
 
 @jsonrpc_bp.method(
-    'Patron.create',
+    'Patrons.create',
     tm.MethodAnnotated[
         tm.Summary('Create a new patron'),
         tm.Description('Register a new patron and set a 1-year membership expiration date'),
@@ -76,11 +76,11 @@ def create_patron(
 
 
 @jsonrpc_bp.method(
-    'Patron.update',
+    'Patrons.update',
     tm.MethodAnnotated[
         tm.Summary('Update patron'),
         tm.Description('Partially update patron fields'),
-        tm.Tag(name='patron'),
+        tm.Tag(name='patrons'),
         tm.Error(code=-32003, message='Update failed', data={'reason': 'patron not found or invalid data'}),
         tm.Example(
             name='update_patron_example',
@@ -98,11 +98,11 @@ def update_patron(
 
 
 @jsonrpc_bp.method(
-    'Patron.update_email',
+    'Patrons.update_email',
     tm.MethodAnnotated[
         tm.Summary('Update patron'),
         tm.Description('Partially update patron fields'),
-        tm.Tag(name='patron'),
+        tm.Tag(name='patrons'),
         tm.Error(code=-32003, message='Update failed', data={'reason': 'patron not found or invalid data'}),
         tm.Example(
             name='update_patron_example',
@@ -121,11 +121,11 @@ def update_patron_email(
 
 
 @jsonrpc_bp.method(
-    'Patron.activate',
+    'Patrons.activate',
     tm.MethodAnnotated[
         tm.Summary('Delete patron'),
         tm.Description('Remove a patron record'),
-        tm.Tag(name='patron'),
+        tm.Tag(name='patrons'),
         tm.Error(code=-32004, message='Deletion failed', data={'reason': 'patron not found'}),
         tm.Example(
             name='delete_patron_example', params=[tm.ExampleField(name='patron_id', value=1, summary='Patron ID')]
@@ -140,11 +140,11 @@ def activate_patron(
 
 
 @jsonrpc_bp.method(
-    'Patron.archive',
+    'Patrons.archive',
     tm.MethodAnnotated[
         tm.Summary('Delete patron'),
         tm.Description('Remove a patron record'),
-        tm.Tag(name='patron'),
+        tm.Tag(name='patrons'),
         tm.Error(code=-32004, message='Deletion failed', data={'reason': 'patron not found'}),
         tm.Example(
             name='delete_patron_example', params=[tm.ExampleField(name='patron_id', value=1, summary='Patron ID')]
@@ -159,7 +159,7 @@ def archive_patron(
 
 
 @jsonrpc_bp.method(
-    'Fine.list',
+    'Fines.list',
     tm.MethodAnnotated[
         tm.Summary('List fines'),
         tm.Description('Retrieve all fines'),
@@ -174,11 +174,11 @@ def list_fines() -> t.Annotated[Page[Fine], tp.Summary('Fine list')]:
 
 
 @jsonrpc_bp.method(
-    'Fine.get',
+    'Fines.get',
     tm.MethodAnnotated[
         tm.Summary('Get patron by ID'),
         tm.Description('Retrieve patron information using unique ID'),
-        tm.Tag(name='patron'),
+        tm.Tag(name='patrons'),
         tm.Error(code=-32002, message='Patron not found', data={'reason': 'invalid patron ID'}),
         tm.Example(name='get_patron_example', params=[tm.ExampleField(name='patron_id', value=1, summary='Patron ID')]),
     ],
@@ -191,11 +191,11 @@ def get_fine(
 
 
 @jsonrpc_bp.method(
-    'Fine.pay',
+    'Fines.pay',
     tm.MethodAnnotated[
         tm.Summary('Delete patron'),
         tm.Description('Remove a patron record'),
-        tm.Tag(name='patron'),
+        tm.Tag(name='patrons'),
         tm.Error(code=-32004, message='Deletion failed', data={'reason': 'patron not found'}),
         tm.Example(
             name='delete_patron_example', params=[tm.ExampleField(name='patron_id', value=1, summary='Patron ID')]
@@ -210,11 +210,11 @@ def pay_fine(
 
 
 @jsonrpc_bp.method(
-    'Fine.waive',
+    'Fines.waive',
     tm.MethodAnnotated[
         tm.Summary('Delete patron'),
         tm.Description('Remove a patron record'),
-        tm.Tag(name='patron'),
+        tm.Tag(name='patrons'),
         tm.Error(code=-32004, message='Deletion failed', data={'reason': 'patron not found'}),
         tm.Example(
             name='delete_patron_example', params=[tm.ExampleField(name='patron_id', value=1, summary='Patron ID')]

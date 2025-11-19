@@ -21,11 +21,6 @@ class BranchUpdate(BaseSchema):
     phone: str | None = Field(None, max_length=20, description='Branch phone number')
 
 
-class BranchAssignManager(BaseSchema):
-    branch_id: str = Field(description='Branch ID')
-    manager_id: str = Field(description='Manager ID')
-
-
 class StaffCreate(BaseSchema):
     name: str = Field(min_length=1, max_length=100, description='Staff name')
     email: EmailStr = Field(description='Staff email address')
@@ -35,13 +30,3 @@ class StaffCreate(BaseSchema):
 class StaffUpdate(BaseSchema):
     staff_id: str = Field(description='Unique staff identifier')
     name: str = Field(min_length=1, max_length=100, description='Staff name')
-
-
-class StaffUpdateRole(BaseSchema):
-    staff_id: str = Field(description='Unique staff identifier')
-    role: str = Field(description='Staff role (librarian, technician, manager)')
-
-
-class StaffUpdateEmail(BaseSchema):
-    staff_id: str = Field(description='Unique staff identifier')
-    email: EmailStr = Field(description='Staff email address')

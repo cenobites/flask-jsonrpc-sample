@@ -12,8 +12,8 @@ from ..db import Base
 
 if t.TYPE_CHECKING:
     from .patrons import PatronModel
-    from .catalogs import CopyModel
-    from .organization import StaffModel, BranchModel
+    from .catalogs import CopyModel, ItemModel
+    from .organizations import StaffModel, BranchModel
 
 
 class HoldStatus(enum.Enum):
@@ -53,13 +53,15 @@ class HoldModel(Base):
     __tablename__ = 'hold'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
-    copy_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey('copy.id'))
     patron_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('patron.id'))
-    loan_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('loan.id'))
+    item_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('item.id'))
+    loan_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey('loan.id'))
+    copy_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey('copy.id'))
     request_date: Mapped[datetime.date] = mapped_column(default=datetime.date.today)
     expiry_date: Mapped[datetime.date | None]
     status: Mapped[HoldStatus] = mapped_column(default=HoldStatus.PENDING)
 
-    copy: Mapped[CopyModel] = relationship('CopyModel', back_populates='holds')
     patron: Mapped[PatronModel] = relationship('PatronModel', back_populates='holds')
+    item: Mapped[ItemModel] = relationship('ItemModel', back_populates='holds')
     loan: Mapped[LoanModel] = relationship('LoanModel', back_populates='hold')
+    copy: Mapped[CopyModel] = relationship('CopyModel', back_populates='holds')

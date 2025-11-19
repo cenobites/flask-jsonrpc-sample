@@ -72,12 +72,18 @@ class Patron(DomainEntity):
         ):
             raise PatronCannotBorrowError('Patron cannot borrow this copy due to status or barring rules')
 
+    def available_to_renew(self, copy_id: str, patron_barring_service: PatronBarringService) -> None:
+        if self.status != PatronStatus.ACTIVE.value or not patron_barring_service.can_renew_copy(
+            t.cast(str, self.id), copy_id
+        ):
+            raise PatronCannotBorrowError('Patron cannot renew this copy due to status or barring rules')
+
     def available_to_place_hold(self, patron_holding_service: PatronHoldingService) -> None:
         if self.status != PatronStatus.ACTIVE.value or not patron_holding_service.can_place_holds(t.cast(str, self.id)):
             raise PatronCannotPlaceHoldError('Patron cannot place hold due to status or holding rules')
 
     def activate(self) -> None:
-        if self.status != PatronStatus.REGISTERED.value:
+        if self.status == PatronStatus.ACTIVE.value:
             raise PatronCannotChangeStatusError('Patron is already active')
         self.status = PatronStatus.ACTIVE.value
 

@@ -8,7 +8,7 @@ from flask import Flask, current_app
 from lms.app.services.catalogs import ItemService
 from lms.infrastructure.logging import logger
 from lms.infrastructure.event_bus import event_bus
-from lms.app.services.organization import StaffService
+from lms.app.services.organizations import StaffService
 from lms.domain.acquisitions.events import AcquisitionOrderReceivedEvent
 
 

@@ -13,7 +13,7 @@ from ..db import Base
 
 if t.TYPE_CHECKING:
     from .circulations import HoldModel, LoanModel
-    from .organization import BranchModel
+    from .organizations import BranchModel
 
 
 class PatronStatus(enum.Enum):

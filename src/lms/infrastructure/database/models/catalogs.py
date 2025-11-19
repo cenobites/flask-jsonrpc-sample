@@ -14,7 +14,7 @@ if t.TYPE_CHECKING:
     from .serials import SerialModel, SerialIssueModel
     from .acquisitions import AcquisitionOrderLineModel
     from .circulations import HoldModel, LoanModel
-    from .organization import BranchModel
+    from .organizations import BranchModel
 
 
 class ItemFormat(enum.Enum):
@@ -93,6 +93,7 @@ class ItemModel(Base):
     category: Mapped[CategoryModel] = relationship('CategoryModel', back_populates='items')
     authors: Mapped[list[AuthorModel]] = relationship(secondary=item_author_association, back_populates='items')
     copies: Mapped[list[CopyModel]] = relationship('CopyModel', back_populates='item')
+    holds: Mapped[list[HoldModel]] = relationship('HoldModel', back_populates='item')
     order_lines: Mapped[list[AcquisitionOrderLineModel]] = relationship(
         'AcquisitionOrderLineModel', back_populates='item'
     )

@@ -6,12 +6,12 @@ from flask.testing import FlaskClient
 
 from lms.infrastructure.database.models.acquisitions import OrderStatus
 
-from .factories import ItemFactory, StaffFactory, VendorFactory, AcquisitionOrderFactory, AcquisitionOrderLineFactory
+from ...factories import ItemFactory, StaffFactory, VendorFactory, AcquisitionOrderFactory, AcquisitionOrderLineFactory
 
 
 def test_vendor_list_empty(client: FlaskClient) -> None:
     rv = client.post(
-        '/api/acquisition', json={'jsonrpc': '2.0', 'method': 'Vendor.list', 'params': {}, 'id': str(uuid.uuid4())}
+        '/api/acquisitions', json={'jsonrpc': '2.0', 'method': 'Vendors.list', 'params': {}, 'id': str(uuid.uuid4())}
     )
     assert rv.status_code == 200
     rv_data = rv.get_json()
@@ -23,7 +23,7 @@ def test_vendor_list_with_vendors(client: FlaskClient) -> None:
     VendorFactory(name='Vendor B')
 
     rv = client.post(
-        '/api/acquisition', json={'jsonrpc': '2.0', 'method': 'Vendor.list', 'params': {}, 'id': str(uuid.uuid4())}
+        '/api/acquisitions', json={'jsonrpc': '2.0', 'method': 'Vendors.list', 'params': {}, 'id': str(uuid.uuid4())}
     )
     assert rv.status_code == 200
     rv_data = rv.get_json()
@@ -35,11 +35,11 @@ def test_vendor_register_minimal(client: FlaskClient) -> None:
     staff = StaffFactory(name='Staff Member', email='staff@test.com')
 
     rv = client.post(
-        '/api/acquisition',
+        '/api/acquisitions',
         json={
             'id': str(uuid.uuid4()),
             'jsonrpc': '2.0',
-            'method': 'Vendor.register',
+            'method': 'Vendors.register',
             'params': {'vendor': {'name': 'New Vendor', 'staff_id': str(staff.id)}},
         },
     )
@@ -57,11 +57,11 @@ def test_vendor_register_with_all_fields(client: FlaskClient) -> None:
     staff = StaffFactory(name='Staff Member', email='staff@test.com')
 
     rv = client.post(
-        '/api/acquisition',
+        '/api/acquisitions',
         json={
             'id': str(uuid.uuid4()),
             'jsonrpc': '2.0',
-            'method': 'Vendor.register',
+            'method': 'Vendors.register',
             'params': {
                 'vendor': {
                     'name': 'Complete Vendor',
@@ -86,11 +86,11 @@ def test_vendor_get_success(client: FlaskClient) -> None:
     vendor = VendorFactory(name='Test Vendor', email='test@vendor.com')
 
     rv = client.post(
-        '/api/acquisition',
+        '/api/acquisitions',
         json={
             'id': str(uuid.uuid4()),
             'jsonrpc': '2.0',
-            'method': 'Vendor.get',
+            'method': 'Vendors.get',
             'params': {'vendor_id': str(vendor.id)},
         },
     )
@@ -105,8 +105,8 @@ def test_vendor_get_not_found(client: FlaskClient) -> None:
     fake_id = str(uuid.uuid7())
 
     rv = client.post(
-        '/api/acquisition',
-        json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Vendor.get', 'params': {'vendor_id': fake_id}},
+        '/api/acquisitions',
+        json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Vendors.get', 'params': {'vendor_id': fake_id}},
     )
     assert rv.status_code == 500, rv.data
     rv_data = rv.get_json()
@@ -117,11 +117,11 @@ def test_vendor_update_name(client: FlaskClient) -> None:
     vendor = VendorFactory(name='Old Name')
 
     rv = client.post(
-        '/api/acquisition',
+        '/api/acquisitions',
         json={
             'id': str(uuid.uuid4()),
             'jsonrpc': '2.0',
-            'method': 'Vendor.update',
+            'method': 'Vendors.update',
             'params': {'vendor': {'id': str(vendor.id), 'name': 'New Name'}},
         },
     )
@@ -134,11 +134,11 @@ def test_vendor_update_all_fields(client: FlaskClient) -> None:
     vendor = VendorFactory(name='Original Vendor')
 
     rv = client.post(
-        '/api/acquisition',
+        '/api/acquisitions',
         json={
             'id': str(uuid.uuid4()),
             'jsonrpc': '2.0',
-            'method': 'Vendor.update',
+            'method': 'Vendors.update',
             'params': {
                 'vendor': {
                     'id': str(vendor.id),
@@ -162,11 +162,11 @@ def test_vendor_update_not_found(client: FlaskClient) -> None:
     fake_id = str(uuid.uuid7())
 
     rv = client.post(
-        '/api/acquisition',
+        '/api/acquisitions',
         json={
             'id': str(uuid.uuid4()),
             'jsonrpc': '2.0',
-            'method': 'Vendor.update',
+            'method': 'Vendors.update',
             'params': {'vendor': {'id': fake_id, 'name': 'New Name'}},
         },
     )
@@ -177,8 +177,8 @@ def test_vendor_update_not_found(client: FlaskClient) -> None:
 
 def test_acquisition_order_list_empty(client: FlaskClient) -> None:
     rv = client.post(
-        '/api/acquisition',
-        json={'jsonrpc': '2.0', 'method': 'AcquisitionOrder.list', 'params': {}, 'id': str(uuid.uuid4())},
+        '/api/acquisitions',
+        json={'jsonrpc': '2.0', 'method': 'AcquisitionOrders.list', 'params': {}, 'id': str(uuid.uuid4())},
     )
     assert rv.status_code == 200
     rv_data = rv.get_json()
@@ -190,8 +190,8 @@ def test_acquisition_order_list_with_orders(client: FlaskClient) -> None:
     AcquisitionOrderFactory()
 
     rv = client.post(
-        '/api/acquisition',
-        json={'jsonrpc': '2.0', 'method': 'AcquisitionOrder.list', 'params': {}, 'id': str(uuid.uuid4())},
+        '/api/acquisitions',
+        json={'jsonrpc': '2.0', 'method': 'AcquisitionOrders.list', 'params': {}, 'id': str(uuid.uuid4())},
     )
     assert rv.status_code == 200
     rv_data = rv.get_json()
@@ -204,11 +204,11 @@ def test_acquisition_order_create_without_lines(client: FlaskClient) -> None:
     staff = StaffFactory(name='Staff', email='staff@test.com')
 
     rv = client.post(
-        '/api/acquisition',
+        '/api/acquisitions',
         json={
             'id': str(uuid.uuid4()),
             'jsonrpc': '2.0',
-            'method': 'AcquisitionOrder.create',
+            'method': 'AcquisitionOrders.create',
             'params': {'order': {'vendor_id': str(vendor.id), 'staff_id': str(staff.id), 'order_lines': []}},
         },
     )
@@ -227,11 +227,11 @@ def test_acquisition_order_create_with_lines(client: FlaskClient) -> None:
     item = ItemFactory(title='Test Item')
 
     rv = client.post(
-        '/api/acquisition',
+        '/api/acquisitions',
         json={
             'id': str(uuid.uuid4()),
             'jsonrpc': '2.0',
-            'method': 'AcquisitionOrder.create',
+            'method': 'AcquisitionOrders.create',
             'params': {
                 'order': {
                     'vendor_id': str(vendor.id),
@@ -255,11 +255,11 @@ def test_acquisition_order_get_success(client: FlaskClient) -> None:
     order = AcquisitionOrderFactory()
 
     rv = client.post(
-        '/api/acquisition',
+        '/api/acquisitions',
         json={
             'id': str(uuid.uuid4()),
             'jsonrpc': '2.0',
-            'method': 'AcquisitionOrder.get',
+            'method': 'AcquisitionOrders.get',
             'params': {'order_id': str(order.id)},
         },
     )
@@ -272,11 +272,11 @@ def test_acquisition_order_get_not_found(client: FlaskClient) -> None:
     fake_id = str(uuid.uuid7())
 
     rv = client.post(
-        '/api/acquisition',
+        '/api/acquisitions',
         json={
             'id': str(uuid.uuid4()),
             'jsonrpc': '2.0',
-            'method': 'AcquisitionOrder.get',
+            'method': 'AcquisitionOrders.get',
             'params': {'order_id': fake_id},
         },
     )
@@ -290,11 +290,11 @@ def test_acquisition_order_add_line(client: FlaskClient) -> None:
     item = ItemFactory(title='New Item')
 
     rv = client.post(
-        '/api/acquisition',
+        '/api/acquisitions',
         json={
             'id': str(uuid.uuid4()),
             'jsonrpc': '2.0',
-            'method': 'AcquisitionOrder.add_line',
+            'method': 'AcquisitionOrders.add_line',
             'params': {
                 'order_line': {'order_id': str(order.id), 'item_id': str(item.id), 'quantity': 5, 'unit_price': 15.75}
             },
@@ -311,11 +311,11 @@ def test_acquisition_order_remove_line(client: FlaskClient) -> None:
     line = AcquisitionOrderLineFactory(order=order)
 
     rv = client.post(
-        '/api/acquisition',
+        '/api/acquisitions',
         json={
             'id': str(uuid.uuid4()),
             'jsonrpc': '2.0',
-            'method': 'AcquisitionOrder.remove_line',
+            'method': 'AcquisitionOrders.remove_line',
             'params': {'order_id': str(order.id), 'order_line_id': str(line.id)},
         },
     )
@@ -329,11 +329,11 @@ def test_acquisition_order_submit(client: FlaskClient) -> None:
     AcquisitionOrderLineFactory(order=order)
 
     rv = client.post(
-        '/api/acquisition',
+        '/api/acquisitions',
         json={
             'id': str(uuid.uuid4()),
             'jsonrpc': '2.0',
-            'method': 'AcquisitionOrder.submit',
+            'method': 'AcquisitionOrders.submit',
             'params': {'order_id': str(order.id)},
         },
     )
@@ -346,11 +346,11 @@ def test_acquisition_order_submit_not_found(client: FlaskClient) -> None:
     fake_id = str(uuid.uuid7())
 
     rv = client.post(
-        '/api/acquisition',
+        '/api/acquisitions',
         json={
             'id': str(uuid.uuid4()),
             'jsonrpc': '2.0',
-            'method': 'AcquisitionOrder.submit',
+            'method': 'AcquisitionOrders.submit',
             'params': {'order_id': fake_id},
         },
     )
@@ -363,11 +363,11 @@ def test_acquisition_order_cancel(client: FlaskClient) -> None:
     order = AcquisitionOrderFactory()
 
     rv = client.post(
-        '/api/acquisition',
+        '/api/acquisitions',
         json={
             'id': str(uuid.uuid4()),
             'jsonrpc': '2.0',
-            'method': 'AcquisitionOrder.cancel',
+            'method': 'AcquisitionOrders.cancel',
             'params': {'order_id': str(order.id)},
         },
     )
@@ -380,11 +380,11 @@ def test_acquisition_order_cancel_not_found(client: FlaskClient) -> None:
     fake_id = str(uuid.uuid7())
 
     rv = client.post(
-        '/api/acquisition',
+        '/api/acquisitions',
         json={
             'id': str(uuid.uuid4()),
             'jsonrpc': '2.0',
-            'method': 'AcquisitionOrder.cancel',
+            'method': 'AcquisitionOrders.cancel',
             'params': {'order_id': fake_id},
         },
     )
@@ -398,11 +398,11 @@ def test_acquisition_order_receive_line_full(client: FlaskClient) -> None:
     line = AcquisitionOrderLineFactory(order=order, quantity=10)
 
     rv = client.post(
-        '/api/acquisition',
+        '/api/acquisitions',
         json={
             'id': str(uuid.uuid4()),
             'jsonrpc': '2.0',
-            'method': 'AcquisitionOrder.receive_line',
+            'method': 'AcquisitionOrders.receive_line',
             'params': {'order_id': str(order.id), 'order_line_id': str(line.id), 'received_quantity': 10},
         },
     )
@@ -418,11 +418,11 @@ def test_acquisition_order_receive_line_partial(client: FlaskClient) -> None:
     line = AcquisitionOrderLineFactory(order=order, quantity=10)
 
     rv = client.post(
-        '/api/acquisition',
+        '/api/acquisitions',
         json={
             'id': str(uuid.uuid4()),
             'jsonrpc': '2.0',
-            'method': 'AcquisitionOrder.receive_line',
+            'method': 'AcquisitionOrders.receive_line',
             'params': {'order_id': str(order.id), 'order_line_id': str(line.id), 'received_quantity': 5},
         },
     )
@@ -438,11 +438,11 @@ def test_acquisition_order_receive_line_default_quantity(client: FlaskClient) ->
     line = AcquisitionOrderLineFactory(order=order, quantity=8)
 
     rv = client.post(
-        '/api/acquisition',
+        '/api/acquisitions',
         json={
             'id': str(uuid.uuid4()),
             'jsonrpc': '2.0',
-            'method': 'AcquisitionOrder.receive_line',
+            'method': 'AcquisitionOrders.receive_line',
             'params': {'order_id': str(order.id), 'order_line_id': str(line.id)},
         },
     )
@@ -451,129 +451,6 @@ def test_acquisition_order_receive_line_default_quantity(client: FlaskClient) ->
     order_line = rv_data['result']['order_lines'][0]
     assert order_line['received_quantity'] == 8
     assert order_line['status'] == 'received'
-
-
-def test_complete_acquisition_workflow(client: FlaskClient) -> None:
-    staff = StaffFactory(name='Librarian', email='librarian@test.com')
-
-    # Register vendor
-    rv = client.post(
-        '/api/acquisition',
-        json={
-            'id': str(uuid.uuid4()),
-            'jsonrpc': '2.0',
-            'method': 'Vendor.register',
-            'params': {'vendor': {'name': 'Book Supplier', 'staff_id': str(staff.id), 'email': 'supplier@test.com'}},
-        },
-    )
-    assert rv.status_code == 200, rv.data
-    vendor_id = rv.get_json()['result']['id']
-
-    # Create order without lines
-    rv = client.post(
-        '/api/acquisition',
-        json={
-            'id': str(uuid.uuid4()),
-            'jsonrpc': '2.0',
-            'method': 'AcquisitionOrder.create',
-            'params': {'order': {'vendor_id': vendor_id, 'staff_id': str(staff.id), 'order_lines': []}},
-        },
-    )
-    assert rv.status_code == 200, rv.data
-    order_id = rv.get_json()['result']['id']
-
-    # Add line to order
-    item = ItemFactory(title='Book Title')
-    rv = client.post(
-        '/api/acquisition',
-        json={
-            'id': str(uuid.uuid4()),
-            'jsonrpc': '2.0',
-            'method': 'AcquisitionOrder.add_line',
-            'params': {
-                'order_line': {'order_id': order_id, 'item_id': str(item.id), 'quantity': 20, 'unit_price': 12.99}
-            },
-        },
-    )
-    assert rv.status_code == 200, rv.data
-    line_id = rv.get_json()['result']['order_lines'][0]['id']
-
-    # Submit order
-    rv = client.post(
-        '/api/acquisition',
-        json={
-            'id': str(uuid.uuid4()),
-            'jsonrpc': '2.0',
-            'method': 'AcquisitionOrder.submit',
-            'params': {'order_id': order_id},
-        },
-    )
-    assert rv.status_code == 200, rv.data
-    assert rv.get_json()['result']['status'] == 'submitted'
-
-    # Receive line
-    rv = client.post(
-        '/api/acquisition',
-        json={
-            'id': str(uuid.uuid4()),
-            'jsonrpc': '2.0',
-            'method': 'AcquisitionOrder.receive_line',
-            'params': {'order_id': order_id, 'order_line_id': line_id, 'received_quantity': 20},
-        },
-    )
-    assert rv.status_code == 200, rv.data
-    result = rv.get_json()['result']
-    assert result['status'] == 'received'
-    assert result['order_lines'][0]['status'] == 'received'
-
-
-def test_vendor_update_workflow(client: FlaskClient) -> None:
-    staff = StaffFactory(name='Staff', email='staff@test.com')
-
-    # Register vendor
-    rv = client.post(
-        '/api/acquisition',
-        json={
-            'id': str(uuid.uuid4()),
-            'jsonrpc': '2.0',
-            'method': 'Vendor.register',
-            'params': {'vendor': {'name': 'Initial Name', 'staff_id': str(staff.id)}},
-        },
-    )
-    assert rv.status_code == 200, rv.data
-    vendor_id = rv.get_json()['result']['id']
-
-    # Update vendor
-    rv = client.post(
-        '/api/acquisition',
-        json={
-            'id': str(uuid.uuid4()),
-            'jsonrpc': '2.0',
-            'method': 'Vendor.update',
-            'params': {
-                'vendor': {
-                    'id': vendor_id,
-                    'name': 'Updated Name',
-                    'email': 'updated@vendor.com',
-                    'phone': '555-7777',
-                    'address': '789 Vendor Rd',
-                }
-            },
-        },
-    )
-    assert rv.status_code == 200, rv.data
-
-    # Get vendor to verify updates
-    rv = client.post(
-        '/api/acquisition',
-        json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Vendor.get', 'params': {'vendor_id': vendor_id}},
-    )
-    assert rv.status_code == 200, rv.data
-    result = rv.get_json()['result']
-    assert result['name'] == 'Updated Name'
-    assert result['email'] == 'updated@vendor.com'
-    assert result['phone'] == '555-7777'
-    assert result['address'] == '789 Vendor Rd'
 
 
 def test_order_with_multiple_lines(client: FlaskClient) -> None:
@@ -585,11 +462,11 @@ def test_order_with_multiple_lines(client: FlaskClient) -> None:
 
     # Create order with multiple lines
     rv = client.post(
-        '/api/acquisition',
+        '/api/acquisitions',
         json={
             'id': str(uuid.uuid4()),
             'jsonrpc': '2.0',
-            'method': 'AcquisitionOrder.create',
+            'method': 'AcquisitionOrders.create',
             'params': {
                 'order': {
                     'vendor_id': str(vendor.id),

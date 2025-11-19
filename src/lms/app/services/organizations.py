@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from lms.infrastructure.event_bus import event_bus
-from lms.domain.organization.entities import Staff, Branch
-from lms.domain.organization.services import StaffUniquenessService, BranchAssignmentService, BranchUniquenessService
-from lms.domain.organization.exceptions import StaffDoesNotExistError, BranchDoesNotExistError
-from lms.domain.organization.repositories import StaffRepository, BranchRepository
+from lms.domain.organizations.entities import Staff, Branch
+from lms.domain.organizations.services import StaffUniquenessService, BranchAssignmentService, BranchUniquenessService
+from lms.domain.organizations.exceptions import StaffDoesNotExistError, BranchDoesNotExistError
+from lms.domain.organizations.repositories import StaffRepository, BranchRepository
 
 
 class BranchService:

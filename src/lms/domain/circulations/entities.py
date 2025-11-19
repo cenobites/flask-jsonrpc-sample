@@ -25,7 +25,7 @@ from .. import DomainEntity
 if t.TYPE_CHECKING:
     from lms.domain.patrons.entities import Patron
     from lms.domain.catalogs.entities import Copy, Item
-    from lms.domain.organization.entities import Staff, Branch
+    from lms.domain.organizations.entities import Staff, Branch
 
 
 @dataclass
@@ -134,7 +134,7 @@ class Loan(DomainEntity):
         patron_barring_service: PatronBarringService,
         loan_policy_service: LoanPolicyService,
     ) -> None:
-        patron.available_to_borrow(patron_barring_service)
+        patron.available_to_renew(copy_id=t.cast(str, copy.id), patron_barring_service=patron_barring_service)
         if self.return_date is not None:
             raise ValueError('Cannot renew a returned loan')
         if self.due_date < datetime.date.today():
@@ -147,6 +147,7 @@ class Hold(DomainEntity):
     item_id: str
     patron_id: str
     copy_id: str | None = None
+    loan_id: str | None = None
     request_date: datetime.date = field(default_factory=datetime.date.today)
     expiry_date: datetime.date | None = None
     status: str = HoldStatus.PENDING.value
@@ -168,9 +169,9 @@ class Hold(DomainEntity):
         expiry_date = hold_policy_service.calculate_hold_expiry_date(request_date=request_date)
         hold = cls(
             id=None,
-            copy_id=copy.id if copy else None,
             patron_id=t.cast(str, patron.id),
             item_id=t.cast(str, item.id),
+            copy_id=copy.id if copy else None,
             expiry_date=expiry_date,
             status=HoldStatus.PENDING.value,
         )
