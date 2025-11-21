@@ -49,7 +49,11 @@ RUN echo "Version: ${VERSION}"
 COPY --chown=${USERNAME}:${GROUPNAME} run.py src/ ${APP_DIR}/
 
 RUN set -eux \
-    && apk del .build-deps
+    && apk del .build-deps \
+    && rm -rf /var/cache/apk/* \
+    && mkdir -p ${APP_DIR}/static/browse \
+    && cp -rf .venv/lib/python*/site-packages/flask_jsonrpc/contrib/browse/static/* ${APP_DIR}/static/browse/ \
+    && chown -R ${USERNAME}:${GROUPNAME} ${APP_DIR}
 
 ENV PATH="${PYTHON_VENV_DIR}/bin:${PATH}"
 EXPOSE 5000
