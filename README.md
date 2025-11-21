@@ -2,32 +2,27 @@
 
 Sample project for a library management system (LMS) using Flask-JSONRPC.
 
-
-Excellent — converting your RESTful API into **JSON-RPC 2.0** means each endpoint becomes a *method name* and accepts its parameters inside a `params` object. The URL stays fixed (e.g. `/api/jsonrpc`), and all actions are determined by the `method` field.
-
-Below is a complete **JSON-RPC method schema** derived from your LMS REST API.
-
 ---
 
 ## Models
 
-Branch - Library branch with staff and manager
-Patron - Library members with status tracking
-Staff - Employees with roles and branch assignment
-Publisher - Publishers for items and serials
-Category - Categories for classification
-Author - Authors linked via many-to-many to items
-Item - Bibliographic records (books, DVDs, etc.)
-Copy - Physical copies of items
-Loan - Circulation transactions
-Hold - Reservations
-Vendor - Vendors for acquisitions
-AcquisitionOrder - Purchase orders
-AcquisitionOrderLine - Order line items
-Serial - Serial publications/subscriptions
-SerialIssue - Individual serial issues
-Fine - Patron fines
-Report - Statistics and reportsl
+* Branch - Library branch with staff and manager
+* Patron - Library members with status tracking
+* Staff - Employees with roles and branch assignment
+* Publisher - Publishers for items and serials
+* Category - Categories for classification
+* Author - Authors linked via many-to-many to items
+* Item - Bibliographic records (books, DVDs, etc.)
+* Copy - Physical copies of items
+* Loan - Circulation transactions
+* Hold - Reservations
+* Vendor - Vendors for acquisitions
+* AcquisitionOrder - Purchase orders
+* AcquisitionOrderLine - Order line items
+* Serial - Serial publications/subscriptions
+* SerialIssue - Individual serial issues
+* Fine - Patron fines
+* Report - Statistics and reportsl
 
 ## Relations
 
@@ -333,6 +328,8 @@ Report - Statistics and reportsl
 ---
 
 ## 🧩 JSON-RPC Base
+
+Below is a complete **JSON-RPC method schema** derived from your LMS REST API.
 
 ```
 POST /api/v1/jsonrpc
