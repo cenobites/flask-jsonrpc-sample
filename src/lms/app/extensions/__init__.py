@@ -6,6 +6,7 @@ from datetime import datetime
 from operator import attrgetter
 
 from sqlalchemy import Dialect
+from flask_alembic import Alembic
 from flask_jsonrpc import JSONRPC
 from sqlalchemy.orm import DeclarativeBase
 from flask_sqlalchemy import SQLAlchemy
@@ -74,6 +75,8 @@ db.Model.registry.update_type_annotation_map(  # type: ignore
     {datetime: DateTime(timezone=True), uuid.UUID: GUID}
 )
 
+alembic = Alembic()
+
 jsonrpc = JSONRPC(path='/api', enable_web_browsable_api=True)
 
-__all__ = ['db', 'jsonrpc']
+__all__ = ['db', 'alembic', 'jsonrpc', 'Base', 'GUID']

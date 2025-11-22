@@ -7,9 +7,9 @@ from flask.testing import FlaskClient
 
 import pytest
 
+from lms.app import create_app
 from lms.config import Config as BaseConfig
-from lms.app.main import create_app
-from lms.app.extentions import db
+from lms.app.extensions import db
 
 
 class Config(BaseConfig):

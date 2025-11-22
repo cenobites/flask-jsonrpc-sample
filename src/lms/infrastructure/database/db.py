@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from flask import Flask
 
-from lms.app.extentions import db
+from lms.app.extensions import db
 
 db_session = db.session
 

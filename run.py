@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from lms.app.main import create_app
+from lms.app import create_app
 from lms.infrastructure.database.db import init_db
 
 app = create_app()
