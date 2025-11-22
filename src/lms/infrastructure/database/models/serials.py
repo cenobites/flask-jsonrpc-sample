@@ -8,7 +8,7 @@ import datetime
 from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 
-from ..db import Base
+from ..db import BaseModel
 
 if t.TYPE_CHECKING:
     from .catalogs import CopyModel, ItemModel
@@ -32,7 +32,7 @@ class SerialIssueStatus(enum.Enum):
     LOST = 'lost'
 
 
-class SerialModel(Base):
+class SerialModel(BaseModel):
     __tablename__ = 'serial'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
@@ -47,7 +47,7 @@ class SerialModel(Base):
     issues: Mapped[list[SerialIssueModel]] = relationship('SerialIssueModel', back_populates='serial')
 
 
-class SerialIssueModel(Base):
+class SerialIssueModel(BaseModel):
     __tablename__ = 'serial_issue'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)

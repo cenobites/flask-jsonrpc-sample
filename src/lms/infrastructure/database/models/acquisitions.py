@@ -9,7 +9,7 @@ import datetime
 from sqlalchemy import DECIMAL, String, ForeignKey
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 
-from ..db import Base
+from ..db import BaseModel
 
 if t.TYPE_CHECKING:
     from .catalogs import ItemModel
@@ -34,7 +34,7 @@ class OrderLineStatus(enum.Enum):
     PARTIALLY_RECEIVED = 'partially_received'
 
 
-class VendorModel(Base):
+class VendorModel(BaseModel):
     __tablename__ = 'vendor'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
@@ -49,7 +49,7 @@ class VendorModel(Base):
     )
 
 
-class AcquisitionOrderModel(Base):
+class AcquisitionOrderModel(BaseModel):
     __tablename__ = 'acquisition_order'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
@@ -66,7 +66,7 @@ class AcquisitionOrderModel(Base):
     )
 
 
-class AcquisitionOrderLineModel(Base):
+class AcquisitionOrderLineModel(BaseModel):
     __tablename__ = 'acquisition_order_line'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)

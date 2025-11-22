@@ -8,7 +8,7 @@ import datetime
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 
-from ..db import Base
+from ..db import BaseModel
 
 if t.TYPE_CHECKING:
     from .patrons import PatronModel
@@ -24,7 +24,7 @@ class HoldStatus(enum.Enum):
     EXPIRED = 'expired'
 
 
-class LoanModel(Base):
+class LoanModel(BaseModel):
     __tablename__ = 'loan'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
@@ -49,7 +49,7 @@ class LoanModel(Base):
     hold: Mapped[HoldModel] = relationship('HoldModel', back_populates='loan')
 
 
-class HoldModel(Base):
+class HoldModel(BaseModel):
     __tablename__ = 'hold'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)

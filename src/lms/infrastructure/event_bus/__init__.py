@@ -13,7 +13,7 @@ class BlinkerEventBus:
     def add_event(self, event: object) -> None:
         self._events.append((type(event).__name__, event))
 
-    def subscribe(self, event_type: type[object], handler: t.Callable) -> None:
+    def subscribe(self, event_type: type[object], handler: t.Callable[..., t.Any]) -> None:
         signal = self._namespace.signal(event_type.__name__)
         signal.connect(handler)
 
@@ -26,7 +26,7 @@ class BlinkerEventBus:
         self._events = []
         for name, event in events:
             signal = self._namespace.signal(name)
-            signal.send(event)  # type: ignore
+            signal.send(event)
 
 
 event_bus = BlinkerEventBus()

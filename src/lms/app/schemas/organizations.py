@@ -11,7 +11,6 @@ class BranchCreate(BaseSchema):
     address: str | None = Field(None, max_length=255, description='Branch address')
     phone: str | None = Field(None, max_length=20, description='Branch phone number')
     email: str | None = Field(None, max_length=100, description='Branch email address')
-    manager_id: str | None = Field(None, description='Manager ID')
 
 
 class BranchUpdate(BaseSchema):

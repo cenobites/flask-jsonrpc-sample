@@ -56,7 +56,8 @@ class SQLAlchemyItemRepository:
 
     def exists_by_title(self, title: str) -> bool:
         q = self.session.query(ItemModel).filter_by(title=title)
-        return self.session.query(q.exists()).scalar()
+        count = self.session.query(q.exists()).scalar()
+        return count is not None and count > 0
 
     def save(self, item: Item) -> Item:
         model = self.session.get(ItemModel, item.id) if item.id else None

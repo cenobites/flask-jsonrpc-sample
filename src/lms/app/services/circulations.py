@@ -88,7 +88,7 @@ class LoanService:
             patron_barring_service=self.patron_barring_service,
             loan_policy_service=self.loan_policy_service,
         )
-        created_loan = self.loan_repository.save(loan, t.cast(Copy, copy))
+        created_loan = self.loan_repository.save(loan, copy)
         event_bus.publish_events()
         return created_loan
 
@@ -239,7 +239,7 @@ class HoldService:
             patron_barring_service=self.patron_barring_service,
             loan_policy_service=self.loan_policy_service,
         )
-        created_loan = self.loan_repository.save(loan, t.cast(Copy, copy))
+        created_loan = self.loan_repository.save(loan, copy)
         hold.fulfill(copy=copy, loan=created_loan)
         self.hold_repository.save(hold)
         event_bus.publish_events()

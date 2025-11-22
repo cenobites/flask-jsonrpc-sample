@@ -24,7 +24,8 @@ class SQLAlchemyBranchRepository:
 
     def exists_by_name(self, name: str) -> bool:
         q = self.session.query(BranchModel).filter_by(name=name)
-        return self.session.query(q.exists()).scalar()
+        count = self.session.query(q.exists()).scalar()
+        return count is not None and count > 0
 
     def save(self, branch: Branch) -> Branch:
         model = self.session.get(BranchModel, branch.id) if branch.id else None
@@ -62,7 +63,8 @@ class SQLAlchemyStaffRepository:
 
     def exists_by_email(self, email: str) -> bool:
         q = self.session.query(StaffModel).filter_by(email=email)
-        return self.session.query(q.exists()).scalar()
+        count = self.session.query(q.exists()).scalar()
+        return count is not None and count > 0
 
     def save(self, staff: Staff) -> Staff:
         model = self.session.get(StaffModel, staff.id) if staff.id else None

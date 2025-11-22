@@ -23,7 +23,8 @@ class SQLAlchemyPatronRepository:
 
     def exists_by_email(self, email: str) -> bool:
         q = self.session.query(PatronModel).filter_by(email=email)
-        return self.session.query(q.exists()).scalar()
+        count = self.session.query(q.exists()).scalar()
+        return count is not None and count > 0
 
     def save(self, patron: Patron) -> Patron:
         model = self.session.get(PatronModel, patron.id)

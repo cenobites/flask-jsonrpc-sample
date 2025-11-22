@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import uuid
 
-from lms.domain.acquisitions.entities import Vendor, OrderLineStatus, AcquisitionOrder, AcquisitionOrderLine
+from lms.domain.acquisitions.entities import Vendor, AcquisitionOrder, AcquisitionOrderLine
 from lms.infrastructure.database.models.acquisitions import (
     OrderStatus,
     VendorModel,
+    OrderLineStatus,
     AcquisitionOrderModel,
     AcquisitionOrderLineModel,
 )

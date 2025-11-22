@@ -82,7 +82,7 @@ def list_items() -> t.Annotated[Page[Item], tp.Summary('Catalog items search res
                         'barcode': 'BK-0001',
                         'title': 'The Pragmatic Programmer',
                         'author': 'Andrew Hunt',
-                        'material_type': 'book',
+                        'format': 'book',
                     },
                     summary='Item data object',
                 )
@@ -101,7 +101,7 @@ def create_item(
         publication_year=item.publication_year,
         category_id=item.category_id,
         edition=item.edition,
-        format=item.format,
+        format=str(item.format),
         description=item.description,
     )
 

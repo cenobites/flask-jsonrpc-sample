@@ -36,7 +36,7 @@ def test_item_create_minimal(client: FlaskClient) -> None:
             'id': str(uuid.uuid4()),
             'jsonrpc': '2.0',
             'method': 'Items.create',
-            'params': {'item': {'barcode': 'ITM-001', 'title': 'Test Book', 'material_type': 'book'}},
+            'params': {'item': {'barcode': 'ITM-001', 'title': 'Test Book', 'format': 'book'}},
         },
     )
     assert rv.status_code == 200, rv.data
@@ -52,7 +52,7 @@ def test_item_create_with_all_fields(client: FlaskClient) -> None:
             'barcode': 'ITM-002',
             'title': 'Complete Book',
             'author': 'John Doe',
-            'material_type': 'book',
+            'format': 'book',
             'isbn': '978-1234567890',
             'publication_year': 2023,
             'description': 'A complete book with all fields',
@@ -99,7 +99,7 @@ def test_item_get_not_found(client: FlaskClient) -> None:
 def test_item_update_title(client: FlaskClient) -> None:
     item = ItemFactory(title='Old Title')
 
-    params = {'item': {'id': str(item.id), 'barcode': 'ITM-UPD', 'title': 'New Title', 'material_type': 'book'}}
+    params = {'item': {'id': str(item.id), 'barcode': 'ITM-UPD', 'title': 'New Title', 'format': 'book'}}
     rv = client.post(
         '/api/catalogs', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Items.update', 'params': params}
     )
@@ -117,7 +117,7 @@ def test_item_update_all_fields(client: FlaskClient) -> None:
             'id': str(item.id),
             'barcode': 'ITM-ALL',
             'title': 'Updated Title',
-            'material_type': 'book',
+            'format': 'book',
             'isbn': '978-9876543210',
             'description': 'Updated description',
         },
@@ -135,10 +135,7 @@ def test_item_update_all_fields(client: FlaskClient) -> None:
 def test_item_update_not_found(client: FlaskClient) -> None:
     fake_id = str(uuid.uuid7())
 
-    params = {
-        'item_id': fake_id,
-        'item': {'id': fake_id, 'barcode': 'ITM-XXX', 'title': 'New Title', 'material_type': 'book'},
-    }
+    params = {'item_id': fake_id, 'item': {'id': fake_id, 'barcode': 'ITM-XXX', 'title': 'New Title', 'format': 'book'}}
     rv = client.post(
         '/api/catalogs', json={'id': str(uuid.uuid4()), 'jsonrpc': '2.0', 'method': 'Items.update', 'params': params}
     )

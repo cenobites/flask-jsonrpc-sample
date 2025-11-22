@@ -8,7 +8,7 @@ import datetime
 from sqlalchemy import UUID, Table, Column, String, ForeignKey
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 
-from ..db import Base
+from ..db import BaseModel
 
 if t.TYPE_CHECKING:
     from .serials import SerialModel, SerialIssueModel
@@ -35,13 +35,13 @@ class CopyStatus(enum.Enum):
 
 item_author_association = Table(
     'item_author_association',
-    Base.metadata,
+    BaseModel.metadata,
     Column('item_id', UUID, ForeignKey('item.id'), primary_key=True),
     Column('author_id', UUID, ForeignKey('author.id'), primary_key=True),
 )
 
 
-class PublisherModel(Base):
+class PublisherModel(BaseModel):
     __tablename__ = 'publisher'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
@@ -52,7 +52,7 @@ class PublisherModel(Base):
     items: Mapped[list[ItemModel]] = relationship('ItemModel', back_populates='publisher')
 
 
-class AuthorModel(Base):
+class AuthorModel(BaseModel):
     __tablename__ = 'author'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
@@ -65,7 +65,7 @@ class AuthorModel(Base):
     )
 
 
-class CategoryModel(Base):
+class CategoryModel(BaseModel):
     __tablename__ = 'category'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
@@ -75,7 +75,7 @@ class CategoryModel(Base):
     items: Mapped[list[ItemModel]] = relationship('ItemModel', back_populates='category')
 
 
-class ItemModel(Base):
+class ItemModel(BaseModel):
     __tablename__ = 'item'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
@@ -99,7 +99,7 @@ class ItemModel(Base):
     )
 
 
-class CopyModel(Base):
+class CopyModel(BaseModel):
     __tablename__ = 'copy'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)

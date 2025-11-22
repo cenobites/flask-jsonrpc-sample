@@ -4,8 +4,11 @@ from flask import Flask
 
 from lms.app.extentions import db
 
-Base = db.Model
 db_session = db.session
+
+
+class BaseModel(db.Model):  # type: ignore
+    __abstract__ = True
 
 
 def init_db(app: Flask) -> None:

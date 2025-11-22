@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import uuid
+import typing as t
 from datetime import datetime
 from operator import attrgetter
 
+from sqlalchemy import Dialect
 from flask_jsonrpc import JSONRPC
 from sqlalchemy.orm import DeclarativeBase
 from flask_sqlalchemy import SQLAlchemy
@@ -12,7 +14,7 @@ from sqlalchemy.dialects.mssql import UNIQUEIDENTIFIER
 from sqlalchemy.dialects.postgresql import UUID
 
 
-class GUID(TypeDecorator):
+class GUID(TypeDecorator):  # type: ignore
     """Platform-independent GUID type.
 
     Uses PostgreSQL's UUID type or MSSQL's UNIQUEIDENTIFIER,
@@ -26,7 +28,7 @@ class GUID(TypeDecorator):
     _default_type = CHAR(32)
     _uuid_as_str = attrgetter('hex')
 
-    def load_dialect_impl(self, dialect):  # noqa: ANN001, ANN202
+    def load_dialect_impl(self, dialect: Dialect) -> t.Any:  # noqa: ANN001, ANN202, ANN401
         if dialect.name == 'postgresql':
             return dialect.type_descriptor(UUID())
         elif dialect.name == 'mssql':
@@ -34,7 +36,7 @@ class GUID(TypeDecorator):
         else:
             return dialect.type_descriptor(self._default_type)
 
-    def process_bind_param(self, value, dialect):  # noqa: ANN001, ANN202
+    def process_bind_param(self, value: t.Any, dialect: Dialect) -> t.Any:  # noqa: ANN001, ANN202, ANN401
         if value is None or dialect.name in ('postgresql', 'mssql'):
             return value
         else:
@@ -42,7 +44,7 @@ class GUID(TypeDecorator):
                 value = uuid.UUID(value)
             return self._uuid_as_str(value)
 
-    def process_result_value(self, value, dialect):  # noqa: ANN001, ANN202
+    def process_result_value(self, value: t.Any, dialect: Dialect) -> t.Any:  # noqa: ANN001, ANN202, ANN401
         if value is None:
             return value
         else:
@@ -60,7 +62,7 @@ class GUIDHyphens(GUID):
     """
 
     _default_type = CHAR(36)
-    _uuid_as_str = str
+    _uuid_as_str = str  # type: ignore[assignment]
 
 
 class Base(DeclarativeBase):

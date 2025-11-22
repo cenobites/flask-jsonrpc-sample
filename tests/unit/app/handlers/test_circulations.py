@@ -10,64 +10,62 @@ from lms.domain.circulations.events import LoanReturnedEvent
 
 
 def test_handle_loan_returned_processes_holds(app: Flask) -> None:
-    with app.app_context():
-        mock_hold_service = MagicMock()
-        app.container.hold_service = lambda: mock_hold_service  # type: ignore
+    mock_hold_service = MagicMock()
+    app.container.hold_service = lambda: mock_hold_service  # type: ignore
 
-        copy_id = str(uuid.uuid4())
-        event = LoanReturnedEvent(
-            loan_id=str(uuid.uuid4()),
-            copy_id=copy_id,
-            patron_id=str(uuid.uuid4()),
-            branch_id=str(uuid.uuid4()),
-            staff_in_id=str(uuid.uuid4()),
-            loan_date=None,  # type: ignore
-            due_date=None,  # type: ignore
-            return_date=None,  # type: ignore
-        )
+    copy_id = str(uuid.uuid4())
+    event = LoanReturnedEvent(
+        loan_id=str(uuid.uuid4()),
+        copy_id=copy_id,
+        patron_id=str(uuid.uuid4()),
+        branch_id=str(uuid.uuid4()),
+        staff_in_id=str(uuid.uuid4()),
+        loan_date=None,  # type: ignore
+        due_date=None,  # type: ignore
+        return_date=None,  # type: ignore
+    )
 
-        handle_loan_returned(event)
+    handle_loan_returned(event)
 
-        mock_hold_service.process_holds_for_returned_copy.assert_called_once_with(copy_id=copy_id)
+    mock_hold_service.process_holds_for_returned_copy.assert_called_once_with(copy_id=copy_id)
 
 
 def test_handle_loan_returned_with_different_copy_ids(app: Flask) -> None:
-    with app.app_context():
-        mock_hold_service = MagicMock()
-        app.container.hold_service = lambda: mock_hold_service  # type: ignore
+    mock_hold_service = MagicMock()
+    app.container.hold_service = lambda: mock_hold_service  # type: ignore
 
-        copy_id_1 = str(uuid.uuid4())
-        copy_id_2 = str(uuid.uuid4())
+    copy_id_1 = str(uuid.uuid4())
+    copy_id_2 = str(uuid.uuid4())
 
-        event_1 = LoanReturnedEvent(
-            loan_id=str(uuid.uuid4()),
-            copy_id=copy_id_1,
-            patron_id=str(uuid.uuid4()),
-            branch_id=str(uuid.uuid4()),
-            staff_in_id=str(uuid.uuid4()),
-            loan_date=None,  # type: ignore
-            due_date=None,  # type: ignore
-            return_date=None,  # type: ignore
-        )
+    event_1 = LoanReturnedEvent(
+        loan_id=str(uuid.uuid4()),
+        copy_id=copy_id_1,
+        patron_id=str(uuid.uuid4()),
+        branch_id=str(uuid.uuid4()),
+        staff_in_id=str(uuid.uuid4()),
+        loan_date=None,  # type: ignore
+        due_date=None,  # type: ignore
+        return_date=None,  # type: ignore
+    )
 
-        event_2 = LoanReturnedEvent(
-            loan_id=str(uuid.uuid4()),
-            copy_id=copy_id_2,
-            patron_id=str(uuid.uuid4()),
-            branch_id=str(uuid.uuid4()),
-            staff_in_id=str(uuid.uuid4()),
-            loan_date=None,  # type: ignore
-            due_date=None,  # type: ignore
-            return_date=None,  # type: ignore
-        )
+    event_2 = LoanReturnedEvent(
+        loan_id=str(uuid.uuid4()),
+        copy_id=copy_id_2,
+        patron_id=str(uuid.uuid4()),
+        branch_id=str(uuid.uuid4()),
+        staff_in_id=str(uuid.uuid4()),
+        loan_date=None,  # type: ignore
+        due_date=None,  # type: ignore
+        return_date=None,  # type: ignore
+    )
 
-        handle_loan_returned(event_1)
-        handle_loan_returned(event_2)
+    handle_loan_returned(event_1)
+    handle_loan_returned(event_2)
 
-        assert mock_hold_service.process_holds_for_returned_copy.call_count == 2
-        calls = mock_hold_service.process_holds_for_returned_copy.call_args_list
-        assert calls[0].kwargs['copy_id'] == copy_id_1
-        assert calls[1].kwargs['copy_id'] == copy_id_2
+    assert mock_hold_service.process_holds_for_returned_copy.call_count == 2
+    calls = mock_hold_service.process_holds_for_returned_copy.call_args_list
+    assert calls[0].kwargs['copy_id'] == copy_id_1
+    assert calls[1].kwargs['copy_id'] == copy_id_2
 
 
 @patch('lms.app.handlers.circulations.event_bus')
@@ -78,22 +76,21 @@ def test_register_handler_subscribes_to_event(mock_event_bus: MagicMock, app: Fl
 
 
 def test_handle_loan_returned_called_once_per_event(app: Flask) -> None:
-    with app.app_context():
-        mock_hold_service = MagicMock()
-        app.container.hold_service = lambda: mock_hold_service  # type: ignore
+    mock_hold_service = MagicMock()
+    app.container.hold_service = lambda: mock_hold_service  # type: ignore
 
-        event = LoanReturnedEvent(
-            loan_id=str(uuid.uuid4()),
-            copy_id=str(uuid.uuid4()),
-            patron_id=str(uuid.uuid4()),
-            branch_id=str(uuid.uuid4()),
-            staff_in_id=str(uuid.uuid4()),
-            loan_date=None,  # type: ignore
-            due_date=None,  # type: ignore
-            return_date=None,  # type: ignore
-        )
+    event = LoanReturnedEvent(
+        loan_id=str(uuid.uuid4()),
+        copy_id=str(uuid.uuid4()),
+        patron_id=str(uuid.uuid4()),
+        branch_id=str(uuid.uuid4()),
+        staff_in_id=str(uuid.uuid4()),
+        loan_date=None,  # type: ignore
+        due_date=None,  # type: ignore
+        return_date=None,  # type: ignore
+    )
 
-        handle_loan_returned(event)
+    handle_loan_returned(event)
 
-        # Verify service method called exactly once
-        assert mock_hold_service.process_holds_for_returned_copy.call_count == 1
+    # Verify service method called exactly once
+    assert mock_hold_service.process_holds_for_returned_copy.call_count == 1

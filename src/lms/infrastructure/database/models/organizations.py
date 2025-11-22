@@ -8,7 +8,7 @@ import datetime
 from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 
-from ..db import Base
+from ..db import BaseModel
 
 if t.TYPE_CHECKING:
     from .patrons import PatronModel
@@ -34,7 +34,7 @@ class StaffStatus(enum.Enum):
     INACTIVE = 'inactive'
 
 
-class BranchModel(Base):
+class BranchModel(BaseModel):
     __tablename__ = 'branch'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
@@ -54,7 +54,7 @@ class BranchModel(Base):
     loans: Mapped[list[LoanModel]] = relationship('LoanModel', back_populates='branch')
 
 
-class StaffModel(Base):
+class StaffModel(BaseModel):
     __tablename__ = 'staff'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)

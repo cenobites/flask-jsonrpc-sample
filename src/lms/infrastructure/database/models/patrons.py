@@ -9,7 +9,7 @@ import datetime
 from sqlalchemy import DECIMAL, String, ForeignKey
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 
-from ..db import Base
+from ..db import BaseModel
 
 if t.TYPE_CHECKING:
     from .circulations import HoldModel, LoanModel
@@ -30,7 +30,7 @@ class FineStatus(enum.Enum):
     WAIVED = 'waived'
 
 
-class PatronModel(Base):
+class PatronModel(BaseModel):
     __tablename__ = 'patron'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
@@ -46,7 +46,7 @@ class PatronModel(Base):
     fines: Mapped[list[FineModel]] = relationship('FineModel', back_populates='patron')
 
 
-class FineModel(Base):
+class FineModel(BaseModel):
     __tablename__ = 'fine'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)

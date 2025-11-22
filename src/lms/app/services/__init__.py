@@ -4,7 +4,7 @@ from flask import Flask
 
 
 class Container:
-    def __init__(self, deps: dict) -> None:
+    def __init__(self, deps: dict[str, object]) -> None:
         self.singleton_deps = deps
 
     def __getattr__(self, name: str) -> object:
