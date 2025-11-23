@@ -31,7 +31,7 @@ class FineStatus(enum.Enum):
 
 
 class PatronModel(BaseModel):
-    __tablename__ = 'patron'
+    __tablename__ = 'patrons'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
@@ -47,7 +47,7 @@ class PatronModel(BaseModel):
 
 
 class FineModel(BaseModel):
-    __tablename__ = 'fine'
+    __tablename__ = 'fines'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
     patron_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('patron.id'))

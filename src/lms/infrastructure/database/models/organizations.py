@@ -35,7 +35,7 @@ class StaffStatus(enum.Enum):
 
 
 class BranchModel(BaseModel):
-    __tablename__ = 'branch'
+    __tablename__ = 'branches'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
     name: Mapped[str] = mapped_column(String(100), nullable=False)

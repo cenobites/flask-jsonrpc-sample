@@ -42,7 +42,7 @@ item_author_association = Table(
 
 
 class PublisherModel(BaseModel):
-    __tablename__ = 'publisher'
+    __tablename__ = 'publishers'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
@@ -53,7 +53,7 @@ class PublisherModel(BaseModel):
 
 
 class AuthorModel(BaseModel):
-    __tablename__ = 'author'
+    __tablename__ = 'authors'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
@@ -66,7 +66,7 @@ class AuthorModel(BaseModel):
 
 
 class CategoryModel(BaseModel):
-    __tablename__ = 'category'
+    __tablename__ = 'categories'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
     name: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
@@ -76,7 +76,7 @@ class CategoryModel(BaseModel):
 
 
 class ItemModel(BaseModel):
-    __tablename__ = 'item'
+    __tablename__ = 'items'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -100,7 +100,7 @@ class ItemModel(BaseModel):
 
 
 class CopyModel(BaseModel):
-    __tablename__ = 'copy'
+    __tablename__ = 'copies'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
     item_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('item.id'))

@@ -33,7 +33,7 @@ class SerialIssueStatus(enum.Enum):
 
 
 class SerialModel(BaseModel):
-    __tablename__ = 'serial'
+    __tablename__ = 'serials'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -48,7 +48,7 @@ class SerialModel(BaseModel):
 
 
 class SerialIssueModel(BaseModel):
-    __tablename__ = 'serial_issue'
+    __tablename__ = 'serial_issues'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
     serial_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('serial.id'))

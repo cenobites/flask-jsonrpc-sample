@@ -22,4 +22,8 @@ def create_app(config_class: type[Config] = Config) -> Flask:
     routes.register(app)
     rpc.register(app, jsonrpc)
 
+    @app.teardown_appcontext
+    def shutdown_session(exception: BaseException | None = None) -> None:
+        db.session.remove()
+
     return app

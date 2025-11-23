@@ -12,7 +12,14 @@ class BaseModel(db.Model):  # type: ignore
 
 
 def init_db(app: Flask) -> None:
-    import lms.infrastructure.database.models  # noqa: F401
+    from lms.infrastructure.database.models import (  # noqa: F401
+        patrons,
+        serials,
+        catalogs,
+        acquisitions,
+        circulations,
+        organizations,
+    )
 
     with app.app_context():
         db.create_all()

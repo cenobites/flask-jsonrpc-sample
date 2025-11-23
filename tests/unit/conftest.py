@@ -23,9 +23,16 @@ class Config(BaseConfig):
 def app() -> t.Generator[Flask]:
     app = create_app(Config)
 
-    import lms.infrastructure.database.models  # noqa: F401
-
     with app.app_context():
+        from lms.infrastructure.database.models import (  # noqa: F401
+            patrons,
+            serials,
+            catalogs,
+            acquisitions,
+            circulations,
+            organizations,
+        )
+
         db.create_all()
 
         yield app

@@ -25,7 +25,7 @@ class HoldStatus(enum.Enum):
 
 
 class LoanModel(BaseModel):
-    __tablename__ = 'loan'
+    __tablename__ = 'loans'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
     copy_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('copy.id'))
@@ -50,7 +50,7 @@ class LoanModel(BaseModel):
 
 
 class HoldModel(BaseModel):
-    __tablename__ = 'hold'
+    __tablename__ = 'holds'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
     patron_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('patron.id'))

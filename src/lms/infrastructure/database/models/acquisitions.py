@@ -35,7 +35,7 @@ class OrderLineStatus(enum.Enum):
 
 
 class VendorModel(BaseModel):
-    __tablename__ = 'vendor'
+    __tablename__ = 'vendors'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
@@ -50,7 +50,7 @@ class VendorModel(BaseModel):
 
 
 class AcquisitionOrderModel(BaseModel):
-    __tablename__ = 'acquisition_order'
+    __tablename__ = 'acquisition_orders'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
     vendor_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('vendor.id'))
@@ -67,7 +67,7 @@ class AcquisitionOrderModel(BaseModel):
 
 
 class AcquisitionOrderLineModel(BaseModel):
-    __tablename__ = 'acquisition_order_line'
+    __tablename__ = 'acquisition_order_lines'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
     order_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('acquisition_order.id'))
