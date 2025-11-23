@@ -36,7 +36,7 @@ class PatronModel(BaseModel):
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     email: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
-    branch_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('branch.id'))
+    branch_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('branches.id'))
     member_since: Mapped[datetime.date] = mapped_column(default=datetime.date.today)
     status: Mapped[PatronStatus] = mapped_column(default=PatronStatus.REGISTERED)
 
@@ -50,7 +50,7 @@ class FineModel(BaseModel):
     __tablename__ = 'fines'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
-    patron_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('patron.id'))
+    patron_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('patrons.id'))
     amount: Mapped[Decimal] = mapped_column(DECIMAL(10, 2))
     reason: Mapped[str | None]
     issued_date: Mapped[datetime.date] = mapped_column(default=datetime.date.today)

@@ -53,7 +53,7 @@ class AcquisitionOrderModel(BaseModel):
     __tablename__ = 'acquisition_orders'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
-    vendor_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('vendor.id'))
+    vendor_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('vendors.id'))
     staff_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('staff.id'))
     order_date: Mapped[datetime.date] = mapped_column(default=datetime.date.today)
     received_date: Mapped[datetime.date | None]
@@ -70,8 +70,8 @@ class AcquisitionOrderLineModel(BaseModel):
     __tablename__ = 'acquisition_order_lines'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
-    order_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('acquisition_order.id'))
-    item_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('item.id'))
+    order_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('acquisition_orders.id'))
+    item_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('items.id'))
     quantity: Mapped[int] = mapped_column(default=1)
     unit_price: Mapped[Decimal] = mapped_column(DECIMAL(10, 2))
     received_quantity: Mapped[int | None]

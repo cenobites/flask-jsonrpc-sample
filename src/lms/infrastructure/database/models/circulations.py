@@ -28,9 +28,9 @@ class LoanModel(BaseModel):
     __tablename__ = 'loans'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
-    copy_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('copy.id'))
-    patron_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('patron.id'))
-    branch_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('branch.id'))
+    copy_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('copies.id'))
+    patron_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('patrons.id'))
+    branch_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('branches.id'))
     staff_out_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('staff.id'))
     staff_in_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey('staff.id'))
     loan_date: Mapped[datetime.date] = mapped_column(default=datetime.date.today)
@@ -53,10 +53,10 @@ class HoldModel(BaseModel):
     __tablename__ = 'holds'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
-    patron_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('patron.id'))
-    item_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('item.id'))
-    loan_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey('loan.id'))
-    copy_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey('copy.id'))
+    patron_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('patrons.id'))
+    item_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('items.id'))
+    loan_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey('loans.id'))
+    copy_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey('copies.id'))
     request_date: Mapped[datetime.date] = mapped_column(default=datetime.date.today)
     expiry_date: Mapped[datetime.date | None]
     status: Mapped[HoldStatus] = mapped_column(default=HoldStatus.PENDING)

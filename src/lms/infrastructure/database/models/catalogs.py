@@ -36,8 +36,8 @@ class CopyStatus(enum.Enum):
 item_author_association = Table(
     'item_author_association',
     BaseModel.metadata,
-    Column('item_id', UUID, ForeignKey('item.id'), primary_key=True),
-    Column('author_id', UUID, ForeignKey('author.id'), primary_key=True),
+    Column('item_id', UUID, ForeignKey('items.id'), primary_key=True),
+    Column('author_id', UUID, ForeignKey('authors.id'), primary_key=True),
 )
 
 
@@ -81,9 +81,9 @@ class ItemModel(BaseModel):
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     isbn: Mapped[str | None] = mapped_column(String(20), unique=True)
-    publisher_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey('publisher.id'))
+    publisher_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey('publishers.id'))
     publication_year: Mapped[int | None]
-    category_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey('category.id'))
+    category_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey('categories.id'))
     edition: Mapped[str | None] = mapped_column(String(50))
     format: Mapped[ItemFormat] = mapped_column(default=ItemFormat.BOOK)
     description: Mapped[str | None]
@@ -103,8 +103,8 @@ class CopyModel(BaseModel):
     __tablename__ = 'copies'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
-    item_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('item.id'))
-    branch_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('branch.id'))
+    item_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('items.id'))
+    branch_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('branches.id'))
     barcode: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     status: Mapped[CopyStatus] = mapped_column(default=CopyStatus.AVAILABLE)
     location: Mapped[str | None] = mapped_column(String(100))

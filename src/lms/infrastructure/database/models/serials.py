@@ -38,7 +38,7 @@ class SerialModel(BaseModel):
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     issn: Mapped[str] = mapped_column(String(20), unique=True)
-    item_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('item.id'))
+    item_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('items.id'))
     frequency: Mapped[SerialFrequency | None]
     description: Mapped[str | None]
     status: Mapped[SerialStatus] = mapped_column(default=SerialStatus.ACTIVE)
@@ -51,11 +51,11 @@ class SerialIssueModel(BaseModel):
     __tablename__ = 'serial_issues'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
-    serial_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('serial.id'))
+    serial_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('serials.id'))
     issue_number: Mapped[str | None] = mapped_column(String(50))
     date_received: Mapped[datetime.date] = mapped_column(default=datetime.date.today)
     status: Mapped[SerialIssueStatus] = mapped_column(default=SerialIssueStatus.RECEIVED)
-    copy_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey('copy.id'))
+    copy_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey('copies.id'))
 
     serial: Mapped[SerialModel] = relationship('SerialModel', back_populates='issues')
     copy: Mapped[CopyModel | None] = relationship('CopyModel', back_populates='serial_issues')

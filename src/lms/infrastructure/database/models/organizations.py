@@ -61,7 +61,7 @@ class StaffModel(BaseModel):
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     email: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
     role: Mapped[StaffRole] = mapped_column(default=StaffRole.LIBRARIAN)
-    branch_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey('branch.id'))
+    branch_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey('branches.id'))
     hire_date: Mapped[datetime.date] = mapped_column(default=datetime.date.today)
     status: Mapped[StaffStatus] = mapped_column(default=StaffStatus.ACTIVE)
 
