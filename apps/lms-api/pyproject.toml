@@ -21,12 +21,13 @@ classifiers = [
 ]
 requires-python = ">=3.14"
 dependencies = [
-    "dotenv>=0.9.9",
-    "email-validator>=2.3.0",
-    "flask-alembic>=3.1.1",
-    "flask-jsonrpc",
-    "flask-sqlalchemy>=3.1.1",
-    "pydantic>=2.12.3",
+    "email-validator>=2.3.0", # https://github.com/JoshData/python-email-validator
+    "flask-alembic>=3.1.1", # https://github.com/pallets-eco/flask-alembic/
+    "flask-cors>=6.0.1", # https://github.com/corydolphin/flask-cors
+    "flask-jsonrpc", # https://github.com/cenobites/flask-jsonrpc
+    "flask-sqlalchemy>=3.1.1", # https://github.com/pallets-eco/flask-sqlalchemy/
+    "pydantic>=2.12.3", # https://github.com/pydantic/pydantic
+    "python-dotenv>=1.2.1", # https://github.com/theskumar/python-dotenv
 ]
 
 [project.urls]
@@ -57,7 +58,7 @@ tests = [
     "pytest-random-order==1.2.0", # https://github.com/pytest-dev/pytest-random-order
     "coverage[toml]==7.12.0", # https://github.com/nedbat/coveragepy
     "requests==2.32.5", # https://github.com/psf/requests
-    "factory-boy>=3.3.3",
+    "factory-boy>=3.3.3", # https://github.com/FactoryBoy/factory_boy
 ]
 parallel-tests = [
     {include-group = "tests"},

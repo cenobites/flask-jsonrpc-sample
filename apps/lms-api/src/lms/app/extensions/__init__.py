@@ -5,6 +5,7 @@ import typing as t
 from datetime import datetime
 from operator import attrgetter
 
+from flask_cors import CORS
 from sqlalchemy import Dialect
 from flask_alembic import Alembic
 from flask_jsonrpc import JSONRPC
@@ -74,9 +75,8 @@ db = SQLAlchemy(model_class=Base)
 db.Model.registry.update_type_annotation_map(  # type: ignore
     {datetime: DateTime(timezone=True), uuid.UUID: GUID}
 )
-
 alembic = Alembic()
-
+cors = CORS()
 jsonrpc = JSONRPC(path='/api', enable_web_browsable_api=True)
 
-__all__ = ['db', 'alembic', 'jsonrpc', 'Base', 'GUID']
+__all__ = ['db', 'alembic', 'cors', 'jsonrpc', 'Base', 'GUID']

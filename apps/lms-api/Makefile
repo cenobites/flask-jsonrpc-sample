@@ -1,0 +1,35 @@
+.PHONY: all clean style typing test release env
+
+VIRTUALENV_EXISTS := $(shell [ -d .venv ] && echo 1 || echo 0)
+
+all: clean test
+	@python -c "print('OK')"
+
+clean:
+	find {src,tests} -regex ".*\.\(so\|pyc\)" | xargs rm -rf
+	find {src,tests} -name "__pycache__" -o -name ".coverage" -o -name "junit" -o -name "coverage.lcov" -o -name "htmlcov" -o -name ".tox"  -o -name ".pytest_cache" -o -name ".ruff_cache"  -o -name ".pkg" -o -name ".tmp" -o -name "*.so" | xargs rm -rf
+# 	rm -rf .coverage coverage.* .eggs/ .mypy_cache/ .pytype/ .ruff_cache/ .pytest_cache/ .tox/ src/*.egg-info/ htmlcov/ junit/ htmldoc/ build/ dist/ wheelhouse/ __pycache__/
+
+style:
+	uv run ruff check .
+	uv run ruff format .
+
+typing:
+	uv run mypy --install-types --non-interactive src/
+	uv run pyright
+
+dev:
+	uv run flask --app lms run --reload
+
+test: clean
+	uv run pytest --numprocesses=0 --count=1 --reruns=0
+
+release: test
+	uv build
+	uv tool run twine check --strict dist/*
+env:
+ifeq ($(VIRTUALENV_EXISTS), 0)
+	uv venv --clear
+endif
+	uv sync --locked
+	@echo "To activate the virtualenv, run: source .venv/bin/activate"

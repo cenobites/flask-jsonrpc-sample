@@ -1,16 +1,17 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { staffApi } from '@/lib/api/organizations';
 import { branchesApi } from '@/lib/api/organizations';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Mail, Building2 } from 'lucide-react';
+import { Plus, Mail, Building2, Pencil, Trash2 } from 'lucide-react';
 import type { Staff, Branch } from '@/lib/schemas';
 
 export default function StaffPage() {
+  const queryClient = useQueryClient();
   const { data: staff, isLoading } = useQuery({
     queryKey: ['staff'],
     queryFn: staffApi.list,
@@ -23,6 +24,19 @@ export default function StaffPage() {
 
   const getBranchName = (branchId: string) => {
     return branches?.results.find((b: Branch) => b.id === branchId)?.name || branchId;
+  };
+
+  const deleteMutation = useMutation({
+    mutationFn: staffApi.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['staff'] });
+    },
+  });
+
+  const handleDelete = async (staffId: string) => {
+    if (window.confirm('Are you sure you want to delete this staff member?')) {
+      await deleteMutation.mutateAsync(staffId);
+    }
   };
 
   if (isLoading) {
@@ -60,6 +74,7 @@ export default function StaffPage() {
                 <TableHead>Email</TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead>Branch</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -81,6 +96,23 @@ export default function StaffPage() {
                     <div className="flex items-center text-gray-600">
                       <Building2 className="mr-2 h-4 w-4" />
                       {getBranchName(member.branch_id)}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <Link href={`/staff/${member.id}/edit`}>
+                        <Button variant="ghost" size="sm">
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                      </Link>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(member.id)}
+                        disabled={deleteMutation.isPending}
+                      >
+                        <Trash2 className="h-4 w-4 text-red-600" />
+                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>
