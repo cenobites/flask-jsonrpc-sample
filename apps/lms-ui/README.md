@@ -1,4 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Library Management System - UI
+
+A modern, responsive web interface for the Library Management System built with Next.js, React, TypeScript, and Tailwind CSS.
+
+## Features
+
+- **Dashboard**: Overview of library statistics and quick actions
+- **Catalog Management**: Add, edit, and manage library items (books, DVDs, magazines, etc.)
+- **Patron Management**: Register and manage library members
+- **Circulation**: Handle checkouts, returns, and holds
+- **Branch Management**: Manage multiple library branches
+- **Staff Management**: Manage library staff members
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS 4
+- **State Management**: TanStack Query (React Query)
+- **API Client**: Axios with JSON-RPC support
+- **Validation**: Zod
+- **Icons**: Lucide React
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 20+ 
+- npm or yarn
+- Running LMS API server (see `apps/lms-api`)
+
+### Installation
+
+1. Install dependencies:
+
+```bash
+cd apps/lms-ui
+npm install
+```
+
+2. Configure environment variables:
+
+Create a `.env.local` file:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5000/api
+```
+
+3. Start the development server:
+
+```bash
+npm run dev
+```
+
+The application will be available at `http://localhost:3000`.
+
+## API Integration
+
+The UI communicates with the LMS API using JSON-RPC 2.0 protocol. The API client is located in `lib/api-client.ts` and provides a type-safe interface for all API endpoints.
+
+## Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm start` - Start production server
+- `npm run lint` - Run ESLint
+
 
 ## Getting Started
 

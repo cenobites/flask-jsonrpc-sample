@@ -77,7 +77,7 @@ def list_items() -> t.Annotated[Page[Item], tp.Summary('Catalog items search res
             summary='Create new catalog item',
             params=[
                 tm.ExampleField(
-                    name='item_data',
+                    name='item',
                     value={
                         'barcode': 'BK-0001',
                         'title': 'The Pragmatic Programmer',
@@ -138,7 +138,7 @@ def get_item(
             params=[
                 tm.ExampleField(name='item_id', value=1, summary='Item ID to update'),
                 tm.ExampleField(
-                    name='item_data',
+                    name='item',
                     value={'title': 'Pragmatic Programmer 2nd Ed', 'isbn': '978-0135957059'},
                     summary='Partial item data object',
                 ),
