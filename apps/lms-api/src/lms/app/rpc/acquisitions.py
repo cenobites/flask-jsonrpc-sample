@@ -11,9 +11,29 @@ import flask_jsonrpc.types.methods as tm
 from lms.app.schemas import Page
 from lms.app.schemas.acquisitions import OrderCreate, OrderLineAdd, VendorUpdate, VendorRegister
 from lms.app.services.acquisitions import VendorService, AcquisitionOrderService
+from lms.app.exceptions.acquisitions import (
+    VendorNotFoundError,
+    AcquisitionOrderNotFoundError,
+    AcquisitionOrderLineNotFoundError,
+)
 from lms.domain.acquisitions.entities import Vendor, AcquisitionOrder
 
 jsonrpc_bp = JSONRPCBlueprint('acquisitions', __name__)
+
+
+@jsonrpc_bp.errorhandler(AcquisitionOrderNotFoundError)
+def handle_acquisition_order_not_found(ex: AcquisitionOrderNotFoundError) -> dict[str, t.Any]:
+    return {'message': ex.message, 'code': ex.__class__.__name__}
+
+
+@jsonrpc_bp.errorhandler(AcquisitionOrderLineNotFoundError)
+def handle_acquisition_order_line_not_found(ex: AcquisitionOrderLineNotFoundError) -> dict[str, t.Any]:
+    return {'message': ex.message, 'code': ex.__class__.__name__}
+
+
+@jsonrpc_bp.errorhandler(VendorNotFoundError)
+def handle_vendor_not_found(ex: VendorNotFoundError) -> dict[str, t.Any]:
+    return {'message': ex.message, 'code': ex.__class__.__name__}
 
 
 @jsonrpc_bp.method(
@@ -33,8 +53,8 @@ def list_orders() -> t.Annotated[Page[AcquisitionOrder], tp.Summary('List of ord
 @jsonrpc_bp.method(
     'AcquisitionOrders.get',
     tm.MethodAnnotated[
-        tm.Summary('Get order by ID'),
-        tm.Description('Retrieve details of a specific acquisition order'),
+        tm.Summary('Get acquisition order by ID'),
+        tm.Description('Retrieve messages of a specific acquisition order'),
         tm.Tag(name='acquisitions'),
     ],
 )
@@ -76,7 +96,7 @@ def create_order(
         tm.Tag(name='acquisitions'),
         tm.Error(code=-32001, message='Order update failed', data={'reason': 'order not found or invalid data'}),
         tm.Example(
-            name='update_order_example',
+            name='default',
             summary='Update existing order status',
             params=[
                 tm.ExampleField(name='order_id', value=1, summary='Order ID'),

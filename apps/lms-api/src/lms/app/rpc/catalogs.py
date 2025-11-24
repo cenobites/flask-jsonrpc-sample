@@ -11,9 +11,41 @@ import flask_jsonrpc.types.methods as tm
 from lms.app.schemas import Page
 from lms.app.schemas.catalogs import ItemCreate, ItemUpdate
 from lms.app.services.catalogs import CopyService, ItemService
+from lms.app.exceptions.catalogs import (
+    CopyNotFoundError,
+    ItemNotFoundError,
+    AuthorNotFoundError,
+    CategoryNotFoundError,
+    PublisherNotFoundError,
+)
 from lms.domain.catalogs.entities import Copy, Item
 
 jsonrpc_bp = JSONRPCBlueprint('catalogs', __name__)
+
+
+@jsonrpc_bp.errorhandler(CopyNotFoundError)
+def handle_copy_not_found_error(ex: CopyNotFoundError) -> dict[str, t.Any]:
+    return {'message': ex.message, 'code': ex.__class__.__name__}
+
+
+@jsonrpc_bp.errorhandler(ItemNotFoundError)
+def handle_item_not_found_error(ex: ItemNotFoundError) -> dict[str, t.Any]:
+    return {'message': ex.message, 'code': ex.__class__.__name__}
+
+
+@jsonrpc_bp.errorhandler(CategoryNotFoundError)
+def handle_category_not_found_error(ex: CategoryNotFoundError) -> dict[str, t.Any]:
+    return {'message': ex.message, 'code': ex.__class__.__name__}
+
+
+@jsonrpc_bp.errorhandler(AuthorNotFoundError)
+def handle_author_not_found_error(ex: AuthorNotFoundError) -> dict[str, t.Any]:
+    return {'message': ex.message, 'code': ex.__class__.__name__}
+
+
+@jsonrpc_bp.errorhandler(PublisherNotFoundError)
+def handle_publisher_not_found_error(ex: PublisherNotFoundError) -> dict[str, t.Any]:
+    return {'message': ex.message, 'code': ex.__class__.__name__}
 
 
 @jsonrpc_bp.method(
@@ -69,7 +101,7 @@ def list_items() -> t.Annotated[Page[Item], tp.Summary('Catalog items search res
     'Items.create',
     tm.MethodAnnotated[
         tm.Summary('Create a new catalog item'),
-        tm.Description('Add a new item to the library catalog with title, barcode and material type'),
+        tm.Description('Add a new item to the library catalog with title, barcode and format'),
         tm.Tag(name='catalogs'),
         tm.Error(code=-32001, message='Item creation failed', data={'reason': 'duplicate barcode or invalid data'}),
         tm.Example(

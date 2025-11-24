@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from lms.app.exceptions.serials import SerialNotFoundError
+from lms.app.exceptions.catalogs import ItemNotFoundError
 from lms.domain.serials.entities import Serial
 from lms.domain.catalogs.entities import Item
 from lms.infrastructure.event_bus import event_bus
@@ -23,13 +25,13 @@ class SerialService:
     def _get_item(self, item_id: str) -> Item:
         item = self.item_repository.get_by_id(item_id)
         if not item:
-            raise ValueError(f'Item with id {item_id} not found')
+            raise ItemNotFoundError(f'Item with id {item_id} not found')
         return item
 
     def _get_serial(self, serial_id: str) -> Serial:
         serial = self.serial_repository.get_by_id(serial_id)
         if not serial:
-            raise ValueError(f'Serial with id {serial_id} not found')
+            raise SerialNotFoundError(f'Serial with id {serial_id} not found')
         return serial
 
     def find_all_serials(self) -> list[Serial]:

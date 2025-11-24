@@ -5,28 +5,30 @@ from decimal import Decimal
 import datetime
 from dataclasses import field, dataclass
 
-from lms.domain.patrons.events import (
-    FineCreatedEvent,
-    PatronRegisteredEvent,
-    PatronReinstatedEvent,
-    PatronEmailChangedEvent,
-)
-from lms.domain.patrons.services import FinePolicyService
+from lms.domain import DomainEntity
 from lms.infrastructure.event_bus import event_bus
 from lms.infrastructure.database.models.patrons import FineStatus, PatronStatus
 
-from .. import DomainEntity
-from .services import PatronBarringService, PatronHoldingService, PatronUniquenessService, PatronReinstatementService
-from .exceptions import (
-    PatronCannotBorrowError,
-    DuplicatePatronEmailError,
-    PatronCannotPlaceHoldError,
-    PatronCannotBeReinstatedError,
-    PatronCannotChangeStatusError,
+from .events import FineCreatedEvent, PatronRegisteredEvent, PatronReinstatedEvent, PatronEmailChangedEvent
+from .services import (
+    FinePolicyService,
+    PatronBarringService,
+    PatronHoldingService,
+    PatronUniquenessService,
+    PatronReinstatementService,
 )
-
-if t.TYPE_CHECKING:
-    pass
+from .exceptions import (
+    FineAlreadyPaid,
+    PatronNotActive,
+    PatronNotArchived,
+    FineAAlreadyWaived,
+    PatronNotSuspended,
+    PatronAlreadyActive,
+    PatronHasActiveLoans,
+    PatronHasNotActiveHolds,
+    PatronHasNotActiveLoans,
+    PatronEmailAlreadyExists,
+)
 
 
 @dataclass
@@ -48,7 +50,7 @@ class Patron(DomainEntity):
         patron_uniqueness_service: PatronUniquenessService,
     ) -> Patron:
         if not patron_uniqueness_service.is_email_unique(email):
-            raise DuplicatePatronEmailError(f'Patron with email "{email}" already exists')
+            raise PatronEmailAlreadyExists(email)
         patron = cls(id=None, name=name, email=email, branch_id=branch_id)
         event_bus.add_event(PatronRegisteredEvent(patron_id=t.cast(str, patron.id), email=patron.email))
         return patron
@@ -58,7 +60,7 @@ class Patron(DomainEntity):
 
     def change_email(self, email: str, patron_uniqueness_service: PatronUniquenessService) -> None:
         if email != self.email and not patron_uniqueness_service.is_email_unique(email):
-            raise DuplicatePatronEmailError(f'Patron with email "{email}" already exists')
+            raise PatronEmailAlreadyExists(email)
         if self.email != email:
             old_email = self.email
             self.email = email
@@ -67,41 +69,43 @@ class Patron(DomainEntity):
             )
 
     def available_to_borrow(self, patron_barring_service: PatronBarringService) -> None:
-        if self.status != PatronStatus.ACTIVE.value or not patron_barring_service.can_borrow_copies(
-            t.cast(str, self.id)
-        ):
-            raise PatronCannotBorrowError('Patron cannot borrow this copy due to status or barring rules')
+        if self.status != PatronStatus.ACTIVE.value:
+            raise PatronNotActive(t.cast(str, self.id))
+        if not patron_barring_service.can_borrow_copies(t.cast(str, self.id)):
+            raise PatronHasActiveLoans(t.cast(str, self.id))
 
     def available_to_renew(self, copy_id: str, patron_barring_service: PatronBarringService) -> None:
-        if self.status != PatronStatus.ACTIVE.value or not patron_barring_service.can_renew_copy(
-            t.cast(str, self.id), copy_id
-        ):
-            raise PatronCannotBorrowError('Patron cannot renew this copy due to status or barring rules')
+        if self.status != PatronStatus.ACTIVE.value:
+            raise PatronNotActive(t.cast(str, self.id))
+        if not patron_barring_service.can_renew_copy(t.cast(str, self.id), copy_id):
+            raise PatronHasNotActiveLoans(t.cast(str, self.id))
 
     def available_to_place_hold(self, patron_holding_service: PatronHoldingService) -> None:
-        if self.status != PatronStatus.ACTIVE.value or not patron_holding_service.can_place_holds(t.cast(str, self.id)):
-            raise PatronCannotPlaceHoldError('Patron cannot place hold due to status or holding rules')
+        if self.status != PatronStatus.ACTIVE.value:
+            raise PatronNotActive(t.cast(str, self.id))
+        if not patron_holding_service.can_place_holds(t.cast(str, self.id)):
+            raise PatronHasNotActiveHolds(t.cast(str, self.id))
 
     def activate(self) -> None:
         if self.status == PatronStatus.ACTIVE.value:
-            raise PatronCannotChangeStatusError('Patron is already active')
+            raise PatronAlreadyActive(t.cast(str, self.id))
         self.status = PatronStatus.ACTIVE.value
 
     def archive(self) -> None:
         if self.status != PatronStatus.ACTIVE.value:
-            raise PatronCannotChangeStatusError('Patron is already archived')
+            raise PatronNotActive(t.cast(str, self.id))
         self.status = PatronStatus.ARCHIVED.value
 
     def unarchive(self) -> None:
         if self.status != PatronStatus.ARCHIVED.value:
-            raise PatronCannotChangeStatusError('Patron is already active')
+            raise PatronNotArchived(t.cast(str, self.id))
         self.status = PatronStatus.ACTIVE.value
 
     def reinstate(self, patron_reinstatement_service: PatronReinstatementService) -> None:
-        if self.status != PatronStatus.SUSPENDED.value or not patron_reinstatement_service.can_reinstate(
-            t.cast(str, self.id)
-        ):
-            raise PatronCannotBeReinstatedError('Patron is not suspended or there are loans and cannot be reinstated')
+        if self.status != PatronStatus.SUSPENDED.value:
+            raise PatronNotSuspended(t.cast(str, self.id))
+        if not patron_reinstatement_service.can_reinstate(t.cast(str, self.id)):
+            raise PatronHasActiveLoans(t.cast(str, self.id))
         self.status = PatronStatus.ACTIVE.value
         event_bus.add_event(PatronReinstatedEvent(patron_id=t.cast(str, self.id), email=self.email))
 
@@ -166,12 +170,12 @@ class Fine(DomainEntity):
 
     def pay(self) -> None:
         if self.status == FineStatus.PAID.value:
-            raise ValueError('Fine is already paid')
+            raise FineAlreadyPaid(self.patron_id, self.loan_id)
         self.status = FineStatus.PAID.value
         self.paid_date = datetime.date.today()
 
     def waive(self) -> None:
         if self.status == FineStatus.WAIVED.value:
-            raise ValueError('Fine is already waived')
+            raise FineAAlreadyWaived(self.patron_id, self.loan_id)
         self.status = FineStatus.WAIVED.value
         self.paid_date = datetime.date.today()

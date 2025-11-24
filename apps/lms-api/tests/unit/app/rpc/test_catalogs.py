@@ -4,7 +4,7 @@ import uuid
 
 from flask.testing import FlaskClient
 
-from ...factories import CopyFactory, ItemFactory, BranchFactory
+from tests.unit.factories import CopyFactory, ItemFactory, BranchFactory
 
 
 def test_item_list_empty(client: FlaskClient) -> None:

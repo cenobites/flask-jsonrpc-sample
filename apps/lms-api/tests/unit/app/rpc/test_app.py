@@ -4,11 +4,7 @@ import uuid
 
 from flask.testing import FlaskClient
 
-from lms.infrastructure.database.models.patrons import PatronStatus
-from lms.infrastructure.database.models.catalogs import CopyStatus, ItemFormat
-from lms.infrastructure.database.models.organizations import StaffRole, BranchStatus
-
-from ...factories import (
+from tests.unit.factories import (
     CopyFactory,
     ItemFactory,
     StaffFactory,
@@ -18,6 +14,9 @@ from ...factories import (
     CategoryFactory,
     PublisherFactory,
 )
+from lms.infrastructure.database.models.patrons import PatronStatus
+from lms.infrastructure.database.models.catalogs import CopyStatus, ItemFormat
+from lms.infrastructure.database.models.organizations import StaffRole, BranchStatus
 
 
 def test_complete_acquisition_workflow(client: FlaskClient) -> None:

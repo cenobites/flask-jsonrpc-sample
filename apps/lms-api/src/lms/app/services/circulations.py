@@ -3,13 +3,16 @@ from __future__ import annotations
 import typing as t
 import datetime
 
+from lms.app.exceptions.patrons import PatronNotFoundError
 from lms.infrastructure.logging import logger
+from lms.app.exceptions.catalogs import CopyNotFoundError, ItemNotFoundError
 from lms.domain.patrons.entities import Patron
 from lms.domain.patrons.services import PatronBarringService, PatronHoldingService
 from lms.domain.catalogs.entities import Copy, Item
 from lms.infrastructure.event_bus import event_bus
-from lms.domain.patrons.exceptions import PatronDoesNotExistError
+from lms.app.exceptions.circulations import HoldNotFoundError, LoanNotFoundError
 from lms.domain.patrons.repositories import PatronRepository
+from lms.app.exceptions.organizations import StaffNotFoundError, BranchNotFoundError
 from lms.domain.catalogs.repositories import CopyRepository, ItemRepository
 from lms.domain.circulations.entities import Hold, Loan
 from lms.domain.circulations.services import HoldPolicyService, LoanPolicyService
@@ -42,31 +45,31 @@ class LoanService:
     def _get_copy(self, copy_id: str) -> Copy:
         copy = self.copy_repository.get_by_id(copy_id)
         if not copy:
-            raise ValueError(f'Copy with id {copy_id} not found')
+            raise CopyNotFoundError(f'Copy with id {copy_id} not found')
         return copy
 
     def _get_patron(self, patron_id: str) -> Patron:
         patron = self.patron_repository.get_by_id(patron_id)
         if not patron:
-            raise PatronDoesNotExistError(f'Patron with id {patron_id} not found')
+            raise PatronNotFoundError(f'Patron with id {patron_id} not found')
         return patron
 
     def _get_staff(self, staff_id: str) -> Staff:
         staff = self.staff_repository.get_by_id(staff_id)
         if not staff:
-            raise ValueError(f'Staff with id {staff_id} not found')
+            raise StaffNotFoundError(f'Staff with id {staff_id} not found')
         return staff
 
     def _get_branch(self, branch_id: str) -> Branch:
         branch = self.branch_repository.get_by_id(branch_id)
         if not branch:
-            raise ValueError(f'Branch with id {branch_id} not found')
+            raise BranchNotFoundError(f'Branch with id {branch_id} not found')
         return branch
 
     def _get_loan(self, loan_id: str) -> Loan:
         loan = self.loan_repository.get_by_id(loan_id)
         if not loan:
-            raise ValueError(f'Loan with id {loan_id} not found')
+            raise LoanNotFoundError(f'Loan with id {loan_id} not found')
         return loan
 
     def find_all_loans(self) -> list[Loan]:
@@ -163,37 +166,37 @@ class HoldService:
     def _get_copy(self, copy_id: str) -> Copy:
         copy = self.copy_repository.get_by_id(copy_id)
         if not copy:
-            raise ValueError(f'Copy with id {copy_id} not found')
+            raise CopyNotFoundError(f'Copy with id {copy_id} not found')
         return copy
 
     def _get_patron(self, patron_id: str) -> Patron:
         patron = self.patron_repository.get_by_id(patron_id)
         if not patron:
-            raise PatronDoesNotExistError(f'Patron with id {patron_id} not found')
+            raise PatronNotFoundError(f'Patron with id {patron_id} not found')
         return patron
 
     def _get_item(self, item_id: str) -> Item:
         item = self.item_repository.get_by_id(item_id)
         if not item:
-            raise ValueError(f'Item with id {item_id} not found')
+            raise ItemNotFoundError(f'Item with id {item_id} not found')
         return item
 
     def _get_staff(self, staff_id: str) -> Staff:
         staff = self.staff_repository.get_by_id(staff_id)
         if not staff:
-            raise ValueError(f'Staff with id {staff_id} not found')
+            raise StaffNotFoundError(f'Staff with id {staff_id} not found')
         return staff
 
     def _get_branch(self, branch_id: str) -> Branch:
         branch = self.branch_repository.get_by_id(branch_id)
         if not branch:
-            raise ValueError(f'Branch with id {branch_id} not found')
+            raise BranchNotFoundError(f'Branch with id {branch_id} not found')
         return branch
 
     def _get_hold(self, hold_id: str) -> Hold:
         hold = self.hold_repository.get_by_id(hold_id)
         if not hold:
-            raise ValueError(f'Hold with id {hold_id} not found')
+            raise HoldNotFoundError(f'Hold with id {hold_id} not found')
         return hold
 
     def find_all_holds(self) -> list[Hold]:

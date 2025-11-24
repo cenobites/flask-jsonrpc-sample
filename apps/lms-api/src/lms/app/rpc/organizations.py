@@ -11,26 +11,20 @@ import flask_jsonrpc.types.methods as tm
 from lms.app.schemas import Page
 from lms.app.schemas.organizations import StaffCreate, StaffUpdate, BranchCreate, BranchUpdate
 from lms.app.services.organizations import StaffService, BranchService
+from lms.app.exceptions.organizations import StaffNotFoundError, BranchNotFoundError
 from lms.domain.organizations.entities import Staff, Branch
-from lms.domain.organizations.exceptions import (
-    StaffBaseError,
-    BranchBaseError,
-    StaffDoesNotExistError,
-    BranchDoesNotExistError,
-)
 
 jsonrpc_bp = JSONRPCBlueprint('organizations', __name__)
 
 
-@jsonrpc_bp.errorhandler(BranchBaseError)
-def handle_branch_base_error(ex: BranchBaseError) -> dict[str, t.Any]:
-    message = ex.args[0] if ex.args else 'Unknown error'
-    return {'detail': message, 'code': ex.__class__.__name__}
+@jsonrpc_bp.errorhandler(BranchNotFoundError)
+def handle_branch_not_found_exist(ex: BranchNotFoundError) -> dict[str, t.Any]:
+    return {'message': ex.message, 'code': ex.__class__.__name__}
 
 
-@jsonrpc_bp.errorhandler(BranchDoesNotExistError)
-def handle_branch_does_not_exist(ex: BranchDoesNotExistError) -> dict[str, t.Any]:
-    return {'detail': 'Branch does not exist', 'code': ex.__class__.__name__}
+@jsonrpc_bp.errorhandler(StaffNotFoundError)
+def handle_staff_not_found_error(ex: StaffNotFoundError) -> dict[str, t.Any]:
+    return {'message': ex.message, 'code': ex.__class__.__name__}
 
 
 @jsonrpc_bp.method(
@@ -70,7 +64,7 @@ def get_branch(
     'Branches.create',
     tm.MethodAnnotated[
         tm.Summary('Create a new branch'),
-        tm.Description('Create a new library branch with name and location details'),
+        tm.Description('Create a new library branch with name and location messages'),
         tm.Tag(name='organizations'),
         tm.Error(code=-32001, message='Branch creation failed', data={'reason': 'duplicate name or invalid data'}),
         tm.Example(
@@ -105,7 +99,7 @@ def create_branch(
     'Branches.update',
     tm.MethodAnnotated[
         tm.Summary('Update an existing branch'),
-        tm.Description('Update an existing library branch with new details'),
+        tm.Description('Update an existing library branch with new messages'),
         tm.Tag(name='organizations'),
         tm.Error(code=-32001, message='Branch update failed', data={'reason': 'branch not found or invalid data'}),
         tm.Example(
@@ -177,17 +171,6 @@ def close_branch(branch_id: t.Annotated[str, tp.Summary('Branch ID'), tp.Require
     branch_service.close_branch(branch_id=branch_id)
 
 
-@jsonrpc_bp.errorhandler(StaffBaseError)
-def handle_staff_base_error(ex: StaffBaseError) -> dict[str, t.Any]:
-    message = ex.args[0] if ex.args else 'Unknown error'
-    return {'detail': message, 'code': ex.__class__.__name__}
-
-
-@jsonrpc_bp.errorhandler(StaffDoesNotExistError)
-def handle_staff_does_not_exist(ex: StaffDoesNotExistError) -> dict[str, t.Any]:
-    return {'detail': 'Staff does not exist', 'code': ex.__class__.__name__}
-
-
 @jsonrpc_bp.method(
     'Staff.list',
     tm.MethodAnnotated[
@@ -253,7 +236,7 @@ def create_staff(
     'Staff.update',
     tm.MethodAnnotated[
         tm.Summary('Update an existing staff member'),
-        tm.Description('Update an existing staff member with new details'),
+        tm.Description('Update an existing staff member with new messages'),
         tm.Tag(name='organizations'),
         tm.Error(code=-32001, message='Staff update failed', data={'reason': 'staff not found or invalid data'}),
         tm.Example(
@@ -278,7 +261,7 @@ def update_staff(
     'Staff.update_email',
     tm.MethodAnnotated[
         tm.Summary('Update an existing staff member'),
-        tm.Description('Update an existing staff member with new details'),
+        tm.Description('Update an existing staff member with new messages'),
         tm.Tag(name='organizations'),
         tm.Error(code=-32001, message='Staff update failed', data={'reason': 'staff not found or invalid data'}),
         tm.Example(
@@ -312,7 +295,7 @@ def update_staff_email(
     'Staff.update_role',
     tm.MethodAnnotated[
         tm.Summary('Update an existing staff member'),
-        tm.Description('Update an existing staff member with new details'),
+        tm.Description('Update an existing staff member with new messages'),
         tm.Tag(name='organizations'),
         tm.Error(code=-32001, message='Staff update failed', data={'reason': 'staff not found or invalid data'}),
         tm.Example(

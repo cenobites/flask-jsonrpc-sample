@@ -5,11 +5,10 @@ import datetime
 
 from flask.testing import FlaskClient
 
+from tests.unit.factories import CopyFactory, HoldFactory, ItemFactory, LoanFactory, StaffFactory, PatronFactory
 from lms.infrastructure.database.models.patrons import PatronStatus
 from lms.infrastructure.database.models.catalogs import CopyStatus
 from lms.infrastructure.database.models.circulations import HoldStatus
-
-from ...factories import CopyFactory, HoldFactory, ItemFactory, LoanFactory, StaffFactory, PatronFactory
 
 
 def test_loans_list_empty(client: FlaskClient) -> None:

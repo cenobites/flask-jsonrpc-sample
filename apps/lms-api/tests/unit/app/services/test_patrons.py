@@ -5,8 +5,8 @@ from unittest.mock import ANY, Mock, MagicMock, patch
 import pytest
 
 from lms.app.services.patrons import FineService, PatronService
+from lms.app.exceptions.patrons import PatronNotFoundError
 from lms.domain.patrons.entities import Fine, Patron
-from lms.domain.patrons.exceptions import PatronDoesNotExistError
 
 
 @pytest.fixture
@@ -73,7 +73,7 @@ def test_patron_service_get_patron_success(patron_service: PatronService, mock_p
 def test_patron_service_get_patron_not_found(patron_service: PatronService, mock_patron_repository: Mock) -> None:
     mock_patron_repository.get_by_id.return_value = None
 
-    with pytest.raises(PatronDoesNotExistError):
+    with pytest.raises(PatronNotFoundError):
         patron_service.get_patron('patron-999')
 
 

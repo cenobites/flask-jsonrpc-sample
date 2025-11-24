@@ -11,9 +11,20 @@ import flask_jsonrpc.types.methods as tm
 from lms.app.schemas import Page
 from lms.app.schemas.serials import SerialCreate
 from lms.app.services.serials import SerialService
+from lms.app.exceptions.serials import SerialNotFoundError, SerialIssueNotFoundError
 from lms.domain.serials.entities import Serial
 
 jsonrpc_bp = JSONRPCBlueprint('serials', __name__)
+
+
+@jsonrpc_bp.errorhandler(SerialNotFoundError)
+def handle_serial_not_found_error(ex: SerialNotFoundError) -> dict[str, t.Any]:
+    return {'message': ex.message, 'code': ex.__class__.__name__}
+
+
+@jsonrpc_bp.errorhandler(SerialIssueNotFoundError)
+def handle_serial_issue_not_found_error(ex: SerialIssueNotFoundError) -> dict[str, t.Any]:
+    return {'message': ex.message, 'code': ex.__class__.__name__}
 
 
 @jsonrpc_bp.method(

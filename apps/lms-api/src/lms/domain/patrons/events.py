@@ -3,7 +3,7 @@ from __future__ import annotations
 from decimal import Decimal
 from dataclasses import dataclass
 
-from .. import DomainEvent
+from lms.domain import DomainEvent
 
 
 @dataclass

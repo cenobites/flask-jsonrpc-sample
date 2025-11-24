@@ -4,7 +4,7 @@ import uuid
 
 from flask.testing import FlaskClient
 
-from ...factories import ItemFactory, SerialFactory
+from tests.unit.factories import ItemFactory, SerialFactory
 
 
 def test_serial_list_empty(client: FlaskClient) -> None:

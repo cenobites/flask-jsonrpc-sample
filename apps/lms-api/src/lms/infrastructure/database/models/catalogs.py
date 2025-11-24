@@ -8,7 +8,7 @@ import datetime
 from sqlalchemy import UUID, Table, Column, String, ForeignKey
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 
-from ..db import BaseModel
+from lms.infrastructure.database.db import BaseModel
 
 if t.TYPE_CHECKING:
     from .serials import SerialModel, SerialIssueModel

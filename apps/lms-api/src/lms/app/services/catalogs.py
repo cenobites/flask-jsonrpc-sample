@@ -3,6 +3,13 @@ from __future__ import annotations
 import typing as t
 import datetime
 
+from lms.app.exceptions.catalogs import (
+    CopyNotFoundError,
+    ItemNotFoundError,
+    AuthorNotFoundError,
+    CategoryNotFoundError,
+    PublisherNotFoundError,
+)
 from lms.domain.catalogs.entities import Copy, Item, Author, Category, Publisher
 from lms.infrastructure.event_bus import event_bus
 from lms.domain.catalogs.repositories import (
@@ -18,30 +25,26 @@ class CopyService:
     def __init__(self, /, *, copy_repository: CopyRepository) -> None:
         self.copy_repository = copy_repository
 
+    def _get_copy(self, copy_id: str) -> Copy:
+        copy = self.copy_repository.get_by_id(copy_id)
+        if copy is None:
+            raise CopyNotFoundError(f'Copy with id {copy_id} not found')
+        return copy
+
     def create_copy(
         self, item_id: str, branch_id: str, barcode: str, status: str = 'available', location: str | None = None
     ) -> Copy:
-        """Create a new copy of an item."""
         copy = Copy(id=None, item_id=item_id, branch_id=branch_id, barcode=barcode, status=status, location=location)
         return self.copy_repository.save(copy)
 
     def get_copy(self, copy_id: str) -> Copy:
-        """Get a copy by ID."""
-        model = self.copy_repository.get_by_id(copy_id)
-        if not model:
-            raise ValueError(f'Copy with id {copy_id} not found')
-        return model
+        return self._get_copy(copy_id)
 
     def get_all_copies(self) -> list[Copy]:
-        """Get all copies."""
         return self.copy_repository.find_all()
 
     def update_copy_status(self, copy_id: str, status: str) -> Copy:
-        """Update the status of a copy."""
-        copy = self.copy_repository.get_by_id(copy_id)
-        if copy is None:
-            raise ValueError(f'Copy with id {copy_id} not found')
-
+        copy = self._get_copy(copy_id)
         updated_copy = Copy(
             id=copy.id,
             item_id=copy.item_id,
@@ -54,7 +57,6 @@ class CopyService:
         return self.copy_repository.save(updated_copy)
 
     def delete_copy(self, copy_id: str) -> bool:
-        """Delete a copy."""
         self.copy_repository.delete_by_id(copy_id)
         return True
 
@@ -67,13 +69,13 @@ class ItemService:
     def _get_item(self, item_id: str) -> Item:
         item = self.item_repository.get_by_id(item_id)
         if item is None:
-            raise ValueError(f'Item with id {item_id} not found')
+            raise ItemNotFoundError(f'Item with id {item_id} not found')
         return item
 
     def _get_copy(self, copy_id: str) -> Copy:
         copy = self.copy_repository.get_by_id(copy_id)
         if copy is None:
-            raise ValueError(f'Copy with id {copy_id} not found')
+            raise CopyNotFoundError(f'Copy with id {copy_id} not found')
         return copy
 
     def get_all_items(self) -> list[Item]:
@@ -142,17 +144,17 @@ class CategoryService:
     def __init__(self, /, *, category_repository: CategoryRepository) -> None:
         self.category_repository = category_repository
 
-    def _get(self, category_id: str) -> Category:
+    def _get_category(self, category_id: str) -> Category:
         category = self.category_repository.get_by_id(category_id)
         if category is None:
-            raise ValueError(f'Category with id {category_id} not found')
+            raise CategoryNotFoundError(f'Category with id {category_id} not found')
         return category
 
     def find_all_categories(self) -> list[Category]:
         return self.category_repository.find_all()
 
     def get_category(self, category_id: str) -> Category:
-        return self._get(category_id)
+        return self._get_category(category_id)
 
     def register_category(self, name: str, description: str | None = None) -> Category:
         category = Category.create(name=name, description=description)
@@ -161,7 +163,7 @@ class CategoryService:
         return created_category
 
     def update_category(self, category_id: str, name: str | None = None, description: str | None = None) -> Category:
-        category = self._get(category_id)
+        category = self._get_category(category_id)
         category.name = name if name is not None else category.name
         category.description = description if description is not None else category.description
         updated_category = self.category_repository.save(category)
@@ -177,17 +179,17 @@ class AuthorService:
     def __init__(self, /, *, author_repository: AuthorRepository) -> None:
         self.author_repository = author_repository
 
-    def _get(self, author_id: str) -> Author:
+    def _get_author(self, author_id: str) -> Author:
         author = self.author_repository.get_by_id(author_id)
         if author is None:
-            raise ValueError('Author with id {author_id} not found')
+            raise AuthorNotFoundError(f'Author with id {author_id} not found')
         return author
 
     def find_all_authors(self) -> list[Author]:
         return self.author_repository.find_all()
 
     def get_author(self, author_id: str) -> Author:
-        return self._get(author_id)
+        return self._get_author(author_id)
 
     def register_author(self, name: str, bio: str | None = None, birth_date: datetime.date | None = None) -> Author:
         author = Author.create(name=name, bio=bio, birth_date=birth_date)
@@ -196,7 +198,7 @@ class AuthorService:
     def update_author(
         self, author_id: str, name: str | None = None, bio: str | None = None, birth_date: datetime.date | None = None
     ) -> Author:
-        author = self._get(author_id)
+        author = self._get_author(author_id)
         author.name = name if name is not None else author.name
         author.bio = bio if bio is not None else author.bio
         author.birth_date = birth_date if birth_date is not None else author.birth_date
@@ -213,17 +215,17 @@ class PublisherService:
     def __init__(self, /, *, publisher_repository: PublisherRepository) -> None:
         self.publisher_repository = publisher_repository
 
-    def _get(self, publisher_id: str) -> Publisher:
+    def _get_publisher(self, publisher_id: str) -> Publisher:
         publisher = self.publisher_repository.get_by_id(publisher_id)
         if publisher is None:
-            raise ValueError(f'Publisher with id {publisher_id} not found')
+            raise PublisherNotFoundError(f'Publisher with id {publisher_id} not found')
         return publisher
 
     def find_all_publishers(self) -> list[Publisher]:
         return self.publisher_repository.find_all()
 
     def get_publisher(self, publisher_id: str) -> Publisher:
-        return self._get(publisher_id)
+        return self._get_publisher(publisher_id)
 
     def register_publisher(
         self, name: str, address: str | None = None, email: str | None = None, phone: str | None = None
@@ -241,7 +243,7 @@ class PublisherService:
         email: str | None = None,
         phone: str | None = None,
     ) -> Publisher:
-        publisher = self._get(publisher_id)
+        publisher = self._get_publisher(publisher_id)
         publisher.name = name if name is not None else publisher.name
         publisher.address = address if address is not None else publisher.address
         publisher.email = email if email is not None else publisher.email

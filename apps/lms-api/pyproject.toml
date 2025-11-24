@@ -51,17 +51,17 @@ tests = [
     "pytest-xdist==3.8.0", # https://github.com/pytest-dev/pytest-xdist
     "pytest-sugar==1.1.1", # https://github.com/Frozenball/pytest-sugar
     "pytest-env==1.2.0", # https://github.com/MobileDynasty/pytest-env
-    "pytest-rerunfailures==16.1", # https://github.com/pytest-dev/pytest-rerunfailures
-    "pytest-repeat==0.9.4", # https://github.com/pytest-dev/pytest-repeat
     "pytest-clarity==1.0.1", # https://github.com/darrenburns/pytest-clarity
-    "pytest-randomly==4.0.1", # https://github.com/pytest-dev/pytest-randomly
-    "pytest-random-order==1.2.0", # https://github.com/pytest-dev/pytest-random-order
     "coverage[toml]==7.12.0", # https://github.com/nedbat/coveragepy
     "requests==2.32.5", # https://github.com/psf/requests
     "factory-boy>=3.3.3", # https://github.com/FactoryBoy/factory_boy
 ]
 parallel-tests = [
     {include-group = "tests"},
+    "pytest-rerunfailures==16.1", # https://github.com/pytest-dev/pytest-rerunfailures
+    "pytest-randomly==4.0.1", # https://github.com/pytest-dev/pytest-randomly
+    "pytest-random-order==1.2.0", # https://github.com/pytest-dev/pytest-random-order
+    "pytest-repeat==0.9.4", # https://github.com/pytest-dev/pytest-repeat
     "pytest-run-parallel==0.7.1", # https://github.com/Quansight-Labs/pytest-run-parallel
 ]
 integration-tests = [
@@ -192,8 +192,8 @@ docstring-code-format = true
 docstring-code-line-length = 79
 
 [tool.pytest.ini_options]
-addopts = "-rsxX -vv --pyargs --doctest-modules --showlocals --strict-markers --junitxml=junit/test-results.xml --random-order --numprocesses=0 --count=1 --reruns=0 --cov-report=html --cov-report=term --cov-report=lcov --cov=lms --cov-fail-under=80"
-# --parallel-threads=10 --iterations=5
+addopts = "-rsxX -vv --pyargs --doctest-modules --showlocals --strict-markers --junitxml=junit/test-results.xml --numprocesses=0 --cov-report=html --cov-report=term --cov-report=lcov --cov=lms --cov-fail-under=80"
+# --count=5 --reruns=5 --parallel-threads=10 --iterations=5 --random-order
 junit_family = "xunit2"
 python_files = ["tests.py", "test_*.py", "*_tests.py"]
 pythonpath = "src/"
@@ -210,11 +210,11 @@ required_plugins = [
     "pytest-xdist==3.8.0",
     "pytest-sugar==1.1.1",
     "pytest-env==1.2.0",
-    "pytest-repeat==0.9.4",
-    "pytest-rerunfailures==16.1",
+    # "pytest-repeat==0.9.4",
+    # "pytest-rerunfailures==16.1",
     "pytest-clarity==1.0.1",
-    "pytest-randomly==4.0.1",
-    "pytest-random-order==1.2.0",
+    # "pytest-randomly==4.0.1",
+    # "pytest-random-order==1.2.0",
     # "pytest-run-parallel==0.7.1",
 ]
 

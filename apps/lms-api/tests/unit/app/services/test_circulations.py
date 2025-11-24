@@ -4,10 +4,10 @@ from unittest.mock import Mock, MagicMock
 
 import pytest
 
+from lms.app.exceptions.patrons import PatronNotFoundError
 from lms.domain.patrons.entities import Patron
 from lms.domain.catalogs.entities import Copy
 from lms.app.services.circulations import HoldService, LoanService
-from lms.domain.patrons.exceptions import PatronDoesNotExistError
 from lms.domain.circulations.entities import Hold, Loan
 from lms.domain.organizations.entities import Staff, Branch
 
@@ -171,7 +171,7 @@ def test_loan_service_checkout_copy(
 def test_loan_service_checkout_patron_not_found(loan_service: LoanService, mock_patron_repository: Mock) -> None:
     mock_patron_repository.get_by_id.return_value = None
 
-    with pytest.raises(PatronDoesNotExistError):
+    with pytest.raises(PatronNotFoundError):
         loan_service.checkout_copy(copy_id='copy-1', patron_id='patron-999', staff_out_id='staff-1')
 
 

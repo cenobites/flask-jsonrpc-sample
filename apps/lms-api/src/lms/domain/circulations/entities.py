@@ -4,9 +4,12 @@ import typing as t
 import datetime
 from dataclasses import field, dataclass
 
+from lms.domain import DomainEntity
 from lms.domain.patrons.services import PatronBarringService, PatronHoldingService
 from lms.infrastructure.event_bus import event_bus
-from lms.domain.circulations.events import (
+from lms.infrastructure.database.models.circulations import HoldStatus
+
+from .events import (
     HoldReadyEvent,
     HoldExpiredEvent,
     LoanCreatedEvent,
@@ -17,10 +20,8 @@ from lms.domain.circulations.events import (
     HoldFulfilledEvent,
     LoanMarkedLostEvent,
 )
-from lms.domain.circulations.services import HoldPolicyService, LoanPolicyService
-from lms.infrastructure.database.models.circulations import HoldStatus
-
-from .. import DomainEntity
+from .services import HoldPolicyService, LoanPolicyService
+from .exceptions import LoanOverdue, HoldNotPending, LoanAlreadyReturned
 
 if t.TYPE_CHECKING:
     from lms.domain.patrons.entities import Patron
@@ -80,7 +81,7 @@ class Loan(DomainEntity):
     def mark_as_returned(self, copy: Copy, return_date: datetime.date, staff_in_id: str) -> None:
         copy.mark_as_available()
         if self.return_date is not None:
-            raise ValueError('Loan is already returned')
+            raise LoanAlreadyReturned(t.cast(str, self.id), self.return_date)
         self.return_date = return_date
         self.staff_in_id = staff_in_id
         event_bus.add_event(
@@ -104,9 +105,10 @@ class Loan(DomainEntity):
     def mark_damaged(self, copy: Copy) -> None:
         copy.mark_as_damaged()
         if self.return_date is not None:
-            raise ValueError('Loan is already returned')
+            raise LoanAlreadyReturned(t.cast(str, self.id), self.return_date)
         if self.due_date < datetime.date.today():
-            raise ValueError('Cannot mark a damaged loan as overdue')
+            days_late = (datetime.date.today() - self.due_date).days
+            raise LoanOverdue(t.cast(str, self.id), days_late)
         self.return_date = datetime.date.today()
         event_bus.add_event(
             LoanDamagedEvent(
@@ -117,9 +119,10 @@ class Loan(DomainEntity):
     def mark_lost(self, copy: Copy) -> None:
         copy.mark_as_lost()
         if self.return_date is not None:
-            raise ValueError('Loan is already returned')
+            raise LoanAlreadyReturned(t.cast(str, self.id), self.return_date)
         if self.due_date < datetime.date.today():
-            raise ValueError('Cannot mark a lost loan as overdue')
+            days_late = (datetime.date.today() - self.due_date).days
+            raise LoanOverdue(t.cast(str, self.id), days_late)
         self.return_date = datetime.date.today()
         event_bus.add_event(
             LoanMarkedLostEvent(
@@ -136,9 +139,10 @@ class Loan(DomainEntity):
     ) -> None:
         patron.available_to_renew(copy_id=t.cast(str, copy.id), patron_barring_service=patron_barring_service)
         if self.return_date is not None:
-            raise ValueError('Cannot renew a returned loan')
+            raise LoanAlreadyReturned(t.cast(str, self.id), self.return_date)
         if self.due_date < datetime.date.today():
-            raise ValueError('Cannot renew an overdue loan')
+            days_late = (datetime.date.today() - self.due_date).days
+            raise LoanOverdue(t.cast(str, self.id), days_late)
         self.due_date = loan_policy_service.calculate_new_due_date(patron=patron, copy=copy)
 
 
@@ -179,7 +183,7 @@ class Hold(DomainEntity):
 
     def ready_for_pickup(self, copy: Copy) -> None:
         if self.status != HoldStatus.PENDING.value:
-            raise ValueError('Only pending holds can be marked as ready for pickup')
+            raise HoldNotPending(t.cast(str, self.id))
         self.copy_id = t.cast(str, copy.id)
         self.status = HoldStatus.READY.value
         event_bus.add_event(
@@ -190,7 +194,7 @@ class Hold(DomainEntity):
 
     def fulfill(self, copy: Copy, loan: Loan) -> None:
         if self.status != HoldStatus.PENDING.value:
-            raise ValueError('Only pending holds can be fulfilled')
+            raise HoldNotPending(t.cast(str, self.id))
         self.copy_id = t.cast(str, copy.id)
         self.loan_id = t.cast(str, loan.id)
         self.status = HoldStatus.FULFILLED.value
@@ -208,7 +212,7 @@ class Hold(DomainEntity):
 
     def expire(self) -> None:
         if self.status != HoldStatus.PENDING.value:
-            raise ValueError('Only pending holds can be expired')
+            raise HoldNotPending(t.cast(str, self.id))
         self.status = HoldStatus.EXPIRED.value
         event_bus.add_event(
             HoldExpiredEvent(
@@ -218,7 +222,7 @@ class Hold(DomainEntity):
 
     def cancel(self) -> None:
         if self.status != HoldStatus.PENDING.value:
-            raise ValueError('Only pending holds can be cancelled')
+            raise HoldNotPending(t.cast(str, self.id))
         self.status = HoldStatus.CANCELLED.value
         event_bus.add_event(
             HoldCancelledEvent(

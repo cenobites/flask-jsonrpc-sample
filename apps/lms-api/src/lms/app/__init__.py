@@ -16,12 +16,13 @@ def create_app(config_class: type[Config] = Config) -> Flask:
     jsonrpc.init_app(app)
     cors.init_app(app, resources={r'/api/*': {'origins': '*'}})
 
-    from lms.app import rpc, routes, handlers, services
+    from lms.app import rpc, errors, routes, handlers, services
 
     services.register(app)
     handlers.register(app)
     routes.register(app)
     rpc.register(app, jsonrpc)
+    errors.register(app, jsonrpc)
 
     @app.teardown_appcontext
     def shutdown_session(exception: BaseException | None = None) -> None:

@@ -3,8 +3,15 @@ from __future__ import annotations
 import uuid
 
 from lms.domain.catalogs.entities import Copy, Item, Author, Category, Publisher
-
-from ..models.catalogs import CopyModel, ItemModel, CopyStatus, ItemFormat, AuthorModel, CategoryModel, PublisherModel
+from lms.infrastructure.database.models.catalogs import (
+    CopyModel,
+    ItemModel,
+    CopyStatus,
+    ItemFormat,
+    AuthorModel,
+    CategoryModel,
+    PublisherModel,
+)
 
 
 class CopyMapper:

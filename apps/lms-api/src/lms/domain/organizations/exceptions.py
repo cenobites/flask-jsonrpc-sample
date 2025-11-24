@@ -1,35 +1,33 @@
 from __future__ import annotations
 
-from .. import DomainError, DomainDoesNotExistError
+from lms.domain import DomainError
 
 
-class BranchBaseError(DomainError):
-    pass
+class BranchNameAlreadyExists(DomainError):
+    def __init__(self, name: str, /) -> None:
+        super().__init__(f'Branch with name {name!r} already exists')
+        self.name = name
 
 
-class BranchDoesNotExistError(DomainDoesNotExistError):
-    pass
+class StaffNotManager(DomainError):
+    def __init__(self, staff_id: str, /) -> None:
+        super().__init__(f'Staff with id {staff_id} is not a manager')
+        self.staff_id = staff_id
 
 
-class DuplicateBranchNameError(BranchBaseError):
-    pass
+class BranchAlreadyClosed(DomainError):
+    def __init__(self, branch_id: str, /) -> None:
+        super().__init__(f'Branch {branch_id} is already closed')
+        self.branch_id = branch_id
 
 
-class CannotAssignBranchManagerError(BranchBaseError):
-    pass
+class StaffEmailAlreadyExists(DomainError):
+    def __init__(self, email: str, /) -> None:
+        super().__init__(f'Staff with email {email!r} already exists')
+        self.email = email
 
 
-class BranchAlreadyClosedError(BranchBaseError):
-    pass
-
-
-class StaffBaseError(DomainError):
-    pass
-
-
-class StaffDoesNotExistError(DomainDoesNotExistError):
-    pass
-
-
-class DuplicateStaffEmailError(StaffBaseError):
-    pass
+class StaffNotActive(DomainError):
+    def __init__(self, staff_id: str, /) -> None:
+        super().__init__(f'Staff {staff_id} is not active')
+        self.staff_id = staff_id

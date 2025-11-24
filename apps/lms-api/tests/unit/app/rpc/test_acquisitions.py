@@ -4,9 +4,14 @@ import uuid
 
 from flask.testing import FlaskClient
 
+from tests.unit.factories import (
+    ItemFactory,
+    StaffFactory,
+    VendorFactory,
+    AcquisitionOrderFactory,
+    AcquisitionOrderLineFactory,
+)
 from lms.infrastructure.database.models.acquisitions import OrderStatus
-
-from ...factories import ItemFactory, StaffFactory, VendorFactory, AcquisitionOrderFactory, AcquisitionOrderLineFactory
 
 
 def test_vendor_list_empty(client: FlaskClient) -> None:

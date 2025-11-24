@@ -4,23 +4,24 @@ import typing as t
 import datetime
 from dataclasses import field, dataclass
 
+from lms.domain import DomainEntity
 from lms.infrastructure.event_bus import event_bus
-from lms.domain.organizations.events import (
+from lms.infrastructure.database.models.organizations import StaffRole, StaffStatus, BranchStatus
+
+from .events import (
     BranchClosedEvent,
     BranchOpenedEvent,
     BranchNameChangedEvent,
     StaffEmailChangedEvent,
     ManagerAssignedToBranchEvent,
 )
-from lms.infrastructure.database.models.organizations import StaffRole, StaffStatus, BranchStatus
-
-from .. import DomainEntity
 from .services import StaffUniquenessService, BranchAssignmentService, BranchUniquenessService
 from .exceptions import (
-    BranchAlreadyClosedError,
-    DuplicateBranchNameError,
-    DuplicateStaffEmailError,
-    CannotAssignBranchManagerError,
+    StaffNotActive,
+    StaffNotManager,
+    BranchAlreadyClosed,
+    BranchNameAlreadyExists,
+    StaffEmailAlreadyExists,
 )
 
 
@@ -45,14 +46,14 @@ class Branch(DomainEntity):
         branch_uniqueness_service: BranchUniquenessService,
     ) -> Branch:
         if not branch_uniqueness_service.is_name_unique(name):
-            raise DuplicateBranchNameError(f'Branch with name "{name}" already exists')
+            raise BranchNameAlreadyExists(name)
         branch = cls(id=None, name=name, address=address, phone=phone, email=email)
         event_bus.add_event(BranchOpenedEvent(branch_id=t.cast(str, branch.id), branch_name=branch.name))
         return branch
 
     def change_name(self, name: str, branch_uniqueness_service: BranchUniquenessService) -> None:
         if name != self.name and not branch_uniqueness_service.is_name_unique(name):
-            raise DuplicateBranchNameError(f'Branch with name "{name}" already exists')
+            raise BranchNameAlreadyExists(name)
         if self.name != name:
             self.name = name
             event_bus.add_event(
@@ -61,9 +62,7 @@ class Branch(DomainEntity):
 
     def assign_manager(self, manager_id: str, branch_assignment_service: BranchAssignmentService) -> None:
         if not branch_assignment_service.can_assign_manager(t.cast(str, self.id), manager_id):
-            raise CannotAssignBranchManagerError(
-                f'Cannot assign staff with id {manager_id} as manager for branch with id {self.id}'
-            )
+            raise StaffNotManager(manager_id)
         if self.manager_id != manager_id:
             self.manager_id = manager_id
             self.status = BranchStatus.ACTIVE.value
@@ -71,7 +70,7 @@ class Branch(DomainEntity):
 
     def close(self) -> None:
         if self.status == BranchStatus.CLOSED.value:
-            raise BranchAlreadyClosedError('Branch is already closed')
+            raise BranchAlreadyClosed(t.cast(str, self.id))
         self.status = BranchStatus.CLOSED.value
         event_bus.add_event(BranchClosedEvent(branch_id=t.cast(str, self.id)))
 
@@ -88,13 +87,13 @@ class Staff(DomainEntity):
     @classmethod
     def create(cls, /, *, name: str, email: str, role: str, staff_uniqueness_service: StaffUniquenessService) -> Staff:
         if not staff_uniqueness_service.is_email_unique(email):
-            raise DuplicateStaffEmailError(f'Staff with email "{email}" already exists')
+            raise StaffEmailAlreadyExists(email)
         staff = cls(id=None, name=name, email=email, role=role)
         return staff
 
     def change_email(self, email: str, staff_uniqueness_service: StaffUniquenessService) -> None:
         if email != self.email and not staff_uniqueness_service.is_email_unique(email):
-            raise DuplicateStaffEmailError(f'Staff with email "{email}" already exists')
+            raise StaffEmailAlreadyExists(email)
         if self.email != email:
             old_email = self.email
             self.email = email
@@ -107,5 +106,5 @@ class Staff(DomainEntity):
 
     def mark_as_inactive(self) -> None:
         if self.status != StaffStatus.ACTIVE.value:
-            raise ValueError('Staff member is already inactive')
+            raise StaffNotActive(t.cast(str, self.id))
         self.status = StaffStatus.INACTIVE.value

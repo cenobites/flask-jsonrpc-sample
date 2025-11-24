@@ -3,6 +3,7 @@ from __future__ import annotations
 from decimal import Decimal
 
 from lms.infrastructure.event_bus import event_bus
+from lms.app.exceptions.acquisitions import VendorNotFoundError, AcquisitionOrderNotFoundError
 from lms.domain.acquisitions.entities import Vendor, AcquisitionOrder
 from lms.domain.acquisitions.repositories import (
     VendorRepository,
@@ -25,7 +26,7 @@ class AcquisitionOrderService:
     def _get_order(self, order_id: str) -> AcquisitionOrder:
         order = self.acquisition_order_repository.get_by_id(order_id)
         if order is None:
-            raise ValueError(f'Acquisition order with id {order_id} not found')
+            raise AcquisitionOrderNotFoundError(f'Acquisition order with id {order_id} not found')
         return order
 
     def find_all_orders(self) -> list[AcquisitionOrder]:
@@ -41,18 +42,14 @@ class AcquisitionOrderService:
         return created_order
 
     def add_line_to_order(self, order_id: str, item_id: str, quantity: int, unit_price: Decimal) -> AcquisitionOrder:
-        order = self.acquisition_order_repository.get_by_id(order_id)
-        if order is None:
-            raise ValueError(f'Acquisition order with id {order_id} not found')
+        order = self._get_order(order_id)
         order.add_line(item_id=item_id, unit_price=unit_price, quantity=quantity)
         updated_order = self.acquisition_order_repository.save(order)
         event_bus.publish_events()
         return updated_order
 
     def remove_line_from_order(self, order_id: str, order_line_id: str) -> AcquisitionOrder:
-        order = self.acquisition_order_repository.get_by_id(order_id)
-        if order is None:
-            raise ValueError(f'Acquisition order with id {order_id} not found')
+        order = self._get_order(order_id)
         order.remove_line(order_line_id=order_line_id)
         updated_order = self.acquisition_order_repository.save(order)
         event_bus.publish_events()
@@ -89,7 +86,7 @@ class VendorService:
     def _get(self, vendor_id: str) -> Vendor:
         model = self.vendor_repository.get_by_id(vendor_id)
         if not model:
-            raise ValueError(f'Vendor with id {vendor_id} not found')
+            raise VendorNotFoundError(f'Vendor with id {vendor_id} not found')
         return model
 
     def find_all_vendors(self) -> list[Vendor]:

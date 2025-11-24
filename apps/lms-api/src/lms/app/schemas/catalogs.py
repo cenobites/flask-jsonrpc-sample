@@ -14,7 +14,7 @@ class ItemCreate(BaseSchema):
     publication_year: int | None = Field(default=None, description='Year the item was published')
     category_id: str | None = Field(default=None, description='ID of the item category')
     edition: str | None = Field(default=None, description='Edition of the item')
-    format: ItemFormat = Field(default=ItemFormat.BOOK, description='Material type of the catalog item')
+    format: ItemFormat = Field(default=ItemFormat.BOOK, description='Format of the catalog item')
     description: str | None = Field(default=None, description='Description of the catalog item')
 
 
@@ -26,5 +26,5 @@ class ItemUpdate(BaseSchema):
     publication_year: int | None = Field(default=None, description='Year the item was published')
     category_id: str | None = Field(default=None, description='ID of the item category')
     edition: str | None = Field(default=None, description='Edition of the item')
-    format: ItemFormat = Field(default=ItemFormat.BOOK, description='Material type of the catalog item')
+    format: ItemFormat = Field(default=ItemFormat.BOOK, description='Format of the catalog item')
     description: str | None = Field(default=None, description='Description of the catalog item')

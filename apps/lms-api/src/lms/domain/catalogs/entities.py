@@ -4,6 +4,7 @@ import typing as t
 import datetime
 from dataclasses import field, dataclass
 
+from lms.domain import DomainEntity
 from lms.domain.catalogs.events import (
     ItemCreatedEvent,
     CopyAddedToItemEvent,
@@ -12,9 +13,8 @@ from lms.domain.catalogs.events import (
     PublisherRegisteredEvent,
 )
 from lms.infrastructure.event_bus import event_bus
+from lms.domain.catalogs.exceptions import CopyAlreadyLost, CopyNotAvailable, CopyNotCheckedOut, CopyAlreadyDamaged
 from lms.infrastructure.database.models.catalogs import CopyStatus, ItemFormat
-
-from .. import DomainEntity
 
 
 @dataclass
@@ -53,22 +53,22 @@ class Copy(DomainEntity):
 
     def mark_as_checked_out(self) -> None:
         if self.status != CopyStatus.AVAILABLE.value:
-            raise ValueError('Copy is not available to borrow')
+            raise CopyNotAvailable(t.cast(str, self.id))
         self.status = CopyStatus.CHECKED_OUT.value
 
     def mark_as_available(self) -> None:
         if self.status != CopyStatus.CHECKED_OUT.value:
-            raise ValueError('Copy is not checked out')
+            raise CopyNotCheckedOut(t.cast(str, self.id))
         self.status = CopyStatus.AVAILABLE.value
 
     def mark_as_lost(self) -> None:
-        if self.status == CopyStatus.CHECKED_OUT.value:
-            raise ValueError('Copy is not checked out')
+        if self.status == CopyStatus.LOST.value:
+            raise CopyAlreadyLost(t.cast(str, self.id))
         self.status = CopyStatus.LOST.value
 
     def mark_as_damaged(self) -> None:
-        if self.status == CopyStatus.CHECKED_OUT.value:
-            raise ValueError('Copy is not checked out')
+        if self.status == CopyStatus.DAMAGED.value:
+            raise CopyAlreadyDamaged(t.cast(str, self.id))
         self.status = CopyStatus.DAMAGED.value
 
 

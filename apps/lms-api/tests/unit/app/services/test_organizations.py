@@ -5,8 +5,8 @@ from unittest.mock import ANY, Mock, MagicMock, patch
 import pytest
 
 from lms.app.services.organizations import StaffService, BranchService
+from lms.app.exceptions.organizations import StaffNotFoundError, BranchNotFoundError
 from lms.domain.organizations.entities import Staff, Branch
-from lms.domain.organizations.exceptions import StaffDoesNotExistError, BranchDoesNotExistError
 
 
 @pytest.fixture
@@ -73,7 +73,7 @@ def test_branch_service_get_branch_success(branch_service: BranchService, mock_b
 def test_branch_service_get_branch_not_found(branch_service: BranchService, mock_branch_repository: Mock) -> None:
     mock_branch_repository.get_by_id.return_value = None
 
-    with pytest.raises(BranchDoesNotExistError):
+    with pytest.raises(BranchNotFoundError):
         branch_service.get_branch('branch-999')
 
 
@@ -184,7 +184,7 @@ def test_staff_service_get_staff_success(staff_service: StaffService, mock_staff
 def test_staff_service_get_staff_not_found(staff_service: StaffService, mock_staff_repository: Mock) -> None:
     mock_staff_repository.get_by_id.return_value = None
 
-    with pytest.raises(StaffDoesNotExistError):
+    with pytest.raises(StaffNotFoundError):
         staff_service.get_staff('staff-999')
 
 

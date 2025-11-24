@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import date
 from dataclasses import dataclass
 
-from .. import DomainEvent
+from lms.domain import DomainEvent
 
 
 @dataclass

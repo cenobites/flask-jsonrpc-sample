@@ -4,9 +4,8 @@ import uuid
 
 from flask.testing import FlaskClient
 
+from tests.unit.factories import StaffFactory, BranchFactory
 from lms.infrastructure.database.models.organizations import StaffRole
-
-from ...factories import StaffFactory, BranchFactory
 
 
 def test_branch_list_empty(client: FlaskClient) -> None:
@@ -104,7 +103,10 @@ def test_branch_create_duplicate_name(client: FlaskClient) -> None:
         'id': rv_data['id'],
         'error': {
             'code': -32000,
-            'data': {'code': 'DuplicateBranchNameError', 'detail': 'Branch with name "Central Library" already exists'},
+            'data': {
+                'code': 'DuplicateBranchNameError',
+                'message': 'Branch with name "Central Library" already exists',
+            },
             'message': 'Server error',
             'name': 'ServerError',
         },
@@ -140,7 +142,7 @@ def test_branch_get_not_found(client: FlaskClient) -> None:
     assert rv.status_code == 500, rv.data
     rv_data = rv.get_json()
     assert 'error' in rv_data
-    assert rv_data['error']['data']['code'] == 'BranchDoesNotExistError'
+    assert rv_data['error']['data']['code'] == 'BranchNotFoundError'
 
 
 def test_branch_update_name(client: FlaskClient) -> None:
@@ -370,7 +372,7 @@ def test_staff_get_not_found(client: FlaskClient) -> None:
     assert rv.status_code == 500, rv.data
     rv_data = rv.get_json()
     assert 'error' in rv_data
-    assert rv_data['error']['data']['code'] == 'StaffDoesNotExistError'
+    assert rv_data['error']['data']['code'] == 'StaffNotFoundError'
 
 
 def test_staff_update_name(client: FlaskClient) -> None:

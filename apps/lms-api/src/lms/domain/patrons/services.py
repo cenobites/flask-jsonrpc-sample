@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from decimal import Decimal
 
+from lms.domain import DomainNotFound
 from lms.domain.catalogs.repositories import CopyRepository, ItemRepository
 from lms.domain.circulations.repositories import HoldRepository, LoanRepository
 from lms.infrastructure.database.models.patrons import PatronStatus
@@ -92,17 +93,17 @@ class FinePolicyService:
     def calculate_fine_for_damaged_item(self, copy_id: str) -> Decimal:
         copy = self.copy_repository.get_by_id(copy_id)
         if not copy:
-            raise ValueError(f'Copy with ID {copy_id} not found')
+            raise DomainNotFound('Copy', copy_id)
         item = self.item_repository.get_by_id(copy.item_id)
         if not item:
-            raise ValueError(f'Item with ID {copy.item_id} not found')
+            raise DomainNotFound('Item', copy.item_id)
         return Decimal(self.damage_fee.get(item.format, self.damage_fee['default']) + self.processing_fee)
 
     def calculate_fine_for_lost_item(self, copy_id: str) -> Decimal:
         copy = self.copy_repository.get_by_id(copy_id)
         if not copy:
-            raise ValueError(f'Copy with ID {copy_id} not found')
+            raise DomainNotFound('Copy', copy_id)
         item = self.item_repository.get_by_id(copy.item_id)
         if not item:
-            raise ValueError(f'Item with ID {copy.item_id} not found')
+            raise DomainNotFound('Item', copy.item_id)
         return Decimal(self.replacement_cost.get(item.format, self.replacement_cost['default']) + self.processing_fee)

@@ -10,9 +10,20 @@ import flask_jsonrpc.types.methods as tm
 
 from lms.app.schemas import Page
 from lms.app.services.circulations import HoldService, LoanService
+from lms.app.exceptions.circulations import HoldNotFoundError, LoanNotFoundError
 from lms.domain.circulations.entities import Hold, Loan
 
 jsonrpc_bp = JSONRPCBlueprint('circulations', __name__)
+
+
+@jsonrpc_bp.errorhandler(LoanNotFoundError)
+def handle_loan_not_found_error(ex: LoanNotFoundError) -> dict[str, t.Any]:
+    return {'message': ex.message, 'code': ex.__class__.__name__}
+
+
+@jsonrpc_bp.errorhandler(HoldNotFoundError)
+def handle_hold_not_found_error(ex: HoldNotFoundError) -> dict[str, t.Any]:
+    return {'message': ex.message, 'code': ex.__class__.__name__}
 
 
 @jsonrpc_bp.method(

@@ -5,9 +5,8 @@ from decimal import Decimal
 
 from flask.testing import FlaskClient
 
+from tests.unit.factories import FineFactory, BranchFactory, PatronFactory
 from lms.infrastructure.database.models.patrons import FineStatus, PatronStatus
-
-from ...factories import FineFactory, BranchFactory, PatronFactory
 
 
 def test_patron_list_empty(client: FlaskClient) -> None:

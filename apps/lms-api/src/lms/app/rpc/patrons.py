@@ -11,9 +11,20 @@ import flask_jsonrpc.types.methods as tm
 from lms.app.schemas import Page
 from lms.app.schemas.patrons import PatronCreate, PatronUpdate
 from lms.app.services.patrons import FineService, PatronService
+from lms.app.exceptions.patrons import FineNotFoundError, PatronNotFoundError
 from lms.domain.patrons.entities import Fine, Patron
 
 jsonrpc_bp = JSONRPCBlueprint('patrons', __name__)
+
+
+@jsonrpc_bp.errorhandler(PatronNotFoundError)
+def handle_patron_not_found_error(ex: PatronNotFoundError) -> dict[str, t.Any]:
+    return {'message': ex.message, 'code': ex.__class__.__name__}
+
+
+@jsonrpc_bp.errorhandler(FineNotFoundError)
+def handle_fine_not_found_error(ex: FineNotFoundError) -> dict[str, t.Any]:
+    return {'message': ex.message, 'code': ex.__class__.__name__}
 
 
 @jsonrpc_bp.method(

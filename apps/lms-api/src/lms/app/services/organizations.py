@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from lms.infrastructure.event_bus import event_bus
+from lms.app.exceptions.organizations import StaffNotFoundError, BranchNotFoundError
 from lms.domain.organizations.entities import Staff, Branch
 from lms.domain.organizations.services import StaffUniquenessService, BranchAssignmentService, BranchUniquenessService
-from lms.domain.organizations.exceptions import StaffDoesNotExistError, BranchDoesNotExistError
 from lms.domain.organizations.repositories import StaffRepository, BranchRepository
 
 
@@ -23,7 +23,7 @@ class BranchService:
     def _get_branch(self, branch_id: str) -> Branch:
         branch = self.branch_repository.get_by_id(branch_id)
         if branch is None:
-            raise BranchDoesNotExistError()
+            raise BranchNotFoundError(f'Branch with id {branch_id} not found')
         return branch
 
     def find_all_branches(self) -> list[Branch]:
@@ -95,7 +95,7 @@ class StaffService:
     def _get_staff(self, staff_id: str) -> Staff:
         staff = self.staff_repository.get_by_id(staff_id)
         if staff is None:
-            raise StaffDoesNotExistError()
+            raise StaffNotFoundError(f'Staff with id {staff_id} not found')
         return staff
 
     def find_all_staff(self) -> list[Staff]:

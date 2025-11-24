@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+from lms.app.exceptions.patrons import FineNotFoundError, PatronNotFoundError
 from lms.domain.patrons.entities import Fine, Patron
 from lms.domain.patrons.services import FinePolicyService, PatronUniquenessService, PatronReinstatementService
 from lms.infrastructure.event_bus import event_bus
-from lms.domain.patrons.exceptions import PatronDoesNotExistError
 from lms.domain.patrons.repositories import FineRepository, PatronRepository
 
 
@@ -23,7 +23,7 @@ class PatronService:
     def _get_patron(self, patron_id: str) -> Patron:
         patron = self.patron_repository.get_by_id(patron_id)
         if patron is None:
-            raise PatronDoesNotExistError(f'Patron with id {patron_id} not found')
+            raise PatronNotFoundError(f'Patron with id {patron_id} not found')
         return patron
 
     def find_all_patrons(self) -> list[Patron]:
@@ -92,7 +92,7 @@ class FineService:
     def _get_fine(self, fine_id: str) -> Fine:
         fine = self.fine_repository.get_by_id(fine_id)
         if fine is None:
-            raise ValueError(f'Fine with id {fine_id} not found')
+            raise FineNotFoundError(f'Fine with id {fine_id} not found')
         return fine
 
     def find_all_fines(self) -> list[Fine]:

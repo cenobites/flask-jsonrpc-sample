@@ -4,17 +4,13 @@ import typing as t
 import datetime
 from dataclasses import field, dataclass
 
-from lms.domain.serials.events import (
-    SerialCreatedEvent,
-    SerialActivatedEvent,
-    SerialDeactivatedEvent,
-    SerialIssueReceivedEvent,
-)
+from lms.domain import DomainEntity
 from lms.domain.catalogs.entities import Copy, Item
 from lms.infrastructure.event_bus import event_bus
 from lms.infrastructure.database.models.serials import SerialStatus, SerialIssueStatus
 
-from .. import DomainEntity
+from .events import SerialCreatedEvent, SerialActivatedEvent, SerialDeactivatedEvent, SerialIssueReceivedEvent
+from .exceptions import SerialAlreadyActive, SerialAlreadyInactive
 
 
 @dataclass
@@ -50,13 +46,13 @@ class Serial(DomainEntity):
 
     def activate(self) -> None:
         if self.status == SerialStatus.ACTIVE.value:
-            raise ValueError('Serial is already active.')
+            raise SerialAlreadyActive(f'Serial {self.id} is already active')
         self.status = SerialStatus.ACTIVE.value
         event_bus.add_event(SerialActivatedEvent(serial_id=t.cast(str, self.id), item_id=self.item_id))
 
     def deactivate(self) -> None:
         if self.status == SerialStatus.INACTIVE.value:
-            raise ValueError('Serial is already inactive.')
+            raise SerialAlreadyInactive(f'Serial {self.id} is already inactive')
         self.status = SerialStatus.INACTIVE.value
         event_bus.add_event(SerialDeactivatedEvent(serial_id=t.cast(str, self.id), item_id=self.item_id))
 

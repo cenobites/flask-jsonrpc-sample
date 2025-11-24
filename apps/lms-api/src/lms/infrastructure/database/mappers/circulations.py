@@ -3,8 +3,7 @@ from __future__ import annotations
 import uuid
 
 from lms.domain.circulations.entities import Hold, Loan
-
-from ..models.circulations import HoldModel, LoanModel, HoldStatus
+from lms.infrastructure.database.models.circulations import HoldModel, LoanModel, HoldStatus
 
 
 class LoanMapper:

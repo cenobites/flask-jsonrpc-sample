@@ -6,11 +6,16 @@ from dataclasses import field, dataclass
 
 
 class DomainError(Exception):
-    pass
+    def __init__(self, message: str) -> None:
+        super().__init__(message)
+        self.message = message
 
 
-class DomainDoesNotExistError(DomainError):
-    pass
+class DomainNotFound(DomainError):
+    def __init__(self, domain_name: str, domain_id: str) -> None:
+        super().__init__(f'{domain_name} with ID {domain_id} was not found')
+        self.domain_name = domain_name
+        self.domain_id = domain_id
 
 
 @dataclass

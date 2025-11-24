@@ -5,8 +5,11 @@ from decimal import Decimal
 import datetime
 from dataclasses import field, dataclass
 
+from lms.domain import DomainEntity, DomainNotFound
 from lms.infrastructure.event_bus import event_bus
-from lms.domain.acquisitions.events import (
+from lms.infrastructure.database.models.acquisitions import OrderStatus, VendorStatus, OrderLineStatus
+
+from .events import (
     VendorRegisteredEvent,
     AcquisitionOrderCreatedEvent,
     AcquisitionOrderReceivedEvent,
@@ -16,9 +19,14 @@ from lms.domain.acquisitions.events import (
     AcquisitionOrderLineRemovedEvent,
     AcquisitionOrderLineReceivedEvent,
 )
-from lms.infrastructure.database.models.acquisitions import OrderStatus, VendorStatus, OrderLineStatus
-
-from .. import DomainEntity
+from .exceptions import (
+    VendorAlreadyActive,
+    VendorAlreadyInactive,
+    AcquisitionOrderHasNoLines,
+    AcquisitionOrderNotPending,
+    AcquisitionOrderLineNotSubmitted,
+    AcquisitionOrderLineAlreadyReceived,
+)
 
 
 @dataclass
@@ -38,7 +46,7 @@ class AcquisitionOrder(DomainEntity):
 
     def add_line(self, item_id: str, unit_price: Decimal, quantity: int) -> None:
         if self.status != OrderStatus.PENDING.value:
-            raise ValueError('Can only add lines to pending orders.')
+            raise AcquisitionOrderNotPending(t.cast(str, self.id))
         order_line = AcquisitionOrderLine.create(
             order_id=t.cast(str, self.id), item_id=item_id, unit_price=unit_price, quantity=quantity
         )
@@ -52,9 +60,9 @@ class AcquisitionOrder(DomainEntity):
     def remove_line(self, order_line_id: str) -> None:
         line_to_remove = next((line for line in self.order_lines if line.id == order_line_id), None)
         if line_to_remove is None:
-            raise ValueError(f'Order line with id {order_line_id} not found in this order.')
+            raise DomainNotFound('AcquisitionOrderLine', order_line_id)
         if line_to_remove.is_received():
-            raise ValueError('Cannot remove an order line that has been received.')
+            raise AcquisitionOrderLineAlreadyReceived(t.cast(str, line_to_remove.id), t.cast(str, self.id))
         self.order_lines.remove(line_to_remove)
         event_bus.add_event(
             AcquisitionOrderLineRemovedEvent(
@@ -64,12 +72,12 @@ class AcquisitionOrder(DomainEntity):
 
     def receive_line(self, order_line_id: str, received_quantity: int | None) -> None:
         if self.status != OrderStatus.SUBMITTED.value:
-            raise ValueError('Can only receive lines for submitted orders.')
+            raise AcquisitionOrderLineNotSubmitted(order_line_id, t.cast(str, self.id))
         received_line = next((line for line in self.order_lines if line.id == order_line_id), None)
         if not received_line:
-            raise ValueError('Order line not found')
+            raise DomainNotFound('AcquisitionOrderLine', order_line_id)
         if received_line.is_fully_received():
-            raise ValueError('Order line is already fully received')
+            raise AcquisitionOrderLineAlreadyReceived(t.cast(str, received_line.id), t.cast(str, self.id))
         received_line.received(
             received_quantity=received_quantity if received_quantity is not None else received_line.quantity
         )
@@ -96,15 +104,15 @@ class AcquisitionOrder(DomainEntity):
 
     def submit(self) -> None:
         if self.status != OrderStatus.PENDING.value:
-            raise ValueError('Only pending orders can be submitted.')
+            raise AcquisitionOrderNotPending(t.cast(str, self.id))
         if not self.order_lines:
-            raise ValueError('Cannot submit an order with no order lines.')
+            raise AcquisitionOrderHasNoLines(t.cast(str, self.id))
         self.status = OrderStatus.SUBMITTED.value
         event_bus.add_event(AcquisitionOrderSubmittedEvent(acquisition_order_id=t.cast(str, self.id)))
 
     def mark_as_cancelled(self) -> None:
         if self.status != OrderStatus.PENDING.value:
-            raise ValueError('Only pending orders can be cancelled.')
+            raise AcquisitionOrderNotPending(t.cast(str, self.id))
         self.status = OrderStatus.CANCELLED.value
         event_bus.add_event(AcquisitionOrderCancelledEvent(acquisition_order_id=t.cast(str, self.id)))
 
@@ -160,10 +168,10 @@ class Vendor(DomainEntity):
 
     def activate(self) -> None:
         if self.status == VendorStatus.ACTIVE.value:
-            raise ValueError('Vendor is already active.')
+            raise VendorAlreadyActive(t.cast(str, self.id))
         self.status = VendorStatus.ACTIVE.value
 
     def deactivate(self) -> None:
         if self.status == VendorStatus.INACTIVE.value:
-            raise ValueError('Vendor is already inactive.')
+            raise VendorAlreadyInactive(t.cast(str, self.id))
         self.status = VendorStatus.INACTIVE.value
