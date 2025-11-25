@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from lms.domain import DomainError
+from lms.app.exceptions import ServiceFailed
 from lms.app.exceptions.serials import SerialNotFoundError
 from lms.app.exceptions.catalogs import ItemNotFoundError
 from lms.domain.serials.entities import Serial
@@ -44,21 +46,30 @@ class SerialService:
         self, title: str, issn: str, item_id: str, frequency: str | None = None, description: str | None = None
     ) -> Serial:
         item = self._get_item(item_id)
-        serial = Serial.create(item=item, title=title, issn=issn, frequency=frequency, description=description)
+        try:
+            serial = Serial.create(item=item, title=title, issn=issn, frequency=frequency, description=description)
+        except DomainError as e:
+            raise ServiceFailed('The serial subscription cannot be created', cause=e) from e
         created_serial = self.serial_repository.save(serial)
         event_bus.publish_events()
         return created_serial
 
     def renew_serial_subscription(self, serial_id: str) -> Serial:
         serial = self._get_serial(serial_id)
-        serial.activate()
+        try:
+            serial.activate()
+        except DomainError as e:
+            raise ServiceFailed('The serial subscription cannot be renewed', cause=e) from e
         updated_serial = self.serial_repository.save(serial)
         event_bus.publish_events()
         return updated_serial
 
     def unsubscribe_serial(self, serial_id: str) -> Serial:
         serial = self._get_serial(serial_id)
-        serial.deactivate()
+        try:
+            serial.deactivate()
+        except DomainError as e:
+            raise ServiceFailed('The serial subscription cannot be unsubscribed', cause=e) from e
         updated_serial = self.serial_repository.save(serial)
         event_bus.publish_events()
         return updated_serial

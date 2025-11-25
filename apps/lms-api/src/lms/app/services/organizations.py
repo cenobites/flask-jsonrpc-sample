@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+from lms.domain import DomainError
+from lms.app.exceptions import ServiceFailed
 from lms.infrastructure.event_bus import event_bus
 from lms.app.exceptions.organizations import StaffNotFoundError, BranchNotFoundError
 from lms.domain.organizations.entities import Staff, Branch
 from lms.domain.organizations.services import StaffUniquenessService, BranchAssignmentService, BranchUniquenessService
+from lms.domain.organizations.exceptions import StaffNotManager
 from lms.domain.organizations.repositories import StaffRepository, BranchRepository
 
 
@@ -40,15 +43,20 @@ class BranchService:
         email: str | None = None,
         manager_id: str | None = None,
     ) -> Branch:
-        branch = Branch.create(
-            name=name,
-            email=email,
-            address=address,
-            phone=phone,
-            branch_uniqueness_service=self.branch_uniqueness_service,
-        )
-        if manager_id is not None:
-            branch.assign_manager(manager_id, self.branch_assignment_service)
+        try:
+            branch = Branch.create(
+                name=name,
+                email=email,
+                address=address,
+                phone=phone,
+                branch_uniqueness_service=self.branch_uniqueness_service,
+            )
+            if manager_id is not None:
+                branch.assign_manager(manager_id, self.branch_assignment_service)
+        except StaffNotManager as e:
+            raise ServiceFailed('The branch cannot be created with the specified manager', cause=e) from e
+        except DomainError as e:
+            raise ServiceFailed('The branch cannot be created', cause=e) from e
         created_branch = self.branch_repository.save(branch)
         event_bus.publish_events()
         return created_branch
@@ -62,7 +70,10 @@ class BranchService:
         email: str | None = None,
     ) -> Branch:
         branch = self._get_branch(branch_id)
-        branch.change_name(name or branch.name, self.branch_uniqueness_service)
+        try:
+            branch.change_name(name or branch.name, self.branch_uniqueness_service)
+        except DomainError as e:
+            raise ServiceFailed('The branch name cannot be updated', cause=e) from e
         branch.address = address if address is not None else branch.address
         branch.phone = phone if phone is not None else branch.phone
         branch.email = email if email is not None else branch.email
@@ -72,14 +83,20 @@ class BranchService:
 
     def assign_branch_manager(self, branch_id: str, manager_id: str) -> Branch:
         branch = self._get_branch(branch_id)
-        branch.assign_manager(manager_id, self.branch_assignment_service)
+        try:
+            branch.assign_manager(manager_id, self.branch_assignment_service)
+        except DomainError as e:
+            raise ServiceFailed('The branch manager cannot be assigned', cause=e) from e
         updated_branch = self.branch_repository.save(branch)
         event_bus.publish_events()
         return updated_branch
 
     def close_branch(self, branch_id: str) -> Branch:
         branch = self._get_branch(branch_id)
-        branch.close()
+        try:
+            branch.close()
+        except DomainError as e:
+            raise ServiceFailed('The branch cannot be closed', cause=e) from e
         updated_branch = self.branch_repository.save(branch)
         event_bus.publish_events()
         return updated_branch
@@ -105,7 +122,12 @@ class StaffService:
         return self._get_staff(staff_id)
 
     def create_staff(self, name: str, email: str, role: str) -> Staff:
-        staff = Staff.create(name=name, email=email, role=role, staff_uniqueness_service=self.staff_uniqueness_service)
+        try:
+            staff = Staff.create(
+                name=name, email=email, role=role, staff_uniqueness_service=self.staff_uniqueness_service
+            )
+        except DomainError as e:
+            raise ServiceFailed('The staff cannot be created', cause=e) from e
         created_staff = self.staff_repository.save(staff)
         event_bus.publish_events()
         return created_staff
@@ -119,7 +141,10 @@ class StaffService:
 
     def update_staff_email(self, staff_id: str, email: str) -> Staff:
         staff = self._get_staff(staff_id)
-        staff.change_email(email, self.staff_uniqueness_service)
+        try:
+            staff.change_email(email, self.staff_uniqueness_service)
+        except DomainError as e:
+            raise ServiceFailed('The staff email cannot be updated', cause=e) from e
         updated_staff = self.staff_repository.save(staff)
         event_bus.publish_events()
         return updated_staff
@@ -133,14 +158,20 @@ class StaffService:
 
     def assign_staff_role(self, staff_id: str, role: str) -> Staff:
         staff = self._get_staff(staff_id)
-        staff.change_role(role)
+        try:
+            staff.change_role(role)
+        except DomainError as e:
+            raise ServiceFailed('The staff role cannot be updated', cause=e) from e
         updated_staff = self.staff_repository.save(staff)
         event_bus.publish_events()
         return updated_staff
 
     def inactivate_staff(self, staff_id: str) -> Staff:
         staff = self._get_staff(staff_id)
-        staff.mark_as_inactive()
+        try:
+            staff.mark_as_inactive()
+        except DomainError as e:
+            raise ServiceFailed('The staff cannot be inactivated', cause=e) from e
         updated_staff = self.staff_repository.save(staff)
         event_bus.publish_events()
         return updated_staff

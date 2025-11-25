@@ -6,6 +6,7 @@ from unittest.mock import Mock, MagicMock
 import pytest
 
 from lms.app.services.catalogs import CopyService, ItemService, AuthorService, CategoryService, PublisherService
+from lms.app.exceptions.catalogs import CopyNotFoundError, ItemNotFoundError, CategoryNotFoundError
 from lms.domain.catalogs.entities import Copy, Item, Author, Category
 
 
@@ -81,7 +82,7 @@ def test_copy_service_get_copy_success(copy_service: CopyService, mock_copy_repo
 def test_copy_service_get_copy_not_found(copy_service: CopyService, mock_copy_repository: Mock) -> None:
     mock_copy_repository.get_by_id.return_value = None
 
-    with pytest.raises(ValueError, match='Copy with id copy-999 not found'):
+    with pytest.raises(CopyNotFoundError, match='Copy with id copy-999 not found'):
         copy_service.get_copy('copy-999')
 
 
@@ -140,7 +141,7 @@ def test_item_service_get_item_success(item_service: ItemService, mock_item_repo
 def test_item_service_get_item_not_found(item_service: ItemService, mock_item_repository: Mock) -> None:
     mock_item_repository.get_by_id.return_value = None
 
-    with pytest.raises(ValueError, match='Item with id item-999 not found'):
+    with pytest.raises(ItemNotFoundError, match='Item with id item-999 not found'):
         item_service.get_item('item-999')
 
 
@@ -215,7 +216,7 @@ def test_category_service_get_category_not_found(
 ) -> None:
     mock_category_repository.get_by_id.return_value = None
 
-    with pytest.raises(ValueError, match='Category with id cat-999 not found'):
+    with pytest.raises(CategoryNotFoundError, match='Category with id cat-999 not found'):
         category_service.get_category('cat-999')
 
 

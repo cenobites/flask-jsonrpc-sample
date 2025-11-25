@@ -5,7 +5,7 @@ from unittest.mock import ANY, Mock, MagicMock, patch
 import pytest
 
 from lms.app.services.patrons import FineService, PatronService
-from lms.app.exceptions.patrons import PatronNotFoundError
+from lms.app.exceptions.patrons import FineNotFoundError, PatronNotFoundError
 from lms.domain.patrons.entities import Fine, Patron
 
 
@@ -184,7 +184,7 @@ def test_fine_service_get_fine_success(fine_service: FineService, mock_fine_repo
 def test_fine_service_get_fine_not_found(fine_service: FineService, mock_fine_repository: Mock) -> None:
     mock_fine_repository.get_by_id.return_value = None
 
-    with pytest.raises(ValueError, match='Fine with id fine-999 not found'):
+    with pytest.raises(FineNotFoundError, match='Fine with id fine-999 not found'):
         fine_service.get_fine('fine-999')
 
 

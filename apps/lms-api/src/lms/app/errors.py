@@ -10,7 +10,7 @@ from lms.domain import DomainError, DomainNotFound
 from lms.infrastructure import InfrastructureError
 from lms.infrastructure.logging import logger
 
-from .exceptions import ApplicationError
+from .exceptions import ServiceFailed, ApplicationError
 
 
 def register(app: Flask, jsonrpc: JSONRPC) -> None:
@@ -22,8 +22,14 @@ def register(app: Flask, jsonrpc: JSONRPC) -> None:
     def handle_domain_error(ex: DomainError) -> tuple[dict[str, t.Any], int]:
         return {'error': str(ex), 'code': ex.__class__.__name__}, 400
 
+    @jsonrpc.errorhandler(ServiceFailed)
+    def handle_service_failed(ex: ServiceFailed) -> tuple[dict[str, t.Any], int]:
+        logger.error('Service failed: %s -> %s', str(ex), str(ex.cause))
+        return {'error': str(ex), 'code': ex.__class__.__name__}, ex.code
+
     @jsonrpc.errorhandler(ApplicationError)
     def handle_application_error(ex: ApplicationError) -> tuple[dict[str, t.Any], int]:
+        logger.error('Application error: %s', str(ex))
         return {'error': str(ex), 'code': ex.__class__.__name__}, ex.code
 
     @jsonrpc.errorhandler(InfrastructureError)

@@ -6,6 +6,7 @@ from unittest.mock import Mock, MagicMock
 import pytest
 
 from lms.app.services.acquisitions import VendorService, AcquisitionOrderService
+from lms.app.exceptions.acquisitions import VendorNotFoundError, AcquisitionOrderNotFoundError
 from lms.domain.acquisitions.entities import Vendor, AcquisitionOrder
 
 
@@ -59,7 +60,7 @@ def test_vendor_service_get_vendor_success(vendor_service: VendorService, mock_v
 def test_vendor_service_get_vendor_not_found(vendor_service: VendorService, mock_vendor_repository: Mock) -> None:
     mock_vendor_repository.get_by_id.return_value = None
 
-    with pytest.raises(ValueError, match='Vendor with id vendor-999 not found'):
+    with pytest.raises(VendorNotFoundError, match='Vendor with id vendor-999 not found'):
         vendor_service.get_vendor('vendor-999')
 
 
@@ -135,7 +136,7 @@ def test_order_service_get_order_success(order_service: AcquisitionOrderService,
 def test_order_service_get_order_not_found(order_service: AcquisitionOrderService, mock_order_repository: Mock) -> None:
     mock_order_repository.get_by_id.return_value = None
 
-    with pytest.raises(ValueError, match='Acquisition order with id order-999 not found'):
+    with pytest.raises(AcquisitionOrderNotFoundError, match='Acquisition order with id order-999 not found'):
         order_service.get_order('order-999')
 
 
@@ -166,7 +167,7 @@ def test_order_service_add_line_order_not_found(
 ) -> None:
     mock_order_repository.get_by_id.return_value = None
 
-    with pytest.raises(ValueError, match='Acquisition order with id order-999 not found'):
+    with pytest.raises(AcquisitionOrderNotFoundError, match='Acquisition order with id order-999 not found'):
         order_service.add_line_to_order('order-999', 'item-1', 1, Decimal('10.00'))
 
 

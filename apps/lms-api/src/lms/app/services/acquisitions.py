@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from decimal import Decimal
 
+from lms.domain import DomainError
+from lms.app.exceptions import ServiceFailed
 from lms.infrastructure.event_bus import event_bus
 from lms.app.exceptions.acquisitions import VendorNotFoundError, AcquisitionOrderNotFoundError
 from lms.domain.acquisitions.entities import Vendor, AcquisitionOrder
@@ -36,21 +38,30 @@ class AcquisitionOrderService:
         return self._get_order(order_id)
 
     def create_order(self, vendor_id: str, staff_id: str) -> AcquisitionOrder:
-        order = AcquisitionOrder.create(vendor_id=vendor_id, staff_id=staff_id)
+        try:
+            order = AcquisitionOrder.create(vendor_id=vendor_id, staff_id=staff_id)
+        except DomainError as e:
+            raise ServiceFailed('The acquisition order cannot be created', cause=e) from e
         created_order = self.acquisition_order_repository.save(order)
         event_bus.publish_events()
         return created_order
 
     def add_line_to_order(self, order_id: str, item_id: str, quantity: int, unit_price: Decimal) -> AcquisitionOrder:
         order = self._get_order(order_id)
-        order.add_line(item_id=item_id, unit_price=unit_price, quantity=quantity)
+        try:
+            order.add_line(item_id=item_id, unit_price=unit_price, quantity=quantity)
+        except DomainError as e:
+            raise ServiceFailed('The line cannot be added to the acquisition order', cause=e) from e
         updated_order = self.acquisition_order_repository.save(order)
         event_bus.publish_events()
         return updated_order
 
     def remove_line_from_order(self, order_id: str, order_line_id: str) -> AcquisitionOrder:
         order = self._get_order(order_id)
-        order.remove_line(order_line_id=order_line_id)
+        try:
+            order.remove_line(order_line_id=order_line_id)
+        except DomainError as e:
+            raise ServiceFailed('The line cannot be removed from the acquisition order', cause=e) from e
         updated_order = self.acquisition_order_repository.save(order)
         event_bus.publish_events()
         return updated_order
@@ -59,21 +70,30 @@ class AcquisitionOrderService:
         self, order_id: str, order_line_id: str, received_quantity: int | None = None
     ) -> AcquisitionOrder:
         order = self._get_order(order_id)
-        order.receive_line(order_line_id=order_line_id, received_quantity=received_quantity)
+        try:
+            order.receive_line(order_line_id=order_line_id, received_quantity=received_quantity)
+        except DomainError as e:
+            raise ServiceFailed('The line cannot be marked as received in the acquisition order', cause=e) from e
         updated_order = self.acquisition_order_repository.save(order)
         event_bus.publish_events()
         return updated_order
 
     def submit_order(self, order_id: str) -> AcquisitionOrder:
         order = self._get_order(order_id)
-        order.submit()
+        try:
+            order.submit()
+        except DomainError as e:
+            raise ServiceFailed('The acquisition order cannot be submitted', cause=e) from e
         updated_order = self.acquisition_order_repository.save(order)
         event_bus.publish_events()
         return updated_order
 
     def cancel_order(self, order_id: str) -> AcquisitionOrder:
         order = self._get_order(order_id)
-        order.mark_as_cancelled()
+        try:
+            order.mark_as_cancelled()
+        except DomainError as e:
+            raise ServiceFailed('The acquisition order cannot be cancelled', cause=e) from e
         updated_order = self.acquisition_order_repository.save(order)
         event_bus.publish_events()
         return updated_order
@@ -98,7 +118,10 @@ class VendorService:
     def register_vendor(
         self, name: str, staff_id: str, address: str | None = None, email: str | None = None, phone: str | None = None
     ) -> Vendor:
-        vendor = Vendor.create(name=name, staff_id=staff_id, address=address, email=email, phone=phone)
+        try:
+            vendor = Vendor.create(name=name, staff_id=staff_id, address=address, email=email, phone=phone)
+        except DomainError as e:
+            raise ServiceFailed('The vendor cannot be created', cause=e) from e
         created_vendor = self.vendor_repository.save(vendor)
         event_bus.publish_events()
         return created_vendor

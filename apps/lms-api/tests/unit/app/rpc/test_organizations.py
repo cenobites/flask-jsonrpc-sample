@@ -103,10 +103,7 @@ def test_branch_create_duplicate_name(client: FlaskClient) -> None:
         'id': rv_data['id'],
         'error': {
             'code': -32000,
-            'data': {
-                'code': 'DuplicateBranchNameError',
-                'message': 'Branch with name "Central Library" already exists',
-            },
+            'data': {'message': 'The branch cannot be created'},
             'message': 'Server error',
             'name': 'ServerError',
         },
@@ -345,7 +342,8 @@ def test_staff_create_duplicate_email(client: FlaskClient) -> None:
     assert rv.status_code == 500, rv.data
     rv_data = rv.get_json()
     assert 'error' in rv_data
-    assert rv_data['error']['data']['code'] == 'DuplicateStaffEmailError'
+    assert 'data' in rv_data['error']
+    assert rv_data['error']['data']['message'] == 'The staff cannot be created'
 
 
 def test_staff_get_success(client: FlaskClient) -> None:

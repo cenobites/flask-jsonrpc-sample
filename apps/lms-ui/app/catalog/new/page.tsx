@@ -111,7 +111,7 @@ export default function NewItemPage() {
 
             <div>
               <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                Material Type
+                Format
               </label>
               <select
                 value={formData.format}

@@ -37,7 +37,7 @@ Donate = "https://github.com/sponsors/nycholas"
 
 [dependency-groups]
 dev = [
-    "ipdb", # https://github.com/gotcha/ipdb
+    # "ipdb", # https://github.com/gotcha/ipdb
     "tox<4.33", # https://github.com/tox-dev/tox
     "tox-uv", # https://github.com/tox-dev/tox-uv
 ]

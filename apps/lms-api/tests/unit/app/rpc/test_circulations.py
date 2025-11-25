@@ -229,11 +229,6 @@ def test_loans_renew_not_found(client: FlaskClient) -> None:
     assert 'error' in rv_data
 
 
-# ========================================
-# Hold RPC Endpoint Tests
-# ========================================
-
-
 def test_holds_list_empty(client: FlaskClient) -> None:
     rv = client.post(
         '/api/circulations', json={'jsonrpc': '2.0', 'method': 'Holds.list', 'params': {}, 'id': str(uuid.uuid4())}

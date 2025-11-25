@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+from lms.domain import DomainError
+from lms.app.exceptions import ServiceFailed
 from lms.app.exceptions.patrons import FineNotFoundError, PatronNotFoundError
 from lms.domain.patrons.entities import Fine, Patron
 from lms.domain.patrons.services import FinePolicyService, PatronUniquenessService, PatronReinstatementService
 from lms.infrastructure.event_bus import event_bus
+from lms.domain.patrons.exceptions import PatronAlreadyActive
 from lms.domain.patrons.repositories import FineRepository, PatronRepository
 
 
@@ -33,10 +36,15 @@ class PatronService:
         return self._get_patron(patron_id)
 
     def create_patron(self, branch_id: str, name: str, email: str) -> Patron:
-        patron = Patron.create(
-            branch_id=branch_id, name=name, email=email, patron_uniqueness_service=self.patron_uniqueness_service
-        )
-        patron.activate()
+        try:
+            patron = Patron.create(
+                branch_id=branch_id, name=name, email=email, patron_uniqueness_service=self.patron_uniqueness_service
+            )
+            patron.activate()
+        except PatronAlreadyActive as e:
+            raise ServiceFailed('The patron cannot be created as active', cause=e) from e
+        except DomainError as e:
+            raise ServiceFailed('The patron cannot be created', cause=e) from e
         created_patron = self.patron_repository.save(patron)
         event_bus.publish_events()
         return created_patron
@@ -50,35 +58,50 @@ class PatronService:
 
     def update_patron_email(self, patron_id: str, email: str) -> Patron:
         patron = self._get_patron(patron_id)
-        patron.change_email(email, self.patron_uniqueness_service)
+        try:
+            patron.change_email(email, self.patron_uniqueness_service)
+        except DomainError as e:
+            raise ServiceFailed('The patron email cannot be updated', cause=e) from e
         updated_patron = self.patron_repository.save(patron)
         event_bus.publish_events()
         return updated_patron
 
     def activate_patron(self, patron_id: str) -> Patron:
         patron = self._get_patron(patron_id)
-        patron.activate()
+        try:
+            patron.activate()
+        except DomainError as e:
+            raise ServiceFailed('The patron cannot be activated', cause=e) from e
         updated_patron = self.patron_repository.save(patron)
         event_bus.publish_events()
         return updated_patron
 
     def reinstate_patron(self, patron_id: str) -> Patron:
         patron = self._get_patron(patron_id)
-        patron.reinstate(self.patron_reinstatement_service)
+        try:
+            patron.reinstate(self.patron_reinstatement_service)
+        except DomainError as e:
+            raise ServiceFailed('The patron cannot be reinstated', cause=e) from e
         updated_patron = self.patron_repository.save(patron)
         event_bus.publish_events()
         return updated_patron
 
     def archive_patron(self, patron_id: str) -> Patron:
         patron = self._get_patron(patron_id)
-        patron.archive()
+        try:
+            patron.archive()
+        except DomainError as e:
+            raise ServiceFailed('The patron cannot be archived', cause=e) from e
         updated_patron = self.patron_repository.save(patron)
         event_bus.publish_events()
         return updated_patron
 
     def unarchive_patron(self, patron_id: str) -> Patron:
         patron = self._get_patron(patron_id)
-        patron.unarchive()
+        try:
+            patron.unarchive()
+        except DomainError as e:
+            raise ServiceFailed('The patron cannot be unarchived', cause=e) from e
         updated_patron = self.patron_repository.save(patron)
         event_bus.publish_events()
         return updated_patron
@@ -103,22 +126,31 @@ class FineService:
 
     def pay_fine(self, fine_id: str) -> Fine:
         fine = self._get_fine(fine_id)
-        fine.pay()
+        try:
+            fine.pay()
+        except DomainError as e:
+            raise ServiceFailed('The fine cannot be paid', cause=e) from e
         updated_fine = self.fine_repository.save(fine)
         event_bus.publish_events()
         return updated_fine
 
     def waive_fine(self, fine_id: str) -> Fine:
         fine = self._get_fine(fine_id)
-        fine.waive()
+        try:
+            fine.waive()
+        except DomainError as e:
+            raise ServiceFailed('The fine cannot be waived', cause=e) from e
         updated_fine = self.fine_repository.save(fine)
         event_bus.publish_events()
         return updated_fine
 
     def process_overdue_loan(self, loan_id: str, patron_id: str, days_late: int) -> Fine:
-        fine = Fine.create_for_overdue(
-            loan_id=loan_id, patron_id=patron_id, days_late=days_late, fine_policy_service=self.fine_policy_service
-        )
+        try:
+            fine = Fine.create_for_overdue(
+                loan_id=loan_id, patron_id=patron_id, days_late=days_late, fine_policy_service=self.fine_policy_service
+            )
+        except DomainError as e:
+            raise ServiceFailed('The overdue loan cannot be processed for fine', cause=e) from e
         created_fine = self.fine_repository.save(fine)
         event_bus.publish_events()
         return created_fine

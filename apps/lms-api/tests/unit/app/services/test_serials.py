@@ -5,6 +5,8 @@ from unittest.mock import Mock, MagicMock
 import pytest
 
 from lms.app.services.serials import SerialService
+from lms.app.exceptions.serials import SerialNotFoundError
+from lms.app.exceptions.catalogs import ItemNotFoundError
 from lms.domain.serials.entities import Serial
 from lms.domain.catalogs.entities import Item
 
@@ -58,7 +60,7 @@ def test_serial_service_get_serial_success(serial_service: SerialService, mock_s
 def test_serial_service_get_serial_not_found(serial_service: SerialService, mock_serial_repository: Mock) -> None:
     mock_serial_repository.get_by_id.return_value = None
 
-    with pytest.raises(ValueError, match='Serial with id serial-999 not found'):
+    with pytest.raises(SerialNotFoundError, match='Serial with id serial-999 not found'):
         serial_service.get_serial('serial-999')
 
 
@@ -98,7 +100,7 @@ def test_serial_service_subscribe_serial_item_not_found(
 ) -> None:
     mock_item_repository.get_by_id.return_value = None
 
-    with pytest.raises(ValueError, match='Item with id item-999 not found'):
+    with pytest.raises(ItemNotFoundError, match='Item with id item-999 not found'):
         serial_service.subscribe_serial(title='Test', issn='1234', item_id='item-999')
 
 

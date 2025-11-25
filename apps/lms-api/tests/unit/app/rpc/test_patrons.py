@@ -76,7 +76,7 @@ def test_patron_create_duplicate_email(client: FlaskClient) -> None:
         'id': rv_data['id'],
         'error': {
             'code': -32000,
-            'data': {'message': 'Patron with email "duplicate@test.com" already exists'},
+            'data': {'message': 'The patron cannot be created'},
             'message': 'Server error',
             'name': 'ServerError',
         },
@@ -117,7 +117,7 @@ def test_patron_get_not_found(client: FlaskClient) -> None:
         'id': rv_data['id'],
         'error': {
             'code': -32000,
-            'data': {'message': f'Patron with id {fake_id} not found'},
+            'data': {'code': 'PatronNotFoundError', 'message': f'Patron with id {fake_id} not found'},
             'message': 'Server error',
             'name': 'ServerError',
         },
@@ -198,7 +198,7 @@ def test_patron_update_email_duplicate(client: FlaskClient) -> None:
         'id': rv_data['id'],
         'error': {
             'code': -32000,
-            'data': {'message': 'Patron with email "existing@test.com" already exists'},
+            'data': {'message': 'The patron email cannot be updated'},
             'message': 'Server error',
             'name': 'ServerError',
         },

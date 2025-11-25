@@ -3,6 +3,8 @@ from __future__ import annotations
 import typing as t
 import datetime
 
+from lms.domain import DomainError
+from lms.app.exceptions import ServiceFailed
 from lms.app.exceptions.catalogs import (
     CopyNotFoundError,
     ItemNotFoundError,
@@ -34,7 +36,12 @@ class CopyService:
     def create_copy(
         self, item_id: str, branch_id: str, barcode: str, status: str = 'available', location: str | None = None
     ) -> Copy:
-        copy = Copy(id=None, item_id=item_id, branch_id=branch_id, barcode=barcode, status=status, location=location)
+        try:
+            copy = Copy(
+                id=None, item_id=item_id, branch_id=branch_id, barcode=barcode, status=status, location=location
+            )
+        except DomainError as e:
+            raise ServiceFailed('The copy cannot be created', cause=e) from e
         return self.copy_repository.save(copy)
 
     def get_copy(self, copy_id: str) -> Copy:
@@ -95,16 +102,19 @@ class ItemService:
         edition: str | None = None,
         description: str | None = None,
     ) -> Item:
-        item = Item.create(
-            title=title,
-            isbn=isbn,
-            publisher_id=publisher_id,
-            publication_year=publication_year,
-            category_id=category_id,
-            edition=edition,
-            format=format,
-            description=description,
-        )
+        try:
+            item = Item.create(
+                title=title,
+                isbn=isbn,
+                publisher_id=publisher_id,
+                publication_year=publication_year,
+                category_id=category_id,
+                edition=edition,
+                format=format,
+                description=description,
+            )
+        except DomainError as e:
+            raise ServiceFailed('The item cannot be created', cause=e) from e
         created_item = self.item_repository.save(item)
         event_bus.publish_events()
         return created_item
@@ -113,13 +123,16 @@ class ItemService:
         self, item_id: str, branch_id: str, barcode: str, acquisition_date: datetime.date, location: str | None = None
     ) -> Copy:
         item = self._get_item(item_id)
-        copy = Copy.create(
-            item_id=t.cast(str, item.id),
-            branch_id=branch_id,
-            barcode=barcode,
-            location=location,
-            acquisition_date=acquisition_date,
-        )
+        try:
+            copy = Copy.create(
+                item_id=t.cast(str, item.id),
+                branch_id=branch_id,
+                barcode=barcode,
+                location=location,
+                acquisition_date=acquisition_date,
+            )
+        except DomainError as e:
+            raise ServiceFailed('The copy cannot be created', cause=e) from e
         created_copy = self.copy_repository.save(copy)
         event_bus.publish_events()
         return created_copy
@@ -157,7 +170,10 @@ class CategoryService:
         return self._get_category(category_id)
 
     def register_category(self, name: str, description: str | None = None) -> Category:
-        category = Category.create(name=name, description=description)
+        try:
+            category = Category.create(name=name, description=description)
+        except DomainError as e:
+            raise ServiceFailed('The category cannot be created', cause=e) from e
         created_category = self.category_repository.save(category)
         event_bus.publish_events()
         return created_category
@@ -192,8 +208,13 @@ class AuthorService:
         return self._get_author(author_id)
 
     def register_author(self, name: str, bio: str | None = None, birth_date: datetime.date | None = None) -> Author:
-        author = Author.create(name=name, bio=bio, birth_date=birth_date)
-        return self.author_repository.save(author)
+        try:
+            author = Author.create(name=name, bio=bio, birth_date=birth_date)
+        except DomainError as e:
+            raise ServiceFailed('The author cannot be created', cause=e) from e
+        created_author = self.author_repository.save(author)
+        event_bus.publish_events()
+        return created_author
 
     def update_author(
         self, author_id: str, name: str | None = None, bio: str | None = None, birth_date: datetime.date | None = None
@@ -230,7 +251,10 @@ class PublisherService:
     def register_publisher(
         self, name: str, address: str | None = None, email: str | None = None, phone: str | None = None
     ) -> Publisher:
-        publisher = Publisher.create(name=name, address=address, email=email, phone=phone)
+        try:
+            publisher = Publisher.create(name=name, address=address, email=email, phone=phone)
+        except DomainError as e:
+            raise ServiceFailed('The publisher cannot be created', cause=e) from e
         created_publisher = self.publisher_repository.save(publisher)
         event_bus.publish_events()
         return created_publisher

@@ -73,7 +73,7 @@ apps/lms-ui/
 ### 2. Catalog Management (/catalog)
 - **Item listing** with full details
 - **Add new items** with validation
-- **Material type** categorization
+- **Format** categorization
 - **ISBN & publication year** tracking
 - **Edit & delete** operations
 

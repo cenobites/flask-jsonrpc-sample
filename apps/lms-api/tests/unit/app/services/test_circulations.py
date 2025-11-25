@@ -8,6 +8,7 @@ from lms.app.exceptions.patrons import PatronNotFoundError
 from lms.domain.patrons.entities import Patron
 from lms.domain.catalogs.entities import Copy
 from lms.app.services.circulations import HoldService, LoanService
+from lms.app.exceptions.circulations import LoanNotFoundError
 from lms.domain.circulations.entities import Hold, Loan
 from lms.domain.organizations.entities import Staff, Branch
 
@@ -138,7 +139,7 @@ def test_loan_service_get_loan_success(loan_service: LoanService, mock_loan_repo
 def test_loan_service_get_loan_not_found(loan_service: LoanService, mock_loan_repository: Mock) -> None:
     mock_loan_repository.get_by_id.return_value = None
 
-    with pytest.raises(ValueError, match='Loan with id loan-999 not found'):
+    with pytest.raises(LoanNotFoundError, match='Loan with id loan-999 not found'):
         loan_service.get_loan('loan-999')
 
 

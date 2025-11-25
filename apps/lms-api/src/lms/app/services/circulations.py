@@ -3,6 +3,8 @@ from __future__ import annotations
 import typing as t
 import datetime
 
+from lms.domain import DomainError
+from lms.app.exceptions import ServiceFailed
 from lms.app.exceptions.patrons import PatronNotFoundError
 from lms.infrastructure.logging import logger
 from lms.app.exceptions.catalogs import CopyNotFoundError, ItemNotFoundError
@@ -83,14 +85,17 @@ class LoanService:
         staff = self._get_staff(staff_out_id)
         branch = self._get_branch(patron.branch_id)
         copy = self._get_copy(copy_id)
-        loan = Loan.create(
-            copy=copy,
-            patron=patron,
-            staff=staff,
-            branch=branch,
-            patron_barring_service=self.patron_barring_service,
-            loan_policy_service=self.loan_policy_service,
-        )
+        try:
+            loan = Loan.create(
+                copy=copy,
+                patron=patron,
+                staff=staff,
+                branch=branch,
+                patron_barring_service=self.patron_barring_service,
+                loan_policy_service=self.loan_policy_service,
+            )
+        except DomainError as e:
+            raise ServiceFailed('The copy cannot be checked out', cause=e) from e
         created_loan = self.loan_repository.save(loan, copy)
         event_bus.publish_events()
         return created_loan
@@ -98,7 +103,10 @@ class LoanService:
     def checkin_copy(self, loan_id: str, staff_in_id: str) -> Loan:
         loan = self._get_loan(loan_id)
         copy = self._get_copy(loan.copy_id)
-        loan.mark_as_returned(copy=copy, return_date=datetime.date.today(), staff_in_id=staff_in_id)
+        try:
+            loan.mark_as_returned(copy=copy, return_date=datetime.date.today(), staff_in_id=staff_in_id)
+        except DomainError as e:
+            raise ServiceFailed('The copy cannot be checked in', cause=e) from e
         updated_loan = self.loan_repository.save(loan, copy)
         event_bus.publish_events()
         return updated_loan
@@ -106,7 +114,10 @@ class LoanService:
     def damaged_copy(self, loan_id: str) -> Loan:
         loan = self._get_loan(loan_id)
         copy = self._get_copy(loan.copy_id)
-        loan.mark_damaged(copy=copy)
+        try:
+            loan.mark_damaged(copy=copy)
+        except DomainError as e:
+            raise ServiceFailed('The copy cannot be marked as damaged', cause=e) from e
         updated_loan = self.loan_repository.save(loan, copy)
         event_bus.publish_events()
         return updated_loan
@@ -114,7 +125,10 @@ class LoanService:
     def lost_copy(self, loan_id: str) -> Loan:
         loan = self._get_loan(loan_id)
         copy = self._get_copy(loan.copy_id)
-        loan.mark_lost(copy=copy)
+        try:
+            loan.mark_lost(copy=copy)
+        except DomainError as e:
+            raise ServiceFailed('The copy cannot be marked as lost', cause=e) from e
         updated_loan = self.loan_repository.save(loan, copy)
         event_bus.publish_events()
         return updated_loan
@@ -123,12 +137,15 @@ class LoanService:
         loan = self._get_loan(loan_id)
         patron = self._get_patron(loan.patron_id)
         copy = self._get_copy(loan.copy_id)
-        loan.renew(
-            patron=patron,
-            copy=copy,
-            patron_barring_service=self.patron_barring_service,
-            loan_policy_service=self.loan_policy_service,
-        )
+        try:
+            loan.renew(
+                patron=patron,
+                copy=copy,
+                patron_barring_service=self.patron_barring_service,
+                loan_policy_service=self.loan_policy_service,
+            )
+        except DomainError as e:
+            raise ServiceFailed('The loan cannot be renewed', cause=e) from e
         updated_loan = self.loan_repository.save(loan, copy)
         event_bus.publish_events()
         return updated_loan
@@ -209,13 +226,16 @@ class HoldService:
         patron = self._get_patron(patron_id)
         item = self._get_item(item_id)
         copy = self._get_copy(copy_id) if copy_id else None
-        hold = Hold.create(
-            patron=patron,
-            item=item,
-            copy=copy,
-            patron_holding_service=self.patron_holding_service,
-            hold_policy_service=self.hold_policy_service,
-        )
+        try:
+            hold = Hold.create(
+                patron=patron,
+                item=item,
+                copy=copy,
+                patron_holding_service=self.patron_holding_service,
+                hold_policy_service=self.hold_policy_service,
+            )
+        except DomainError as e:
+            raise ServiceFailed('The hold cannot be placed', cause=e) from e
         created_hold = self.hold_repository.save(hold)
         event_bus.publish_events()
         return created_hold
@@ -223,7 +243,10 @@ class HoldService:
     def ready_hold_for_pickup(self, hold_id: str, copy_id: str) -> Hold:
         copy = self._get_copy(copy_id)
         hold = self._get_hold(hold_id)
-        hold.ready_for_pickup(copy=copy)
+        try:
+            hold.ready_for_pickup(copy=copy)
+        except DomainError as e:
+            raise ServiceFailed('The hold cannot be marked as ready for pickup', cause=e) from e
         updated_hold = self.hold_repository.save(hold)
         event_bus.publish_events()
         return updated_hold
@@ -234,30 +257,42 @@ class HoldService:
         patron = self._get_patron(hold.patron_id)
         staff = self._get_staff(staff_out_id)
         branch = self._get_branch(patron.branch_id)
-        loan = Loan.create(
-            copy=copy,
-            patron=patron,
-            staff=staff,
-            branch=branch,
-            patron_barring_service=self.patron_barring_service,
-            loan_policy_service=self.loan_policy_service,
-        )
+        try:
+            loan = Loan.create(
+                copy=copy,
+                patron=patron,
+                staff=staff,
+                branch=branch,
+                patron_barring_service=self.patron_barring_service,
+                loan_policy_service=self.loan_policy_service,
+            )
+        except DomainError as e:
+            raise ServiceFailed('The hold cannot be picked up', cause=e) from e
         created_loan = self.loan_repository.save(loan, copy)
-        hold.fulfill(copy=copy, loan=created_loan)
+        try:
+            hold.fulfill(copy=copy, loan=created_loan)
+        except DomainError as e:
+            raise ServiceFailed('The hold cannot be fulfilled', cause=e) from e
         self.hold_repository.save(hold)
         event_bus.publish_events()
         return created_loan
 
     def expire_hold(self, hold_id: str) -> Hold:
         hold = self._get_hold(hold_id)
-        hold.expire()
+        try:
+            hold.expire()
+        except DomainError as e:
+            raise ServiceFailed('The hold cannot be expired', cause=e) from e
         updated_hold = self.hold_repository.save(hold)
         event_bus.publish_events()
         return updated_hold
 
     def cancel_hold(self, hold_id: str) -> Hold:
         hold = self._get_hold(hold_id)
-        hold.cancel()
+        try:
+            hold.cancel()
+        except DomainError as e:
+            raise ServiceFailed('The hold cannot be canceled', cause=e) from e
         updated_hold = self.hold_repository.save(hold)
         event_bus.publish_events()
         return updated_hold

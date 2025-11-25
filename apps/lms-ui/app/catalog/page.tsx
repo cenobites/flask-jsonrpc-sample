@@ -63,7 +63,7 @@ export default function CatalogPage() {
                 <TableHead>Title</TableHead>
                 <TableHead>Author</TableHead>
                 <TableHead>ISBN</TableHead>
-                <TableHead>Material Type</TableHead>
+                <TableHead>Format</TableHead>
                 <TableHead>Publication Year</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
