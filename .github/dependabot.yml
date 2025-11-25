@@ -9,8 +9,28 @@ updates:
         patterns:
           - '*'
 
+  - package-ecosystem: docker
+    directories:
+      - /apps/lms-api
+      - /apps/lms-ui
+    schedule:
+      interval: daily
+    groups:
+      python-dependencies:
+        patterns:
+          - '*'
+
   - package-ecosystem: uv
-    directory: /
+    directory: /apps/lms-api
+    schedule:
+      interval: daily
+    groups:
+      python-dependencies:
+        patterns:
+          - '*'
+
+  - package-ecosystem: npm
+    directory: /apps/lms-ui
     schedule:
       interval: daily
     groups:

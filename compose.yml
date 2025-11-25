@@ -2,7 +2,7 @@ services:
   web:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: apps/lms-api/Dockerfile
     environment:
       - DEBUG=0
     user: ${UID:-0}:${GID:-0}

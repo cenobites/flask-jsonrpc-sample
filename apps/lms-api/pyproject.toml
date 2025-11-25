@@ -1,0 +1,366 @@
+[project]
+name = "Flask-JSONRPC-sample"
+version = "0.0.1"
+description = "Sample project for a library management system (LMS) using Flask-JSONRPC."
+readme = {file = "README.md", content-type = "text/markdown"}
+license = {file = "LICENSE.txt"}
+authors = [{name = "Nycholas Oliveira", email = "nycholas@cenobit.es"}]
+maintainers = [{name = "Cenobit Technologies Inc.", email = "hi@cenobit.es"}]
+keywords = ["flask", "flask-extensions", "jsonrpc", "flask-jsonrpc", "sample"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+]
+requires-python = ">=3.14"
+dependencies = [
+    "email-validator>=2.3.0", # https://github.com/JoshData/python-email-validator
+    "flask-alembic>=3.1.1", # https://github.com/pallets-eco/flask-alembic/
+    "flask-cors>=6.0.1", # https://github.com/corydolphin/flask-cors
+    "flask-jsonrpc", # https://github.com/cenobites/flask-jsonrpc
+    "flask-sqlalchemy>=3.1.1", # https://github.com/pallets-eco/flask-sqlalchemy/
+    "pydantic>=2.12.3", # https://github.com/pydantic/pydantic
+    "python-dotenv>=1.2.1", # https://github.com/theskumar/python-dotenv
+]
+
+[project.urls]
+Donate = "https://github.com/sponsors/nycholas"
+"Source Code" = "https://github.com/cenobites/flask-jsonrpc-sample"
+"Issue Tracker" = "https://github.com/cenobites/flask-jsonrpc-sample/issues/"
+
+[dependency-groups]
+dev = [
+    # "ipdb", # https://github.com/gotcha/ipdb
+    "tox<4.33", # https://github.com/tox-dev/tox
+    "tox-uv", # https://github.com/tox-dev/tox-uv
+]
+pre-commit = [
+    "pre-commit", # https://github.com/pre-commit/pre-commit
+    "pre-commit-uv", # https://github.com/tox-dev/pre-commit-uv
+]
+tests = [
+    "pytest==8.4.2", # https://github.com/pytest-dev/pytest
+    "pytest-cov==7.0.0", # https://github.com/pytest-dev/pytest-cov
+    "pytest-xdist==3.8.0", # https://github.com/pytest-dev/pytest-xdist
+    "pytest-sugar==1.1.1", # https://github.com/Frozenball/pytest-sugar
+    "pytest-env==1.2.0", # https://github.com/MobileDynasty/pytest-env
+    "pytest-clarity==1.0.1", # https://github.com/darrenburns/pytest-clarity
+    "coverage[toml]==7.12.0", # https://github.com/nedbat/coveragepy
+    "requests==2.32.5", # https://github.com/psf/requests
+    "factory-boy>=3.3.3", # https://github.com/FactoryBoy/factory_boy
+]
+parallel-tests = [
+    {include-group = "tests"},
+    "pytest-rerunfailures==16.1", # https://github.com/pytest-dev/pytest-rerunfailures
+    "pytest-randomly==4.0.1", # https://github.com/pytest-dev/pytest-randomly
+    "pytest-random-order==1.2.0", # https://github.com/pytest-dev/pytest-random-order
+    "pytest-repeat==0.9.4", # https://github.com/pytest-dev/pytest-repeat
+    "pytest-run-parallel==0.7.1", # https://github.com/Quansight-Labs/pytest-run-parallel
+]
+integration-tests = [
+    {include-group = "tests"},
+    "pytest-playwright==0.7.1", # https://github.com/microsoft/playwright-python
+    "playwright==1.55.0", # https://github.com/microsoft/playwright-python
+]
+style = [
+    "ruff==0.14.6", # https://github.com/astral-sh/ruff
+]
+typing = [
+    "mypy==1.18.2;python_version>='3.11'", # https://github.com/python/mypy
+    "pyright==1.1.407;python_version>='3.11'", # https://github.com/microsoft/pyright
+]
+security = [
+    "bandit;python_version>='3.11'", # https://github.com/PyCQA/bandit
+]
+build = [
+    "hatch==1.15.1", # https://github.com/pypa/hatch
+]
+production = [
+    "gunicorn==23.0.0", # https://github.com/benoitc/gunicorn
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+only-include = ["src/lms"]
+packages = ["src/lms"]
+
+[tool.hatch.build.targets.sdist]
+ignore-vcs = true
+include = [
+    "src/lms",
+    "tests/",
+    "uv.lock",
+]
+exclude = [
+    ".devcontainer",
+    ".docker",
+    ".github",
+    "bin/",
+    ".tox/",
+    "venv/",
+    ".venv/",
+    ".venv.*/",
+    "**/venv/",
+    "**/.venv/",
+    "**/.venv.*",
+    "**/.tox/",
+    "**/junit/",
+    "**/htmlcov/",
+    "**/coverage.*",
+]
+
+[tool.uv]
+package = true
+default-groups = ["dev", "pre-commit", "tests", "style", "typing"]
+
+[tool.uv.build-backend]
+module-name = "lms"
+
+[tool.uv.sources]
+flask-jsonrpc = { git = "https://github.com/cenobites/flask-jsonrpc" }
+
+[tool.ruff]
+src = ["src"]
+fix = true
+show-fixes = true
+output-format = "concise"
+line-length = 120
+target-version = "py314"
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle error
+    "W",    # pycodestyle warning
+    "F",    # pyflakes
+    "UP",   # pyupgrade
+    "ANN",  # flake8-annotations
+    "B",    # flake8-bugbear
+    "Q",    # flake8-quotes
+    "SIM",  # flake8-simplify
+    "T",    # flake8-type-checking
+    "B",    # flake8-bandit
+    "C",    # flake8-copyright
+    "I",    # isort
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.flake8-quotes]
+inline-quotes = "single"
+docstring-quotes = "double"
+
+[tool.ruff.lint.flake8-type-checking]
+exempt-modules = ["typing", "typing_extensions"]
+
+[tool.ruff.lint.flake8-bandit]
+check-typed-exception = true
+
+[tool.ruff.lint.flake8-copyright]
+author = "Cenobit Technologies, Inc. http://cenobit.es/"
+
+[tool.ruff.lint.isort]
+length-sort = true
+combine-as-imports = true
+order-by-type = true
+force-sort-within-sections = true
+split-on-trailing-comma = false
+section-order = ["future", "standard-library", "flask", "flask-jsonrpc", "third-party", "first-party", "local-folder"]
+
+[tool.ruff.lint.isort.sections]
+"flask" = ["flask"]
+"flask-jsonrpc" = ["flask-jsonrpc"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+skip-magic-trailing-comma = true
+docstring-code-format = true
+docstring-code-line-length = 79
+
+[tool.pytest.ini_options]
+addopts = "-rsxX -vv --pyargs --doctest-modules --showlocals --strict-markers --junitxml=junit/test-results.xml --numprocesses=0 --cov-report=html --cov-report=term --cov-report=lcov --cov=lms --cov-fail-under=80"
+# --count=5 --reruns=5 --parallel-threads=10 --iterations=5 --random-order
+junit_family = "xunit2"
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
+pythonpath = "src/"
+testpaths = [
+    "src/lms",
+    "tests",
+]
+filterwarnings = [
+    "error",
+    "ignore::pytest.PytestUnraisableExceptionWarning",
+]
+required_plugins = [
+    "pytest-cov==7.0.0",
+    "pytest-xdist==3.8.0",
+    "pytest-sugar==1.1.1",
+    "pytest-env==1.2.0",
+    # "pytest-repeat==0.9.4",
+    # "pytest-rerunfailures==16.1",
+    "pytest-clarity==1.0.1",
+    # "pytest-randomly==4.0.1",
+    # "pytest-random-order==1.2.0",
+    # "pytest-run-parallel==0.7.1",
+]
+
+[tool.coverage.run]
+branch = true
+source = [
+    "src/lms",
+    "tests",
+]
+omit = [
+    "*/settings.py",
+    "*/fixtures.py",
+    "*/tests.py",
+    "*/test_*.py",
+    "*/*_tests.py",
+]
+
+[tool.coverage.paths]
+source = [
+    "src",
+    "*/site-packages",
+]
+
+[tool.coverage.report]
+fail_under = 100
+ignore_errors = true
+skip_covered = true
+exclude_lines = [
+    "pragma: no cover",
+    "pragma: no cover ${PRAGMA_VERSION}",
+    "def __repr__",
+    "if self\\.debug",
+    "if settings\\.DEBUG",
+    "if current_app\\.config\\['DEBUG'\\]",
+    "if app\\.config\\['DEBUG'\\]",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "if t\\.TYPE_CHECKING:",
+    "if sys\\.version_info"
+]
+
+[tool.mypy]
+plugins = ["pydantic.mypy"]
+files = ["src/lms"]
+python_version = "3.14"
+pretty = true
+strict = true
+show_error_codes = true
+ignore_errors = false
+ignore_missing_imports = false
+warn_redundant_casts = true
+warn_unused_ignores = true
+no_implicit_reexport = true
+check_untyped_defs = true
+disallow_any_generics = true
+disallow_untyped_defs = true
+follow_imports = "silent"
+
+[[tool.mypy.overrides]]
+module = [
+    "asgiref.*",
+    "mypy-werkzeug.datastructures.*",
+    "typeguard.*",
+    "dotenv.*",
+]
+ignore_missing_imports = true
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
+
+[tool.pyright]
+pythonVersion = "3.14"
+include = ["src/lms"]
+typeCheckingMode = "basic"
+
+[tool.tox]
+requires = [
+    "tox>=4.30",
+    "tox-uv>=1.26.1",
+]
+env_list = [
+    "py3.14",
+    "style",
+    "typing",
+    "security",
+]
+skip_missing_interpreters = true
+
+[tool.tox.env_run_base]
+package = "wheel"
+wheel_build_env = ".pkg"
+runner = "uv-venv-lock-runner"
+env_tmp_dir = "{toxworkdir}/tmp/{envname}"
+constrain_package_deps = true
+use_frozen_constraints = true
+dependency_groups = [
+    "tests",
+]
+no_default_groups = true
+commands = [[
+    "pytest", "-rsxX", "-vv", "--numprocesses=auto", "--tb=short", "--basetemp={env_tmp_dir}",
+    {replace = "posargs", default = [], extend = true}
+]]
+
+[tool.tox.env.style]
+runner = "uv-venv-lock-runner"
+base_python = ["3.14"]
+dependency_groups = [
+    "pre-commit"
+]
+no_default_groups = true
+commands = [[
+    "pre-commit", "run", "--all-files", "--show-diff-on-failure"
+]]
+
+[tool.tox.env.typing]
+runner = "uv-venv-lock-runner"
+base_python = ["3.14"]
+dependency_groups = [
+    "typing"
+]
+no_default_groups = true
+commands = [
+    ["mypy", "--install-types", "--non-interactive", "src/"],
+    ["pyright"],
+]
+
+[tool.tox.env.security]
+runner = "uv-venv-lock-runner"
+base_python = ["3.14"]
+dependency_groups = [
+    "security"
+]
+no_default_groups = true
+commands = [
+    ["bandit", "-r", "src/"],
+]
+
+[tool.tox.env.update-requirements]
+base_python = ["3.14"]
+dependency_groups = []
+no_default_groups = true
+skip_install = true
+commands = [["uv", "lock", {replace = "posargs", default = ["-U"], extend = true}]]
