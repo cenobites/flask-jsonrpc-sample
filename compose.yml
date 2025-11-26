@@ -1,8 +1,8 @@
 services:
-  web:
+  api:
     build:
-      context: .
-      dockerfile: apps/lms-api/Dockerfile
+      context: apps/lms-api
+      dockerfile: Dockerfile
     environment:
       - DEBUG=0
     user: ${UID:-0}:${GID:-0}
@@ -11,3 +11,17 @@ services:
         flask --app /app/run run"
     ports:
       - '5000:5000'
+
+  ui:
+    build:
+      context: apps/lms-ui
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+      - NEXT_TELEMETRY_DISABLED=1
+    user: ${UID:-0}:${GID:-0}
+    command: >
+      sh -c "
+        node server.js"
+    ports:
+      - '3000:3000'
