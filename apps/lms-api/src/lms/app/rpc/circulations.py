@@ -37,7 +37,7 @@ def handle_hold_not_found_error(ex: HoldNotFoundError) -> dict[str, t.Any]:
     ],
 )
 def list_loans() -> t.Annotated[Page[Loan], tp.Summary('Loan search result')]:
-    loan_service: LoanService = current_app.container.loan_service()  # type: ignore
+    loan_service: LoanService = current_app.container.loan_service  # type: ignore
     loans = loan_service.find_all_loans()
     return Page[Loan](results=loans, count=len(loans))
 
@@ -66,7 +66,7 @@ def checkout_copy(
     copy_id: t.Annotated[str, tp.Summary('Copy ID'), tp.Required()],
     staff_id: t.Annotated[str, tp.Summary('Staff ID'), tp.Required()],
 ) -> t.Annotated[Loan, tp.Summary('Created loan')]:
-    loan_service: LoanService = current_app.container.loan_service()  # type: ignore
+    loan_service: LoanService = current_app.container.loan_service  # type: ignore
     return loan_service.checkout_copy(copy_id=copy_id, patron_id=patron_id, staff_out_id=staff_id)
 
 
@@ -93,7 +93,7 @@ def checkin_copy(
     loan_id: t.Annotated[str, tp.Summary('Loan ID'), tp.Required()],
     staff_id: t.Annotated[str, tp.Summary('Staff ID'), tp.Required()],
 ) -> t.Annotated[Loan, tp.Summary('Created loan')]:
-    loan_service: LoanService = current_app.container.loan_service()  # type: ignore
+    loan_service: LoanService = current_app.container.loan_service  # type: ignore
     return loan_service.checkin_copy(loan_id=loan_id, staff_in_id=staff_id)
 
 
@@ -116,7 +116,7 @@ def checkin_copy(
 def damaged_copy(
     loan_id: t.Annotated[str, tp.Summary('Loan ID'), tp.Required()],
 ) -> t.Annotated[Loan, tp.Summary('Updated loan information')]:
-    loan_service: LoanService = current_app.container.loan_service()  # type: ignore
+    loan_service: LoanService = current_app.container.loan_service  # type: ignore
     return loan_service.damaged_copy(loan_id)
 
 
@@ -139,7 +139,7 @@ def damaged_copy(
 def lost_copy(
     loan_id: t.Annotated[str, tp.Summary('Loan ID'), tp.Required()],
 ) -> t.Annotated[Loan, tp.Summary('Updated loan information')]:
-    loan_service: LoanService = current_app.container.loan_service()  # type: ignore
+    loan_service: LoanService = current_app.container.loan_service  # type: ignore
     return loan_service.lost_copy(loan_id)
 
 
@@ -156,7 +156,7 @@ def lost_copy(
 def get_loan(
     loan_id: t.Annotated[str, tp.Summary('Loan ID'), tp.Required()],
 ) -> t.Annotated[Loan, tp.Summary('Loan information')]:
-    loan_service: LoanService = current_app.container.loan_service()  # type: ignore
+    loan_service: LoanService = current_app.container.loan_service  # type: ignore
     return loan_service.get_loan(loan_id)
 
 
@@ -179,7 +179,7 @@ def get_loan(
 def renew_loan(
     loan_id: t.Annotated[str, tp.Summary('Loan ID'), tp.Required()],
 ) -> t.Annotated[Loan, tp.Summary('Updated loan information')]:
-    loan_service: LoanService = current_app.container.loan_service()  # type: ignore
+    loan_service: LoanService = current_app.container.loan_service  # type: ignore
     return loan_service.renew_loan(loan_id)
 
 
@@ -194,7 +194,7 @@ def renew_loan(
     ],
 )
 def list_holds() -> t.Annotated[Page[Hold], tp.Summary('Hold list')]:
-    hold_service: HoldService = current_app.container.hold_service()  # type: ignore
+    hold_service: HoldService = current_app.container.hold_service  # type: ignore
     holds = hold_service.find_all_holds()
     return Page[Hold](results=holds, count=len(holds))
 
@@ -212,7 +212,7 @@ def list_holds() -> t.Annotated[Page[Hold], tp.Summary('Hold list')]:
 def get_hold(
     hold_id: t.Annotated[str, tp.Summary('Hold ID'), tp.Required()],
 ) -> t.Annotated[Hold, tp.Summary('Hold information')]:
-    hold_service: HoldService = current_app.container.hold_service()  # type: ignore
+    hold_service: HoldService = current_app.container.hold_service  # type: ignore
     return hold_service.get_hold(hold_id)
 
 
@@ -240,7 +240,7 @@ def place_hold(
     item_id: t.Annotated[str, tp.Summary('Item ID'), tp.Required()],
     copy_id: t.Annotated[str | None, tp.Summary('Copy ID')] = None,
 ) -> t.Annotated[Hold, tp.Summary('Created hold')]:
-    hold_service: HoldService = current_app.container.hold_service()  # type: ignore
+    hold_service: HoldService = current_app.container.hold_service  # type: ignore
     return hold_service.place_hold(item_id=item_id, patron_id=patron_id, copy_id=copy_id)
 
 
@@ -268,7 +268,7 @@ def pickup_hold(
     staff_id: t.Annotated[str, tp.Summary('Staff ID'), tp.Required()],
     copy_id: t.Annotated[str, tp.Summary('Copy ID'), tp.Required()],
 ) -> t.Annotated[Loan, tp.Summary('Created hold')]:
-    hold_service: HoldService = current_app.container.hold_service()  # type: ignore
+    hold_service: HoldService = current_app.container.hold_service  # type: ignore
     return hold_service.pickup_hold(hold_id=hold_id, staff_out_id=staff_id, copy_id=copy_id)
 
 
@@ -294,5 +294,5 @@ def pickup_hold(
 def cancel_hold(
     hold_id: t.Annotated[str, tp.Summary('Hold ID'), tp.Required()],
 ) -> t.Annotated[Hold, tp.Summary('Created hold')]:
-    hold_service: HoldService = current_app.container.hold_service()  # type: ignore
+    hold_service: HoldService = current_app.container.hold_service  # type: ignore
     return hold_service.cancel_hold(hold_id=hold_id)

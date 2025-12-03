@@ -10,7 +10,7 @@ from lms.domain.circulations.events import LoanDamagedEvent, LoanOverdueEvent, L
 
 def handle_loan_overdue(event: LoanOverdueEvent) -> None:
     logger.info('Loan overdue: Loan ID=%s, Patron ID=%s, Days Late=%s', event.loan_id, event.patron_id, event.days_late)
-    fine_service: FineService = current_app.container.fine_service()  # type: ignore
+    fine_service: FineService = current_app.container.fine_service  # type: ignore
     fine = fine_service.process_overdue_loan(
         loan_id=event.loan_id, patron_id=event.patron_id, days_late=event.days_late
     )

@@ -10,7 +10,7 @@ from lms.domain.circulations.events import LoanReturnedEvent
 
 def handle_loan_returned(event: LoanReturnedEvent) -> None:
     logger.info('Loan returned: ID=%s', event.loan_id)
-    hold_service: HoldService = current_app.container.hold_service()  # type: ignore
+    hold_service: HoldService = current_app.container.hold_service  # type: ignore
     hold_service.process_holds_for_returned_copy(copy_id=event.copy_id)
 
 

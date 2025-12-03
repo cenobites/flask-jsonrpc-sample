@@ -130,7 +130,7 @@ def register(app: Flask) -> None:
 
     # Services instantiation
     container.register_singleton(
-        'contaitem_service',
+        'item_service',
         lambda: ItemService(
             item_repository=container.resolve('item_repository'), copy_repository=container.resolve('copy_repository')
         ),

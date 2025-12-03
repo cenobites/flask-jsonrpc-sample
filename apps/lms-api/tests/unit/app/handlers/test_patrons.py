@@ -23,7 +23,10 @@ def test_handle_loan_overdue_creates_fine(app: Flask) -> None:
     mock_fine.amount = Decimal('15.00')
     mock_fine_service.process_overdue_loan.return_value = mock_fine
 
-    app.container.fine_service = lambda: mock_fine_service  # type: ignore
+    # Inject mocks into container
+    mock_container = MagicMock()
+    mock_container.fine_service = mock_fine_service
+    app.container = mock_container  # type: ignore
 
     loan_id = str(uuid.uuid4())
     patron_id = str(uuid.uuid4())
@@ -44,7 +47,10 @@ def test_handle_loan_overdue_with_different_days_late(app: Flask) -> None:
     mock_fine.amount = Decimal('10.00')
     mock_fine_service.process_overdue_loan.return_value = mock_fine
 
-    app.container.fine_service = lambda: mock_fine_service  # type: ignore
+    # Inject mocks into container
+    mock_container = MagicMock()
+    mock_container.fine_service = mock_fine_service
+    app.container = mock_container  # type: ignore
 
     test_cases = [1, 5, 10, 30, 90]
 
@@ -69,7 +75,10 @@ def test_handle_loan_overdue_returns_fine_with_amount(app: Flask) -> None:
         mock_fine.amount = amount
         mock_fine_service.process_overdue_loan.return_value = mock_fine
 
-        app.container.fine_service = lambda: mock_fine_service  # type: ignore
+        # Inject mocks into container
+        mock_container = MagicMock()
+        mock_container.fine_service = mock_fine_service
+        app.container = mock_container  # type: ignore
 
         event = LoanOverdueEvent(loan_id=str(uuid.uuid4()), patron_id=str(uuid.uuid4()), days_late=5)
 
@@ -140,7 +149,10 @@ def test_handle_loan_overdue_with_zero_days_late(app: Flask) -> None:
     mock_fine.amount = Decimal('0.00')
     mock_fine_service.process_overdue_loan.return_value = mock_fine
 
-    app.container.fine_service = lambda: mock_fine_service  # type: ignore
+    # Inject mocks into container
+    mock_container = MagicMock()
+    mock_container.fine_service = mock_fine_service
+    app.container = mock_container  # type: ignore
 
     event = LoanOverdueEvent(loan_id=str(uuid.uuid4()), patron_id=str(uuid.uuid4()), days_late=0)
 
@@ -157,7 +169,10 @@ def test_handle_loan_overdue_multiple_patrons(app: Flask) -> None:
     mock_fine.amount = Decimal('10.00')
     mock_fine_service.process_overdue_loan.return_value = mock_fine
 
-    app.container.fine_service = lambda: mock_fine_service  # type: ignore
+    # Inject mocks into container
+    mock_container = MagicMock()
+    mock_container.fine_service = mock_fine_service
+    app.container = mock_container  # type: ignore
 
     patron_ids = [str(uuid.uuid4()) for _ in range(3)]
 

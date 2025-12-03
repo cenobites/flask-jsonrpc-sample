@@ -29,8 +29,10 @@ def test_handle_acquisition_order_received_creates_copies(app: Flask) -> None:
     mock_item_service.add_copy_to_item.return_value = mock_copy
 
     # Inject mocks into container
-    app.container.item_service = lambda: mock_item_service  # type: ignore
-    app.container.staff_service = lambda: mock_staff_service  # type: ignore
+    mock_container = MagicMock()
+    mock_container.item_service = mock_item_service
+    mock_container.staff_service = mock_staff_service
+    app.container = mock_container  # type: ignore
 
     # Create event with multiple items
     item_id_1 = str(uuid.uuid4())
@@ -80,8 +82,11 @@ def test_handle_acquisition_order_received_single_item_single_quantity(app: Flas
     mock_copy.id = str(uuid.uuid4())
     mock_item_service.add_copy_to_item.return_value = mock_copy
 
-    app.container.item_service = lambda: mock_item_service  # type: ignore
-    app.container.staff_service = lambda: mock_staff_service  # type: ignore
+    # Inject mocks into container
+    mock_container = MagicMock()
+    mock_container.item_service = mock_item_service
+    mock_container.staff_service = mock_staff_service
+    app.container = mock_container  # type: ignore
 
     item_id = str(uuid.uuid4())
     event = AcquisitionOrderReceivedEvent(
@@ -108,8 +113,11 @@ def test_handle_acquisition_order_received_empty_items(app: Flask) -> None:
     mock_staff.branch_id = str(uuid.uuid4())
     mock_staff_service.get_staff.return_value = mock_staff
 
-    app.container.item_service = lambda: mock_item_service  # type: ignore
-    app.container.staff_service = lambda: mock_staff_service  # type: ignore
+    # Inject mocks into container
+    mock_container = MagicMock()
+    mock_container.item_service = mock_item_service
+    mock_container.staff_service = mock_staff_service
+    app.container = mock_container  # type: ignore
 
     event = AcquisitionOrderReceivedEvent(
         acquisition_order_id=str(uuid.uuid4()),
@@ -137,8 +145,11 @@ def test_handle_acquisition_order_received_generates_unique_barcodes(app: Flask)
     mock_copy = MagicMock()
     mock_item_service.add_copy_to_item.return_value = mock_copy
 
-    app.container.item_service = lambda: mock_item_service  # type: ignore
-    app.container.staff_service = lambda: mock_staff_service  # type: ignore
+    # Inject mocks into container
+    mock_container = MagicMock()
+    mock_container.item_service = mock_item_service
+    mock_container.staff_service = mock_staff_service
+    app.container = mock_container  # type: ignore
 
     item_id = str(uuid.uuid4())
     event = AcquisitionOrderReceivedEvent(
@@ -182,8 +193,11 @@ def test_handle_acquisition_order_received_uses_correct_acquisition_date(app: Fl
     mock_copy = MagicMock()
     mock_item_service.add_copy_to_item.return_value = mock_copy
 
-    app.container.item_service = lambda: mock_item_service  # type: ignore
-    app.container.staff_service = lambda: mock_staff_service  # type: ignore
+    # Inject mocks into container
+    mock_container = MagicMock()
+    mock_container.item_service = mock_item_service
+    mock_container.staff_service = mock_staff_service
+    app.container = mock_container  # type: ignore
 
     acquisition_date = date(2025, 1, 15)
     event = AcquisitionOrderReceivedEvent(

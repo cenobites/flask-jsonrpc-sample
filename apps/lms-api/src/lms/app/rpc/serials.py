@@ -36,7 +36,7 @@ def handle_serial_issue_not_found_error(ex: SerialIssueNotFoundError) -> dict[st
     ],
 )
 def list_serials() -> t.Annotated[Page[Serial], tp.Summary('List of serials')]:
-    serial_service: SerialService = current_app.container.serial_service()  # type: ignore
+    serial_service: SerialService = current_app.container.serial_service  # type: ignore
     serials = serial_service.find_all_serials()
     return Page[Serial](results=serials, count=len(serials))
 
@@ -50,7 +50,7 @@ def list_serials() -> t.Annotated[Page[Serial], tp.Summary('List of serials')]:
 def get_serial(
     serial_id: t.Annotated[str, tp.Summary('Serial ID'), tp.Required()],
 ) -> t.Annotated[Serial, tp.Summary('Serial information')]:
-    serial_service: SerialService = current_app.container.serial_service()  # type: ignore
+    serial_service: SerialService = current_app.container.serial_service  # type: ignore
     serial = serial_service.get_serial(serial_id)
     return serial
 
@@ -64,7 +64,7 @@ def get_serial(
 def create_serial(
     serial: t.Annotated[SerialCreate, tp.Summary('Serial information'), tp.Required()],
 ) -> t.Annotated[Serial, tp.Summary('Created serial information')]:
-    serial_service: SerialService = current_app.container.serial_service()  # type: ignore
+    serial_service: SerialService = current_app.container.serial_service  # type: ignore
     created_serial = serial_service.subscribe_serial(
         title=serial.title,
         issn=serial.issn,

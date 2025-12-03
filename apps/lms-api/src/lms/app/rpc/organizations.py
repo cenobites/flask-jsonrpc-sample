@@ -38,7 +38,7 @@ def handle_staff_not_found_error(ex: StaffNotFoundError) -> dict[str, t.Any]:
     ],
 )
 def list_branches() -> t.Annotated[Page[Branch], tp.Summary('Branch information')]:
-    branch_service: BranchService = current_app.container.branch_service()  # type: ignore
+    branch_service: BranchService = current_app.container.branch_service  # type: ignore
     branches = branch_service.find_all_branches()
     return Page[Branch](results=branches, count=len(branches))
 
@@ -56,7 +56,7 @@ def list_branches() -> t.Annotated[Page[Branch], tp.Summary('Branch information'
 def get_branch(
     branch_id: t.Annotated[str, tp.Summary('Unique branch identifier'), tp.Required()],
 ) -> t.Annotated[Branch, tp.Summary('Branch information')]:
-    branch_service: BranchService = current_app.container.branch_service()  # type: ignore
+    branch_service: BranchService = current_app.container.branch_service  # type: ignore
     return branch_service.get_branch(branch_id)
 
 
@@ -88,7 +88,7 @@ def get_branch(
 def create_branch(
     branch: t.Annotated[BranchCreate, tp.Summary('Branch information'), tp.Required()],
 ) -> t.Annotated[Branch, tp.Summary('Created branch information')]:
-    branch_service: BranchService = current_app.container.branch_service()  # type: ignore
+    branch_service: BranchService = current_app.container.branch_service  # type: ignore
     created_branch = branch_service.create_branch(
         name=branch.name, address=branch.address, phone=branch.phone, email=branch.email, manager_id=branch.manager_id
     )
@@ -118,7 +118,7 @@ def create_branch(
 def update_branch(
     branch: t.Annotated[BranchUpdate, tp.Summary('Branch information'), tp.Required()],
 ) -> t.Annotated[Branch, tp.Summary('Updated branch information')]:
-    branch_service: BranchService = current_app.container.branch_service()  # type: ignore
+    branch_service: BranchService = current_app.container.branch_service  # type: ignore
     updated_branch = branch_service.update_branch(
         branch_id=branch.branch_id, name=branch.name, address=branch.address, phone=branch.phone
     )
@@ -147,7 +147,7 @@ def assign_branch_manager(
     branch_id: t.Annotated[str, tp.Summary('Branch ID'), tp.Required()],
     manager_id: t.Annotated[str, tp.Summary('Manager ID'), tp.Required()],
 ) -> t.Annotated[Branch, tp.Summary('Updated branch information with assigned manager')]:
-    branch_service: BranchService = current_app.container.branch_service()  # type: ignore
+    branch_service: BranchService = current_app.container.branch_service  # type: ignore
     updated_branch = branch_service.assign_branch_manager(branch_id=branch_id, manager_id=manager_id)
     return updated_branch
 
@@ -167,7 +167,7 @@ def assign_branch_manager(
     ],
 )
 def close_branch(branch_id: t.Annotated[str, tp.Summary('Branch ID'), tp.Required()]) -> None:
-    branch_service: BranchService = current_app.container.branch_service()  # type: ignore
+    branch_service: BranchService = current_app.container.branch_service  # type: ignore
     branch_service.close_branch(branch_id=branch_id)
 
 
@@ -182,7 +182,7 @@ def close_branch(branch_id: t.Annotated[str, tp.Summary('Branch ID'), tp.Require
     ],
 )
 def list_staff() -> t.Annotated[Page[Staff], tp.Summary('List of all staff')]:
-    staff_service: StaffService = current_app.container.staff_service()  # type: ignore
+    staff_service: StaffService = current_app.container.staff_service  # type: ignore
     staffs = staff_service.find_all_staff()
     return Page[Staff](results=staffs, count=len(staffs))
 
@@ -200,7 +200,7 @@ def list_staff() -> t.Annotated[Page[Staff], tp.Summary('List of all staff')]:
 def get_staff(
     staff_id: t.Annotated[str, tp.Summary('Unique staff identifier'), tp.Required()],
 ) -> t.Annotated[Staff, tp.Summary('Staff information')]:
-    staff_service: StaffService = current_app.container.staff_service()  # type: ignore
+    staff_service: StaffService = current_app.container.staff_service  # type: ignore
     return staff_service.get_staff(staff_id)
 
 
@@ -227,7 +227,7 @@ def get_staff(
 def create_staff(
     staff: t.Annotated[StaffCreate, tp.Summary('Staff information'), tp.Required()],
 ) -> t.Annotated[Staff, tp.Summary('Created staff information')]:
-    staff_service: StaffService = current_app.container.staff_service()  # type: ignore
+    staff_service: StaffService = current_app.container.staff_service  # type: ignore
     created_staff = staff_service.create_staff(name=staff.name, email=staff.email, role=staff.role)
     return created_staff
 
@@ -252,7 +252,7 @@ def create_staff(
 def update_staff(
     staff: t.Annotated[StaffUpdate, tp.Summary('Staff information'), tp.Required()],
 ) -> t.Annotated[Staff, tp.Summary('Updated staff information')]:
-    staff_service: StaffService = current_app.container.staff_service()  # type: ignore
+    staff_service: StaffService = current_app.container.staff_service  # type: ignore
     updated_staff = staff_service.update_staff(staff_id=staff.staff_id, name=staff.name)
     return updated_staff
 
@@ -286,7 +286,7 @@ def update_staff_email(
     staff_id: t.Annotated[str, tp.Summary('Staff ID'), tp.Required()],
     email: t.Annotated[str, tp.Summary('New email address'), tp.Required()],
 ) -> t.Annotated[Staff, tp.Summary('Updated staff email information')]:
-    staff_service: StaffService = current_app.container.staff_service()  # type: ignore
+    staff_service: StaffService = current_app.container.staff_service  # type: ignore
     updated_staff = staff_service.update_staff_email(staff_id=staff_id, email=email)
     return updated_staff
 
@@ -312,7 +312,7 @@ def update_staff_role(
     staff_id: t.Annotated[str, tp.Summary('Staff ID'), tp.Required()],
     role: t.Annotated[str, tp.Summary('New role'), tp.Required()],
 ) -> t.Annotated[Staff, tp.Summary('Updated staff role information')]:
-    staff_service: StaffService = current_app.container.staff_service()  # type: ignore
+    staff_service: StaffService = current_app.container.staff_service  # type: ignore
     updated_staff = staff_service.assign_staff_role(staff_id=staff_id, role=role)
     return updated_staff
 
@@ -334,5 +334,5 @@ def update_staff_role(
 def inactivate_staff(
     staff_id: t.Annotated[str, tp.Summary('Staff ID'), tp.Required()],
 ) -> t.Annotated[Staff, tp.Summary('Updated staff role information')]:
-    staff_service: StaffService = current_app.container.staff_service()  # type: ignore
+    staff_service: StaffService = current_app.container.staff_service  # type: ignore
     return staff_service.inactivate_staff(staff_id=staff_id)

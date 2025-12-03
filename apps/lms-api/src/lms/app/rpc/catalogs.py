@@ -59,7 +59,7 @@ def handle_publisher_not_found_error(ex: PublisherNotFoundError) -> dict[str, t.
     ],
 )
 def list_copies() -> t.Annotated[Page[Copy], tp.Summary('Catalog copies search result')]:
-    copy_service: CopyService = current_app.container.copy_service()  # type: ignore
+    copy_service: CopyService = current_app.container.copy_service  # type: ignore
     items = copy_service.get_all_copies()
     return Page[Copy](results=items, count=len(items))
 
@@ -77,7 +77,7 @@ def list_copies() -> t.Annotated[Page[Copy], tp.Summary('Catalog copies search r
 def get_copy(
     copy_id: t.Annotated[str, tp.Summary('Copy ID'), tp.Required()],
 ) -> t.Annotated[Copy, tp.Summary('Copy information')]:
-    copy_service: CopyService = current_app.container.copy_service()  # type: ignore
+    copy_service: CopyService = current_app.container.copy_service  # type: ignore
     return copy_service.get_copy(copy_id)
 
 
@@ -92,7 +92,7 @@ def get_copy(
     ],
 )
 def list_items() -> t.Annotated[Page[Item], tp.Summary('Catalog items search result')]:
-    item_service: ItemService = current_app.container.item_service()  # type: ignore
+    item_service: ItemService = current_app.container.item_service  # type: ignore
     items = item_service.get_all_items()
     return Page[Item](results=items, count=len(items))
 
@@ -125,7 +125,7 @@ def list_items() -> t.Annotated[Page[Item], tp.Summary('Catalog items search res
 def create_item(
     item: t.Annotated[ItemCreate, tp.Summary('Item information'), tp.Required()],
 ) -> t.Annotated[Item, tp.Summary('Created catalog item')]:
-    item_service: ItemService = current_app.container.item_service()  # type: ignore
+    item_service: ItemService = current_app.container.item_service  # type: ignore
     return item_service.create_item(
         title=item.title,
         isbn=item.isbn,
@@ -153,7 +153,7 @@ def create_item(
 def get_item(
     item_id: t.Annotated[str, tp.Summary('Item ID'), tp.Required()],
 ) -> t.Annotated[Item, tp.Summary('Catalog item information')]:
-    item_service: ItemService = current_app.container.item_service()  # type: ignore
+    item_service: ItemService = current_app.container.item_service  # type: ignore
     return item_service.get_item(item_id)
 
 
@@ -181,5 +181,5 @@ def get_item(
 def update_item(
     item: t.Annotated[ItemUpdate, tp.Summary('Item update information'), tp.Required()],
 ) -> t.Annotated[Item, tp.Summary('Updated catalog item')]:
-    item_service: ItemService = current_app.container.item_service()  # type: ignore
+    item_service: ItemService = current_app.container.item_service  # type: ignore
     return item_service.update_item(item_id=item.id, title=item.title, isbn=item.isbn, description=item.description)

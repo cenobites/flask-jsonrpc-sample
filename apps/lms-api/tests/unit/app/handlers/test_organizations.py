@@ -52,7 +52,11 @@ def test_handle_branch_closed_multiple_times(app: Flask) -> None:
 
 def test_handle_manager_assigned_to_branch_assigns_staff(app: Flask) -> None:
     mock_staff_service = MagicMock()
-    app.container.staff_service = lambda: mock_staff_service  # type: ignore
+
+    # Inject mocks into container
+    mock_container = MagicMock()
+    mock_container.staff_service = mock_staff_service
+    app.container = mock_container  # type: ignore
 
     manager_id = str(uuid.uuid4())
     branch_id = str(uuid.uuid4())
@@ -65,7 +69,11 @@ def test_handle_manager_assigned_to_branch_assigns_staff(app: Flask) -> None:
 
 def test_handle_manager_assigned_to_branch_multiple_assignments(app: Flask) -> None:
     mock_staff_service = MagicMock()
-    app.container.staff_service = lambda: mock_staff_service  # type: ignore
+
+    # Inject mocks into container
+    mock_container = MagicMock()
+    mock_container.staff_service = mock_staff_service
+    app.container = mock_container  # type: ignore
 
     assignments = [
         (str(uuid.uuid4()), str(uuid.uuid4())),
@@ -104,7 +112,11 @@ def test_register_handler_subscribes_to_all_events(mock_event_bus: MagicMock, ap
 
 def test_handle_manager_assigned_same_manager_different_branches(app: Flask) -> None:
     mock_staff_service = MagicMock()
-    app.container.staff_service = lambda: mock_staff_service  # type: ignore
+
+    # Inject mocks into container
+    mock_container = MagicMock()
+    mock_container.staff_service = mock_staff_service
+    app.container = mock_container  # type: ignore
 
     manager_id = str(uuid.uuid4())
     branch_id_1 = str(uuid.uuid4())
@@ -123,7 +135,11 @@ def test_handle_manager_assigned_same_manager_different_branches(app: Flask) -> 
 
 def test_handle_manager_assigned_different_managers_same_branch(app: Flask) -> None:
     mock_staff_service = MagicMock()
-    app.container.staff_service = lambda: mock_staff_service  # type: ignore
+
+    # Inject mocks into container
+    mock_container = MagicMock()
+    mock_container.staff_service = mock_staff_service
+    app.container = mock_container  # type: ignore
 
     manager_id_1 = str(uuid.uuid4())
     manager_id_2 = str(uuid.uuid4())

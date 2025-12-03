@@ -37,7 +37,7 @@ def handle_fine_not_found_error(ex: FineNotFoundError) -> dict[str, t.Any]:
     ],
 )
 def list_patrons() -> t.Annotated[Page[Patron], tp.Summary('Patron list')]:
-    patron_service: PatronService = current_app.container.patron_service()  # type: ignore
+    patron_service: PatronService = current_app.container.patron_service  # type: ignore
     patrons = patron_service.find_all_patrons()
     return Page[Patron](results=patrons, count=len(patrons))
 
@@ -55,7 +55,7 @@ def list_patrons() -> t.Annotated[Page[Patron], tp.Summary('Patron list')]:
 def get_patron(
     patron_id: t.Annotated[str, tp.Summary('Unique patron identifier'), tp.Required()],
 ) -> t.Annotated[Patron, tp.Summary('Patron information')]:
-    patron_service: PatronService = current_app.container.patron_service()  # type: ignore
+    patron_service: PatronService = current_app.container.patron_service  # type: ignore
     return patron_service.get_patron(patron_id)
 
 
@@ -82,7 +82,7 @@ def get_patron(
 def create_patron(
     patron: t.Annotated[PatronCreate, tp.Summary('Patron information'), tp.Required()],
 ) -> t.Annotated[Patron, tp.Summary('Created patron information')]:
-    patron_service: PatronService = current_app.container.patron_service()  # type: ignore
+    patron_service: PatronService = current_app.container.patron_service  # type: ignore
     return patron_service.create_patron(branch_id=patron.branch_id, name=patron.name, email=patron.email)
 
 
@@ -104,7 +104,7 @@ def create_patron(
 def update_patron(
     patron: t.Annotated[PatronUpdate, tp.Summary('Fields to update'), tp.Required()],
 ) -> t.Annotated[Patron, tp.Summary('Updated patron information')]:
-    patron_service: PatronService = current_app.container.patron_service()  # type: ignore
+    patron_service: PatronService = current_app.container.patron_service  # type: ignore
     return patron_service.update_patron(patron_id=patron.id, name=patron.name)
 
 
@@ -127,7 +127,7 @@ def update_patron_email(
     patron_id: t.Annotated[str, tp.Summary('Unique patron identifier'), tp.Required()],
     email: t.Annotated[str, tp.Summary('Patron email address'), tp.Required()],
 ) -> t.Annotated[Patron, tp.Summary('Updated patron information')]:
-    patron_service: PatronService = current_app.container.patron_service()  # type: ignore
+    patron_service: PatronService = current_app.container.patron_service  # type: ignore
     return patron_service.update_patron_email(patron_id=patron_id, email=email)
 
 
@@ -146,7 +146,7 @@ def update_patron_email(
 def activate_patron(
     patron_id: t.Annotated[str, tp.Summary('Patron ID'), tp.Required()],
 ) -> t.Annotated[Patron, tp.Summary('Updated patron information')]:
-    patron_service: PatronService = current_app.container.patron_service()  # type: ignore
+    patron_service: PatronService = current_app.container.patron_service  # type: ignore
     return patron_service.activate_patron(patron_id)
 
 
@@ -165,7 +165,7 @@ def activate_patron(
 def archive_patron(
     patron_id: t.Annotated[str, tp.Summary('Patron ID'), tp.Required()],
 ) -> t.Annotated[Patron, tp.Summary('Updated patron information')]:
-    patron_service: PatronService = current_app.container.patron_service()  # type: ignore
+    patron_service: PatronService = current_app.container.patron_service  # type: ignore
     return patron_service.archive_patron(patron_id)
 
 
@@ -179,7 +179,7 @@ def archive_patron(
     ],
 )
 def list_fines() -> t.Annotated[Page[Fine], tp.Summary('Fine list')]:
-    fine_service: FineService = current_app.container.fine_service()  # type: ignore
+    fine_service: FineService = current_app.container.fine_service  # type: ignore
     fines = fine_service.find_all_fines()
     return Page[Fine](results=fines, count=len(fines))
 
@@ -197,7 +197,7 @@ def list_fines() -> t.Annotated[Page[Fine], tp.Summary('Fine list')]:
 def get_fine(
     fine_id: t.Annotated[str, tp.Summary('Unique fine identifier'), tp.Required()],
 ) -> t.Annotated[Fine, tp.Summary('Fine information')]:
-    fine_service: FineService = current_app.container.fine_service()  # type: ignore
+    fine_service: FineService = current_app.container.fine_service  # type: ignore
     return fine_service.get_fine(fine_id)
 
 
@@ -216,7 +216,7 @@ def get_fine(
 def pay_fine(
     fine_id: t.Annotated[str, tp.Summary('Unique fine identifier'), tp.Required()],
 ) -> t.Annotated[Fine, tp.Summary('Fine information')]:
-    fine_service: FineService = current_app.container.fine_service()  # type: ignore
+    fine_service: FineService = current_app.container.fine_service  # type: ignore
     return fine_service.pay_fine(fine_id)
 
 
@@ -235,5 +235,5 @@ def pay_fine(
 def waive_fine(
     fine_id: t.Annotated[str, tp.Summary('Unique fine identifier'), tp.Required()],
 ) -> t.Annotated[Fine, tp.Summary('Fine information')]:
-    fine_service: FineService = current_app.container.fine_service()  # type: ignore
+    fine_service: FineService = current_app.container.fine_service  # type: ignore
     return fine_service.waive_fine(fine_id)

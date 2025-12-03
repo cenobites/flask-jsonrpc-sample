@@ -18,7 +18,7 @@ def handle_branch_closed(event: BranchClosedEvent) -> None:
 
 def handle_manager_assigned_to_branch(event: ManagerAssignedToBranchEvent) -> None:
     logger.info('Manager assigned to branch: ManagerID=%s, BranchID=%s', event.manager_id, event.branch_id)
-    staff_service: StaffService = current_app.container.staff_service()  # type: ignore
+    staff_service: StaffService = current_app.container.staff_service  # type: ignore
     staff_service.assign_staff_to_branch(event.manager_id, event.branch_id)
     logger.info('Manager with ID=%s assigned to BranchID=%s successfully', event.manager_id, event.branch_id)
 

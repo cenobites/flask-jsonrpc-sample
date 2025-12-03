@@ -45,7 +45,7 @@ def handle_vendor_not_found(ex: VendorNotFoundError) -> dict[str, t.Any]:
     ],
 )
 def list_orders() -> t.Annotated[Page[AcquisitionOrder], tp.Summary('List of orders')]:
-    acquisition_order_service: AcquisitionOrderService = current_app.container.acquisition_order_service()  # type: ignore
+    acquisition_order_service: AcquisitionOrderService = current_app.container.acquisition_order_service  # type: ignore
     orders = acquisition_order_service.find_all_orders()
     return Page[AcquisitionOrder](results=orders, count=len(orders))
 
@@ -61,7 +61,7 @@ def list_orders() -> t.Annotated[Page[AcquisitionOrder], tp.Summary('List of ord
 def get_order(
     order_id: t.Annotated[str, tp.Summary('Order ID'), tp.Required()],
 ) -> t.Annotated[AcquisitionOrder, tp.Summary('Order information')]:
-    acquisition_order_service: AcquisitionOrderService = current_app.container.acquisition_order_service()  # type: ignore
+    acquisition_order_service: AcquisitionOrderService = current_app.container.acquisition_order_service  # type: ignore
     return acquisition_order_service.get_order(order_id)
 
 
@@ -76,7 +76,7 @@ def get_order(
 def create_order(
     order: t.Annotated[OrderCreate, tp.Summary('Order information'), tp.Required()],
 ) -> t.Annotated[AcquisitionOrder, tp.Summary('Created order information')]:
-    acquisition_order_service: AcquisitionOrderService = current_app.container.acquisition_order_service()  # type: ignore
+    acquisition_order_service: AcquisitionOrderService = current_app.container.acquisition_order_service  # type: ignore
     acquisition_order = acquisition_order_service.create_order(vendor_id=order.vendor_id, staff_id=order.staff_id)
     for line in order.order_lines:
         acquisition_order = acquisition_order_service.add_line_to_order(
@@ -108,7 +108,7 @@ def create_order(
 def add_order_line(
     order_line: t.Annotated[OrderLineAdd, tp.Summary('Order line information')],
 ) -> t.Annotated[AcquisitionOrder, tp.Summary('Updated order information')]:
-    acquisition_order_service: AcquisitionOrderService = current_app.container.acquisition_order_service()  # type: ignore
+    acquisition_order_service: AcquisitionOrderService = current_app.container.acquisition_order_service  # type: ignore
     return acquisition_order_service.add_line_to_order(
         order_id=order_line.order_id,
         item_id=order_line.item_id,
@@ -138,7 +138,7 @@ def remove_order_line(
     order_id: t.Annotated[str, tp.Summary('Order ID'), tp.Required()],
     order_line_id: t.Annotated[str, tp.Summary('Order Line ID'), tp.Required()],
 ) -> t.Annotated[AcquisitionOrder, tp.Summary('Updated order information')]:
-    acquisition_order_service: AcquisitionOrderService = current_app.container.acquisition_order_service()  # type: ignore
+    acquisition_order_service: AcquisitionOrderService = current_app.container.acquisition_order_service  # type: ignore
     return acquisition_order_service.remove_line_from_order(order_id=order_id, order_line_id=order_line_id)
 
 
@@ -164,7 +164,7 @@ def receive_order_line(
     order_line_id: t.Annotated[str, tp.Summary('Order Line ID'), tp.Required()],
     received_quantity: t.Annotated[int | None, tp.Summary('Received Quantity')] = None,
 ) -> t.Annotated[AcquisitionOrder, tp.Summary('Updated order information')]:
-    acquisition_order_service: AcquisitionOrderService = current_app.container.acquisition_order_service()  # type: ignore
+    acquisition_order_service: AcquisitionOrderService = current_app.container.acquisition_order_service  # type: ignore
     return acquisition_order_service.receive_line_from_order(
         order_id=order_id, order_line_id=order_line_id, received_quantity=received_quantity
     )
@@ -179,7 +179,7 @@ def receive_order_line(
 def submit_order(
     order_id: t.Annotated[str, tp.Summary('Order ID'), tp.Required()],
 ) -> t.Annotated[AcquisitionOrder, tp.Summary('Submitted order information')]:
-    acquisition_order_service: AcquisitionOrderService = current_app.container.acquisition_order_service()  # type: ignore
+    acquisition_order_service: AcquisitionOrderService = current_app.container.acquisition_order_service  # type: ignore
     return acquisition_order_service.submit_order(order_id)
 
 
@@ -192,7 +192,7 @@ def submit_order(
 def cancel_order(
     order_id: t.Annotated[str, tp.Summary('Order ID'), tp.Required()],
 ) -> t.Annotated[AcquisitionOrder, tp.Summary('Cancelled order information')]:
-    acquisition_order_service: AcquisitionOrderService = current_app.container.acquisition_order_service()  # type: ignore
+    acquisition_order_service: AcquisitionOrderService = current_app.container.acquisition_order_service  # type: ignore
     return acquisition_order_service.cancel_order(order_id)
 
 
@@ -207,7 +207,7 @@ def cancel_order(
     ],
 )
 def list_vendors() -> t.Annotated[Page[Vendor], tp.Summary('Vendor search result')]:
-    vendor_service: VendorService = current_app.container.vendor_service()  # type: ignore
+    vendor_service: VendorService = current_app.container.vendor_service  # type: ignore
     vendors = vendor_service.find_all_vendors()
     return Page[Vendor](results=vendors, count=len(vendors))
 
@@ -225,7 +225,7 @@ def list_vendors() -> t.Annotated[Page[Vendor], tp.Summary('Vendor search result
 def get_vendor(
     vendor_id: t.Annotated[str, tp.Summary('Vendor ID'), tp.Required()],
 ) -> t.Annotated[Vendor, tp.Summary('Vendor information')]:
-    vendor_service: VendorService = current_app.container.vendor_service()  # type: ignore
+    vendor_service: VendorService = current_app.container.vendor_service  # type: ignore
     return vendor_service.get_vendor(vendor_id)
 
 
@@ -252,7 +252,7 @@ def get_vendor(
 def register_vendor(
     vendor: t.Annotated[VendorRegister, tp.Summary('Vendor information'), tp.Required()],
 ) -> t.Annotated[Vendor, tp.Summary('Created vendor information')]:
-    vendor_service: VendorService = current_app.container.vendor_service()  # type: ignore
+    vendor_service: VendorService = current_app.container.vendor_service  # type: ignore
     return vendor_service.register_vendor(
         name=vendor.name, staff_id=vendor.staff_id, address=vendor.address, email=vendor.email, phone=vendor.phone
     )
@@ -282,7 +282,7 @@ def register_vendor(
 def update_vendor(
     vendor: t.Annotated[VendorUpdate, tp.Summary('Vendor update data'), tp.Required()],
 ) -> t.Annotated[Vendor, tp.Summary('Updated vendor information')]:
-    vendor_service: VendorService = current_app.container.vendor_service()  # type: ignore
+    vendor_service: VendorService = current_app.container.vendor_service  # type: ignore
     return vendor_service.update_vendor(
         vendor.id, name=vendor.name, address=vendor.address, email=vendor.email, phone=vendor.phone
     )

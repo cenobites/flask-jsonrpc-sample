@@ -374,7 +374,7 @@ wheels = [
 [[package]]
 name = "flask-jsonrpc"
 version = "4.0.0a16"
-source = { git = "https://github.com/cenobites/flask-jsonrpc#a2e626af296d18f0583d0eee5b562096ffeefa33" }
+source = { git = "https://github.com/cenobites/flask-jsonrpc#40b81afdfabc7555f5b8352bfaa0ff32899da56f" }
 dependencies = [
     { name = "annotated-types" },
     { name = "eval-type-backport" },

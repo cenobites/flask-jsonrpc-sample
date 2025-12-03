@@ -11,7 +11,11 @@ from lms.domain.circulations.events import LoanReturnedEvent
 
 def test_handle_loan_returned_processes_holds(app: Flask) -> None:
     mock_hold_service = MagicMock()
-    app.container.hold_service = lambda: mock_hold_service  # type: ignore
+
+    # Inject mocks into container
+    mock_container = MagicMock()
+    mock_container.hold_service = mock_hold_service
+    app.container = mock_container  # type: ignore
 
     copy_id = str(uuid.uuid4())
     event = LoanReturnedEvent(
@@ -32,7 +36,11 @@ def test_handle_loan_returned_processes_holds(app: Flask) -> None:
 
 def test_handle_loan_returned_with_different_copy_ids(app: Flask) -> None:
     mock_hold_service = MagicMock()
-    app.container.hold_service = lambda: mock_hold_service  # type: ignore
+
+    # Inject mocks into container
+    mock_container = MagicMock()
+    mock_container.hold_service = mock_hold_service
+    app.container = mock_container  # type: ignore
 
     copy_id_1 = str(uuid.uuid4())
     copy_id_2 = str(uuid.uuid4())
@@ -77,7 +85,11 @@ def test_register_handler_subscribes_to_event(mock_event_bus: MagicMock, app: Fl
 
 def test_handle_loan_returned_called_once_per_event(app: Flask) -> None:
     mock_hold_service = MagicMock()
-    app.container.hold_service = lambda: mock_hold_service  # type: ignore
+
+    # Inject mocks into container
+    mock_container = MagicMock()
+    mock_container.hold_service = mock_hold_service
+    app.container = mock_container  # type: ignore
 
     event = LoanReturnedEvent(
         loan_id=str(uuid.uuid4()),
