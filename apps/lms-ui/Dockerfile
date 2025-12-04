@@ -1,9 +1,17 @@
-FROM node:24-alpine AS base
+FROM node:24-alpine AS baseimage
 
-FROM base AS deps
+ENV TZ="UTC"
+ENV USERNAME="flask_user"
+ENV UID="1666"
+ENV GROUPNAME="flask_user"
+ENV GID="1666"
+ENV APP_DIR="/app"
+
+
+FROM baseimage AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 RUN apk add --no-cache libc6-compat
-WORKDIR /app
+WORKDIR ${APP_DIR}
 
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
 RUN \
@@ -14,9 +22,9 @@ RUN \
   fi
 
 
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+FROM baseimage AS builder
+WORKDIR ${APP_DIR}
+COPY --from=deps ${APP_DIR}/node_modules ./node_modules
 COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -28,25 +36,24 @@ RUN \
   else echo "Lockfile not found." && exit 1; \
   fi
 
-FROM base AS runner
-WORKDIR /app
+  
+FROM baseimage AS runner
+WORKDIR ${APP_DIR}
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+RUN addgroup --system --gid ${GID} ${GROUPNAME}
+RUN adduser --system --uid ${UID} ${USERNAME}
 
-COPY --from=builder /app/public ./public
+COPY --from=builder ${APP_DIR}/public ./public
 
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
-USER nextjs
-
-EXPOSE 3000
+COPY --from=builder --chown=${USERNAME}:${GROUPNAME} ${APP_DIR}/.next/standalone ./
+COPY --from=builder --chown=${USERNAME}:${GROUPNAME} ${APP_DIR}/.next/static ./.next/static
 
 ENV PORT=3000
-
 ENV HOSTNAME="0.0.0.0"
+EXPOSE 3000
+
+USER ${USERNAME}:${GROUPNAME}
 CMD ["node", "server.js"]
