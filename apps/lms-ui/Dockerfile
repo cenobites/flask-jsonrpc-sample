@@ -46,10 +46,9 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid ${GID} ${GROUPNAME}
 RUN adduser --system --uid ${UID} ${USERNAME}
 
-COPY --from=builder ${APP_DIR}/public ${APP_DIR}/public
-
-COPY --from=builder --chown=${USERNAME}:${GROUPNAME} ${APP_DIR}/.next/standalone ./
-COPY --from=builder --chown=${USERNAME}:${GROUPNAME} ${APP_DIR}/.next/static ./_next/static
+COPY --from=builder --chown=${USERNAME}:${GROUPNAME} ${APP_DIR}/public ${APP_DIR}/public
+COPY --from=builder --chown=${USERNAME}:${GROUPNAME} ${APP_DIR}/.next/standalone ${APP_DIR}/
+COPY --from=builder --chown=${USERNAME}:${GROUPNAME} ${APP_DIR}/.next/static ${APP_DIR}/_next/static
 
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
