@@ -26,6 +26,7 @@ FROM baseimage AS builder
 WORKDIR ${APP_DIR}
 COPY --from=deps ${APP_DIR}/node_modules ./node_modules
 COPY . .
+COPY .env.production.sample .env.production
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
