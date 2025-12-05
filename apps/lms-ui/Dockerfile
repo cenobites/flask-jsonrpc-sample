@@ -50,6 +50,8 @@ COPY --from=builder --chown=${USERNAME}:${GROUPNAME} ${APP_DIR}/public ${APP_DIR
 COPY --from=builder --chown=${USERNAME}:${GROUPNAME} ${APP_DIR}/.next/standalone ${APP_DIR}/
 COPY --from=builder --chown=${USERNAME}:${GROUPNAME} ${APP_DIR}/.next/static ${APP_DIR}/.next/static
 
+RUN chown ${USERNAME}:${GROUPNAME} -R ${APP_DIR}
+
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 EXPOSE 3000
