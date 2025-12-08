@@ -26,6 +26,7 @@ dependencies = [
     "flask-cors>=6.0.1", # https://github.com/corydolphin/flask-cors
     "flask-jsonrpc", # https://github.com/cenobites/flask-jsonrpc
     "flask-sqlalchemy>=3.1.1", # https://github.com/pallets-eco/flask-sqlalchemy/
+    "msgspec>=0.20.0", # https://github.com/jcrist/msgspec
     "pydantic>=2.12.3", # https://github.com/pydantic/pydantic
     "python-dotenv>=1.2.1", # https://github.com/theskumar/python-dotenv
 ]
@@ -282,6 +283,7 @@ module = [
     "mypy-werkzeug.datastructures.*",
     "typeguard.*",
     "dotenv.*",
+    "flask_cors.*",
 ]
 ignore_missing_imports = true
 

@@ -3,11 +3,13 @@ from __future__ import annotations
 from flask import Flask
 
 from lms.config import Config
+from lms.app.json import MsgSpecJSONProvider
 
 
 def create_app(config_class: type[Config] = Config) -> Flask:
     app = Flask(__name__)
     app.config.from_object(config_class)
+    app.json = MsgSpecJSONProvider(app)
 
     from lms.app.extensions import db, cors, alembic, jsonrpc
 

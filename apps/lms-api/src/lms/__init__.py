@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import click
 
-from .app import create_app
+from lms.app import create_app
 
 app = create_app()
 
