@@ -1,4 +1,4 @@
-FROM node:24-alpine AS baseimage
+FROM node:25-alpine AS baseimage
 
 ENV TZ="UTC"
 ENV USERNAME="flask_user"
